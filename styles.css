@@ -103,6 +103,9 @@ button { font-family: inherit; }
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 }
 .profile-banner-action:hover { background: rgba(255, 213, 107, 0.12); }
 .profile-banner-action-quiet { border-color: rgba(255, 255, 255, 0.18); color: rgba(255, 255, 255, 0.7); }

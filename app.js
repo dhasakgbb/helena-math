@@ -174,6 +174,9 @@
       stale ? el('span', { class: 'profile-banner-stale', textContent: 'stale — consider a re-take' }) : null
     ]));
     profileBanner.appendChild(el('div', { class: 'profile-banner-actions' }, [
+      el('a', { class: 'profile-banner-action', textContent: 'View activity',
+        href: buildActivityUrl(), target: '_blank', rel: 'noopener',
+        title: 'See your math sessions in the parent dashboard' }),
       el('button', { type: 'button', class: 'profile-banner-action', textContent: 'Re-export',
         on: { click: reExportProfile } }),
       el('button', { type: 'button', class: 'profile-banner-action profile-banner-action-quiet',
@@ -238,6 +241,24 @@
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  // Build a URL-safe base64 token of the augmented profile so the parent
+  // can open the producer's /activity page with the data already loaded.
+  // Returns '#' if there's no profile or no telemetry — the calling banner
+  // is gated on a profile being present, so this should never hit '#'.
+  function buildActivityUrl() {
+    if (!window.helenaProfile) return '#';
+    const updated = window.helenaProfile.profileStore.exportWithTelemetry();
+    if (!updated) return '#';
+    try {
+      const json = JSON.stringify(updated);
+      const encoded = btoa(encodeURIComponent(json));
+      const safe = encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      return 'https://helena-learner-profile.vercel.app/activity#profile=' + safe;
+    } catch (_) {
+      return '#';
+    }
   }
 
   // ─── Mode dispatcher ────────────────────────────────────────────────────
