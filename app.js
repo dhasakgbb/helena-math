@@ -104,16 +104,60 @@
     return node;
   }
 
+  // Dismissal flag for the "no profile yet" onboarding nudge. Once the kid
+  // (or parent) clicks "Not now", we keep it hidden across visits. Re-shown
+  // automatically once a real profile is imported, since the no-profile
+  // branch is gated on the profile being null.
+  const NO_PROFILE_DISMISS_KEY = 'helena-math:onboarding:no-profile-dismissed:v1';
+  function isOnboardingDismissed() {
+    try { return localStorage.getItem(NO_PROFILE_DISMISS_KEY) === '1'; }
+    catch (_) { return false; }
+  }
+  function dismissOnboarding() {
+    try { localStorage.setItem(NO_PROFILE_DISMISS_KEY, '1'); } catch (_) {}
+    renderProfileBanner();
+  }
+
   function renderProfileBanner() {
     if (!profileBanner || !window.helenaProfile) return;
     const hp = window.helenaProfile;
     const profile = hp.profileStore.profile;
     while (profileBanner.firstChild) profileBanner.removeChild(profileBanner.firstChild);
     if (!profile) {
-      profileBanner.hidden = true;
+      // No profile yet → onboarding nudge unless the user dismissed it.
+      if (isOnboardingDismissed()) {
+        profileBanner.hidden = true;
+        decorateRecommendedPip();
+        return;
+      }
+      profileBanner.hidden = false;
+      profileBanner.classList.add('profile-banner-onboard');
+      profileBanner.appendChild(el('div', { class: 'profile-banner-info' }, [
+        el('span', { class: 'profile-banner-badge', textContent: 'NO PROFILE' }),
+        el('span', { class: 'profile-banner-text', textContent:
+          'Take a 5-minute quiz so we can recommend the mode that fits how you learn.'
+        })
+      ]));
+      profileBanner.appendChild(el('div', { class: 'profile-banner-actions' }, [
+        el('a', {
+          class: 'profile-banner-action profile-banner-action-primary',
+          href: 'https://helena-learner-profile.vercel.app/',
+          rel: 'noopener',
+          textContent: 'Take the quiz'
+        }),
+        el('button', {
+          type: 'button',
+          class: 'profile-banner-action profile-banner-action-quiet',
+          textContent: 'Not now',
+          on: { click: dismissOnboarding }
+        })
+      ]));
       decorateRecommendedPip();
       return;
     }
+    // Reaching here means the kid has a profile — make sure the onboarding
+    // dismissal class doesn't leak into the "loaded" banner styling.
+    profileBanner.classList.remove('profile-banner-onboard');
     profileBanner.hidden = false;
     const top = hp.topPreference(profile);
     const prettyTop = top === 'read_write' ? 'reading & writing' : (top || '—');
