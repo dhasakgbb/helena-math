@@ -231,6 +231,16 @@
 
   const autoImportResult = tryImportProfileFromHash();
 
+  // Late-arrival profile URLs: if the user already had this tab open and
+  // someone shares a #profile=… URL pasted into the same window, the URL
+  // changes without a full reload — so the inline call above doesn't re-fire.
+  // Listen for hashchange and re-run the import.
+  if (typeof window !== 'undefined') {
+    window.addEventListener('hashchange', () => {
+      tryImportProfileFromHash();
+    });
+  }
+
   window.helenaProfile = {
     profileStore,
     topPreference, secondPreference, recommendedMathMode,
