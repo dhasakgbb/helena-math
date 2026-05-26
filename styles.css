@@ -204,7 +204,7 @@ button { font-family: inherit; }
 .question-text { font-family: var(--font-display); font-size: clamp(2rem, 8vw, 3.4rem); font-weight: 700; line-height: 1; }
 .answer-input {
   width: 100%;
-  max-width: 200px;
+  max-width: 260px;
   padding: 0.85rem 1rem;
   font-family: var(--font-display);
   font-size: 1.7rem;
