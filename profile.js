@@ -27,6 +27,10 @@
     'number-sort': ['visual', 'kinesthetic']
   };
 
+  // CANONICAL: helena-learner-profile/src/lib/profile/schema.ts
+  // If you change the contract there, mirror it here AND in
+  // helena-states/profile.js AND helena-spelling/src/profile/schema.ts.
+  // Drift between the four validators is the most likely platform bug.
   const FLAG_LEVELS = ['low', 'medium', 'high'];
   const PLAN_LEVELS = ['strengths', 'monitor', 'schedule'];
   const SOURCES = ['intake_quiz', 'parent_edit', 'behavioral_observation'];
@@ -147,6 +151,21 @@
 
   let profile = loadProfile();
   let sessionIndex = loadSessionIndex();
+
+  // Cross-tab sync: when another tab of the same origin writes to either
+  // storage key, refresh in-memory state and notify subscribers so the
+  // UI updates without a manual reload.
+  if (typeof window !== 'undefined') {
+    window.addEventListener('storage', (e) => {
+      if (e.key === PROFILE_STORAGE_KEY) {
+        profile = loadProfile();
+        notify();
+      } else if (e.key === SESSION_INDEX_KEY) {
+        sessionIndex = loadSessionIndex();
+        notify();
+      }
+    });
+  }
 
   const profileStore = {
     get profile() { return profile; },
