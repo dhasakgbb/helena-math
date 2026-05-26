@@ -248,14 +248,12 @@
   // Returns '#' if there's no profile or no telemetry — the calling banner
   // is gated on a profile being present, so this should never hit '#'.
   function buildActivityUrl() {
-    if (!window.helenaProfile) return '#';
+    if (!window.helenaProfile || !window.HelenaProfile) return '#';
     const updated = window.helenaProfile.profileStore.exportWithTelemetry();
     if (!updated) return '#';
     try {
-      const json = JSON.stringify(updated);
-      const encoded = btoa(encodeURIComponent(json));
-      const safe = encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-      return 'https://helena-learner-profile.vercel.app/activity#profile=' + safe;
+      const token = window.HelenaProfile.encodeProfileFragment(updated);
+      return 'https://helena-learner-profile.vercel.app/activity#profile=' + token;
     } catch (_) {
       return '#';
     }

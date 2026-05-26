@@ -8,8 +8,11 @@
   <meta name="theme-color" content="#1c1a3a" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E➕%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="styles.css?v=1" />
+  <!-- Canonical Helena profile schema, exposes window.HelenaProfile (capital H).
+       The lowercase window.helenaProfile is this app's own store, set by profile.js. -->
+  <script src="https://cdn.jsdelivr.net/gh/dhasakgbb/profile-schema@v1.0.0/dist/index.iife.js" crossorigin="anonymous"></script>
   <!-- Profile loaded before app so window.helenaProfile is ready -->
-  <script src="profile.js?v=1"></script>
+  <script src="profile.js?v=2"></script>
   <script src="app.js?v=1" defer></script>
 </head>
 <body>

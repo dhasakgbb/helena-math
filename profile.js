@@ -1,15 +1,15 @@
 /**
  * Helena platform learner profile — math module port.
  *
- * Cross-module contract from helena-learner-profile. Identical shape to
- * helena-spelling and helena-states. If the contract changes, mirror it
- * here. Differences from the states port: only MODE_AFFINITY and the
- * exposed globals namespace.
+ * Validators, helpers, and the fragment codec now live in the shared
+ * profile-schema package (window.HelenaProfile, capital H), loaded via
+ * jsDelivr in index.html. This file keeps only the per-app store:
+ * localStorage I/O, cross-tab sync, telemetry, and subscribers — exposed
+ * as window.helenaProfile (lowercase).
  */
 (function () {
   'use strict';
 
-  const PROFILE_VERSION = 1;
   const PROFILE_STORAGE_KEY = 'helena-math:profile:v1';
   const SESSION_INDEX_KEY = 'helena-math:profile:session-index:v1';
   const LAUNCH_HISTORY_MAX = 12;
@@ -17,95 +17,16 @@
 
   const MATH_MODES = ['times-tables', 'speed-add', 'number-sort'];
 
-  // VARK mapping for math modes:
-  //   times-tables  : read/write (text-based equations + typed answers)
-  //   speed-add     : auditory (the problem is spoken; the kid types)
-  //   number-sort   : visual + kinesthetic (drag numbers into bins)
-  const MODE_AFFINITY = {
-    'times-tables': ['read_write'],
-    'speed-add': ['auditory'],
-    'number-sort': ['visual', 'kinesthetic']
-  };
-
-  // CANONICAL: helena-learner-profile/src/lib/profile/schema.ts
-  // If you change the contract there, mirror it here AND in
-  // helena-states/profile.js AND helena-spelling/src/profile/schema.ts.
-  // Drift between the four validators is the most likely platform bug.
-  const FLAG_LEVELS = ['low', 'medium', 'high'];
-  const PLAN_LEVELS = ['strengths', 'monitor', 'schedule'];
-  const SOURCES = ['intake_quiz', 'parent_edit', 'behavioral_observation'];
-
   function isObj(v) { return v !== null && typeof v === 'object' && !Array.isArray(v); }
   function isStr(v) { return typeof v === 'string'; }
   function isNum(v) { return typeof v === 'number' && Number.isFinite(v); }
-  function inRange(v, lo, hi) { return isNum(v) && v >= lo && v <= hi; }
-  function isISODate(v) { return isStr(v) && !Number.isNaN(Date.parse(v)); }
 
   function validate(raw) {
-    if (!isObj(raw)) return { ok: false, error: 'not an object' };
-    if (raw.version !== PROFILE_VERSION) return { ok: false, error: 'version must be ' + PROFILE_VERSION };
-    if (!isISODate(raw.generated_at)) return { ok: false, error: 'generated_at must be ISO date' };
-    if (!isISODate(raw.expires_at)) return { ok: false, error: 'expires_at must be ISO date' };
-    if (!isObj(raw.preferences)) return { ok: false, error: 'preferences must be object' };
-    for (const m of ['visual', 'auditory', 'read_write', 'kinesthetic']) {
-      if (!inRange(raw.preferences[m], 0, 100)) return { ok: false, error: 'preferences.' + m + ' must be 0-100' };
-    }
-    if (!isObj(raw.flags)) return { ok: false, error: 'flags must be object' };
-    for (const d of ['reading', 'writing', 'math', 'attention']) {
-      if (FLAG_LEVELS.indexOf(raw.flags[d]) === -1) return { ok: false, error: 'flags.' + d + ' invalid' };
-    }
-    if (!isObj(raw.needs_corroboration)) return { ok: false, error: 'needs_corroboration must be object' };
-    for (const d of ['reading', 'writing', 'math', 'attention']) {
-      if (typeof raw.needs_corroboration[d] !== 'boolean') return { ok: false, error: 'needs_corroboration.' + d };
-    }
-    if (!Array.isArray(raw.strengths) || !raw.strengths.every(isStr)) return { ok: false, error: 'strengths must be array of strings' };
-    if (PLAN_LEVELS.indexOf(raw.plan) === -1) return { ok: false, error: 'plan invalid' };
-    if (raw.module_overrides !== undefined && !isObj(raw.module_overrides)) return { ok: false, error: 'module_overrides must be object' };
-    if (SOURCES.indexOf(raw.source) === -1) return { ok: false, error: 'source invalid' };
-    if (raw.child_label !== undefined && (!isStr(raw.child_label) || raw.child_label.length > 40)) return { ok: false, error: 'child_label invalid' };
-    return {
-      ok: true,
-      profile: {
-        version: raw.version,
-        generated_at: raw.generated_at,
-        expires_at: raw.expires_at,
-        preferences: { ...raw.preferences },
-        flags: { ...raw.flags },
-        needs_corroboration: { ...raw.needs_corroboration },
-        strengths: raw.strengths.slice(),
-        plan: raw.plan,
-        module_overrides: raw.module_overrides || {},
-        source: raw.source,
-        ...(raw.child_label ? { child_label: raw.child_label } : {})
-      }
-    };
-  }
-
-  function topPreference(profile) {
-    if (!profile) return null;
-    const entries = Object.entries(profile.preferences);
-    entries.sort((a, b) => b[1] - a[1]);
-    return entries[0] && entries[0][1] > 0 ? entries[0][0] : null;
-  }
-  function secondPreference(profile) {
-    if (!profile) return null;
-    const entries = Object.entries(profile.preferences);
-    entries.sort((a, b) => b[1] - a[1]);
-    return entries[1] && entries[1][1] > 0 ? entries[1][0] : null;
-  }
-  function recommendedMathMode(profile, sessionIndex) {
-    if (!profile) return null;
-    const stretchTurn = sessionIndex > 0 && sessionIndex % 4 === 0;
-    const target = stretchTurn ? secondPreference(profile) : topPreference(profile);
-    if (!target) return null;
-    for (const mode of MATH_MODES) {
-      if ((MODE_AFFINITY[mode] || []).indexOf(target) !== -1) return mode;
-    }
-    return null;
-  }
-  function isProfileStale(profile, now) {
-    if (!profile) return false;
-    return (now || new Date()).toISOString() >= profile.expires_at;
+    if (!window.HelenaProfile) return { ok: false, error: 'profile-schema package failed to load' };
+    const r = window.HelenaProfile.exportedProfileSchema.safeParse(raw);
+    return r.success
+      ? { ok: true, profile: r.data }
+      : { ok: false, error: r.error.issues[0]?.message ?? 'invalid' };
   }
 
   function loadProfile() {
@@ -218,12 +139,9 @@
     const params = new URLSearchParams(hash.slice(1));
     const raw = params.get('profile');
     if (!raw) return 'no-hash';
-    let decoded;
-    try {
-      const standard = raw.replace(/-/g, '+').replace(/_/g, '/');
-      const padded = standard + '==='.slice(0, (4 - (standard.length % 4)) % 4);
-      decoded = decodeURIComponent(atob(padded));
-    } catch (_) { return 'invalid'; }
+    if (!window.HelenaProfile) return 'invalid';
+    const decoded = window.HelenaProfile.decodeProfileFragment(raw);
+    if (decoded === null) return 'invalid';
     const r = profileStore.importFromText(decoded);
     try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (_) {}
     return r.ok ? 'imported' : 'invalid';
@@ -241,10 +159,18 @@
     });
   }
 
+  // Thin delegates so app.js can call hp.topPreference(...) etc. without
+  // knowing whether they live on the per-app store or the shared package.
+  function topPreference(p) { return window.HelenaProfile ? window.HelenaProfile.topPreference(p) : null; }
+  function secondPreference(p) { return window.HelenaProfile ? window.HelenaProfile.secondPreference(p) : null; }
+  function recommendedMathMode(p, idx) { return window.HelenaProfile ? window.HelenaProfile.recommendedMathMode(p, idx) : null; }
+  function isProfileStale(p, now) { return window.HelenaProfile ? window.HelenaProfile.isProfileStale(p, now) : false; }
+
   window.helenaProfile = {
     profileStore,
     topPreference, secondPreference, recommendedMathMode,
     isProfileStale, subscribe, autoImportResult,
-    MATH_MODES, MODE_AFFINITY
+    MATH_MODES,
+    get MODE_AFFINITY() { return window.HelenaProfile ? window.HelenaProfile.MODE_AFFINITY.math : {}; }
   };
 })();
