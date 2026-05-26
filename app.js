@@ -335,7 +335,7 @@
         gameFeedback.textContent = '✓ Correct';
         gameFeedback.className = 'game-feedback correct';
       } else {
-        gameFeedback.textContent = '✗ Was ' + q.answer;
+        gameFeedback.textContent = 'Not quite — the answer was ' + q.answer + '.';
         gameFeedback.className = 'game-feedback wrong';
       }
       btn.disabled = true;
@@ -383,7 +383,7 @@
         gameFeedback.textContent = '✓ Correct';
         gameFeedback.className = 'game-feedback correct';
       } else {
-        gameFeedback.textContent = '✗ Was ' + q.answer;
+        gameFeedback.textContent = 'Not quite — the answer was ' + q.answer + '.';
         gameFeedback.className = 'game-feedback wrong';
       }
       btn.disabled = true;
@@ -443,6 +443,41 @@
       binEls[b.key] = binEl;
     }
 
+    // Touch + keyboard model: tap a tile to "pick it up", then tap a bin to
+    // drop it. Keyboard: Tab focuses tiles; arrow keys move the highlight
+    // across the three bins; Enter places the selected tile in the
+    // highlighted bin. Drag-and-drop still works for mouse users.
+    let selectedTile = null;
+    let highlightedBinIdx = 0;
+    const orderedBinKeys = binDefs.map((b) => b.key);
+    function setBinHighlight(idx) {
+      highlightedBinIdx = idx;
+      orderedBinKeys.forEach((k, i) => {
+        binEls[k].classList.toggle('keyboard-highlight', i === idx && !!selectedTile);
+      });
+    }
+    function selectTile(tile) {
+      if (selectedTile) selectedTile.classList.remove('selected');
+      selectedTile = tile;
+      tile.classList.add('selected');
+      setBinHighlight(highlightedBinIdx);
+    }
+    for (const key of orderedBinKeys) {
+      binEls[key].setAttribute('role', 'button');
+      binEls[key].setAttribute('tabindex', '0');
+      binEls[key].setAttribute('aria-label', 'Place number in ' + key + ' bin');
+      const placeHere = () => {
+        if (!selectedTile) return;
+        const n = parseInt(selectedTile.dataset.n, 10);
+        selectedTile = null;
+        setBinHighlight(highlightedBinIdx);
+        handleDrop(n, key, binEls[key]);
+      };
+      binEls[key].addEventListener('click', placeHere);
+      binEls[key].addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); placeHere(); }
+      });
+    }
     for (const n of batchNumbers) {
       const isPrime = checkPrime(n);
       const correctBin = isPrime ? 'prime' : (n % 2 === 0 ? 'even' : 'odd');
@@ -452,16 +487,35 @@
         dataset: { n: String(n), bin: correctBin },
         draggable: true
       });
+      tile.setAttribute('role', 'button');
+      tile.setAttribute('tabindex', '0');
+      tile.setAttribute('aria-label', 'Number ' + n + ', tap then tap a bin');
       tile.addEventListener('dragstart', (e) => {
         tile.classList.add('dragging');
         e.dataTransfer.setData('text/plain', String(n));
         e.dataTransfer.effectAllowed = 'move';
       });
       tile.addEventListener('dragend', () => tile.classList.remove('dragging'));
-      // Touch fallback: tap to cycle the highlighted bin and confirm.
-      tile.addEventListener('click', () => {
-        const target = prompt('Which bin? Type: even, odd, or prime', '');
-        if (target) handleDrop(n, target.toLowerCase().trim(), binEls[target.toLowerCase().trim()] || null);
+      // Tap to select (works on touch + click).
+      tile.addEventListener('click', () => selectTile(tile));
+      // Keyboard path: arrow keys move bin highlight, Enter drops.
+      tile.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (!selectedTile || selectedTile !== tile) { selectTile(tile); return; }
+          const key = orderedBinKeys[highlightedBinIdx];
+          selectedTile = null;
+          setBinHighlight(highlightedBinIdx);
+          handleDrop(n, key, binEls[key]);
+        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (!selectedTile) selectTile(tile);
+          setBinHighlight((highlightedBinIdx + 1) % orderedBinKeys.length);
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (!selectedTile) selectTile(tile);
+          setBinHighlight((highlightedBinIdx - 1 + orderedBinKeys.length) % orderedBinKeys.length);
+        }
       });
       pool.appendChild(tile);
     }
@@ -481,7 +535,7 @@
         gameFeedback.textContent = '✓ ' + correctBin;
         gameFeedback.className = 'game-feedback correct';
       } else {
-        gameFeedback.textContent = '✗ ' + n + ' is ' + correctBin;
+        gameFeedback.textContent = 'Close — ' + n + ' is ' + correctBin + '.';
         gameFeedback.className = 'game-feedback wrong';
         tile.remove();
         if (binEls[correctBin]) {

@@ -269,6 +269,24 @@ button { font-family: inherit; }
   user-select: none;
 }
 .number-tile.dragging { opacity: 0.5; }
+.number-tile.selected {
+  outline: 3px solid var(--accent, #ffd56b);
+  outline-offset: 2px;
+  transform: translateY(-2px);
+}
+.number-tile:focus-visible {
+  outline: 3px solid var(--accent, #ffd56b);
+  outline-offset: 2px;
+}
+.bin.keyboard-highlight {
+  border-style: solid;
+  border-color: var(--accent, #ffd56b);
+  background: rgba(255, 213, 107, 0.12);
+}
+.bin:focus-visible {
+  outline: 3px solid var(--accent, #ffd56b);
+  outline-offset: 2px;
+}
 .bins { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; }
 .bin {
   background: var(--bg);
