@@ -351,3 +351,53 @@ button { font-family: inherit; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+@media print {
+  @page { margin: 0.6in; }
+
+  html, body {
+    background: white !important;
+    background-image: none !important;
+    color: black !important;
+    font-size: 11pt;
+    line-height: 1.45;
+  }
+
+  /* Hide back navigation, footer, and any decorative banners */
+  .back-link,
+  #backToHubBtn,
+  .app-footer,
+  .profile-banner,
+  .profile-auto-toast,
+  [data-no-print] {
+    display: none !important;
+  }
+
+  /* Keep end-of-round summary readable */
+  .end-view,
+  .game-stats,
+  .game-feedback,
+  .mode-card {
+    background: white !important;
+    color: black !important;
+    border: 1px solid #999 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3 {
+    color: black !important;
+    text-shadow: none !important;
+    page-break-after: avoid;
+  }
+
+  .end-actions {
+    display: none !important;
+  }
+
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
