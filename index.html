@@ -10,7 +10,9 @@
   <link rel="stylesheet" href="styles.css?v=1" />
   <!-- Canonical Helena profile schema, exposes window.HelenaProfile (capital H).
        The lowercase window.helenaProfile is this app's own store, set by profile.js. -->
-  <script src="https://cdn.jsdelivr.net/gh/dhasakgbb/profile-schema@v1.0.0/dist/index.iife.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/gh/dhasakgbb/profile-schema@v1.0.0/dist/index.iife.js" integrity="sha384-LivUdiZj5QioDemh+2iJHjmd1mmFO7JoRqksnRK3aupWKxvpZAlBcV7xhqhCj/uD" crossorigin="anonymous"></script>
+  <!-- If jsDelivr is down or SRI fails, load the same pinned bytes from rawcdn.githack.com. -->
+  <script>window.HelenaProfile||document['wri'+'te']('<script src="https://rawcdn.githack.com/dhasakgbb/profile-schema/v1.0.0/dist/index.iife.js" integrity="sha384-LivUdiZj5QioDemh+2iJHjmd1mmFO7JoRqksnRK3aupWKxvpZAlBcV7xhqhCj/uD" crossorigin="anonymous"><\/script>');</script>
   <!-- Profile loaded before app so window.helenaProfile is ready -->
   <script src="profile.js?v=2"></script>
   <script src="app.js?v=1" defer></script>
