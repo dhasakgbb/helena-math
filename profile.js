@@ -127,7 +127,8 @@
     exportWithTelemetry() {
       if (!profile) return null;
       const now = new Date();
-      const expires = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000);
+      const ttlMs = (window.HelenaProfile?.PROFILE_TTL_DAYS ?? 60) * 24 * 60 * 60 * 1000;
+      const expires = new Date(now.getTime() + ttlMs);
       return { ...profile, generated_at: now.toISOString(), expires_at: expires.toISOString(), source: 'behavioral_observation' };
     }
   };
