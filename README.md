@@ -1,6 +1,6 @@
-# Helena's Math Practice
+# Astrid's Number Garden
 
-A small math practice app — part of the Helena learning platform.
+A small math practice app — part of the **Astrid** learning platform.
 
 **Live:** https://helena-math.vercel.app
 
