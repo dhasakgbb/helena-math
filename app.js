@@ -1,5 +1,5 @@
 /**
- * Helena's Math Practice — three modes, profile-aware.
+ * Astrid's Number Garden — three math modes, profile-aware.
  *
  * Modes:
  *   times-tables  → read/write affinity; typed multiplication facts
@@ -236,7 +236,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'helena-learner-profile-from-math-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.download = 'astrid-quiz-from-math-' + new Date().toISOString().slice(0, 10) + '.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

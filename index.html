@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>Helena's Math Practice</title>
-  <meta name="description" content="A small math practice app for Helena — times tables, speed addition, and number sorting. Tailors itself to her learner profile." />
+  <title>Astrid's Number Garden</title>
+  <meta name="description" content="A small math practice app — times tables, speed addition, and number sorting. Astrid tailors the modes to how your kid learns." />
   <meta name="theme-color" content="#1c1a3a" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E➕%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="styles.css?v=1" />
-  <!-- Canonical Helena profile schema, exposes window.HelenaProfile (capital H).
+  <link rel="stylesheet" href="styles.css?v=2" />
+  <!-- Canonical Astrid profile schema, exposes window.HelenaProfile (capital H — historic identifier kept pinned by the shared package).
        The lowercase window.helenaProfile is this app's own store, set by profile.js. -->
   <script src="https://cdn.jsdelivr.net/gh/dhasakgbb/profile-schema@v1.0.0/dist/index.iife.js" integrity="sha384-LivUdiZj5QioDemh+2iJHjmd1mmFO7JoRqksnRK3aupWKxvpZAlBcV7xhqhCj/uD" crossorigin="anonymous"></script>
   <!-- If jsDelivr is down or SRI fails, load the same pinned bytes from rawcdn.githack.com. -->
   <script>window.HelenaProfile||document['wri'+'te']('<script src="https://rawcdn.githack.com/dhasakgbb/profile-schema/v1.0.0/dist/index.iife.js" integrity="sha384-LivUdiZj5QioDemh+2iJHjmd1mmFO7JoRqksnRK3aupWKxvpZAlBcV7xhqhCj/uD" crossorigin="anonymous"><\/script>');</script>
   <!-- Profile loaded before app so window.helenaProfile is ready -->
-  <script src="profile.js?v=2"></script>
-  <script src="app.js?v=1" defer></script>
+  <script src="profile.js?v=3"></script>
+  <script src="app.js?v=2" defer></script>
 </head>
 <body>
   <header class="app-header">
-    <h1>Math Practice</h1>
+    <h1>Number Garden</h1>
     <p class="tagline">Three modes. Pick what fits your brain today.</p>
   </header>
 
@@ -30,7 +30,7 @@
     <!-- Mode selection -->
     <section id="modeSelectionView" class="mode-select">
       <a class="hub-back-link" href="https://helena-learner-profile.vercel.app/hub" rel="noopener">
-        <span aria-hidden="true">←</span> Helena Hub
+        <span aria-hidden="true">←</span> Astrid Hub
       </a>
       <div class="mode-grid" role="group" aria-label="Choose a mode">
         <button class="mode-card mode-card-tt" data-mode="times-tables" type="button">
@@ -79,7 +79,7 @@
   </main>
 
   <footer class="app-footer">
-    <span>Part of Helena's learning platform.</span>
+    <span>Part of the Astrid learning platform.</span>
     <a href="https://helena-learner-profile.vercel.app/hub" target="_blank" rel="noopener">All games →</a>
   </footer>
 </body>

@@ -1,5 +1,5 @@
 /**
- * Helena platform learner profile — math module port.
+ * Astrid platform learner profile — math module port.
  *
  * Validators, helpers, and the fragment codec now live in the shared
  * profile-schema package (window.HelenaProfile, capital H), loaded via
@@ -100,7 +100,7 @@
       try { json = JSON.parse(text); }
       catch (_) { return { ok: false, error: 'invalid JSON' }; }
       const r = validate(json);
-      if (!r.ok) return { ok: false, error: "Doesn't look like a Helena profile (" + r.error + ')' };
+      if (!r.ok) return { ok: false, error: "Doesn't look like an Astrid profile (" + r.error + ')' };
       profile = r.profile; persist(profile); notify();
       return { ok: true, profile: r.profile };
     },
