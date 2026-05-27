@@ -15,7 +15,9 @@
   <script>window.HelenaProfile||document['wri'+'te']('<script src="https://rawcdn.githack.com/dhasakgbb/profile-schema/v1.0.0/dist/index.iife.js" integrity="sha384-LivUdiZj5QioDemh+2iJHjmd1mmFO7JoRqksnRK3aupWKxvpZAlBcV7xhqhCj/uD" crossorigin="anonymous"><\/script>');</script>
   <!-- Profile loaded before app so window.helenaProfile is ready -->
   <script src="profile.js?v=3"></script>
-  <script src="app.js?v=2" defer></script>
+  <!-- Astrid mascot — exposes window.AstridMascot. Load before app.js so init can mount poses. -->
+  <script src="https://cdn.jsdelivr.net/gh/dhasakgbb/astrid-mascot@v1.0.0/dist/index.iife.js" crossorigin="anonymous"></script>
+  <script src="app.js?v=3" defer></script>
 </head>
 <body>
   <header class="app-header">
@@ -32,6 +34,8 @@
       <a class="hub-back-link" href="https://helena-learner-profile.vercel.app/hub" rel="noopener">
         <span aria-hidden="true">←</span> Astrid Hub
       </a>
+      <!-- Astrid mascot mount — populated by app.js via window.AstridMascot.renderInto -->
+      <div id="astridHomeMount" aria-hidden="true" style="display:flex;justify-content:center;width:120px;height:120px;margin:0 auto 0.5rem;"></div>
       <div class="mode-grid" role="group" aria-label="Choose a mode">
         <button class="mode-card mode-card-tt" data-mode="times-tables" type="button">
           <div class="mode-glyph" aria-hidden="true">×</div>

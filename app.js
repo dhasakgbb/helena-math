@@ -56,7 +56,14 @@
     });
 
     initLearnerProfile();
+    mountAstridHome();
   });
+
+  function mountAstridHome() {
+    if (!window.AstridMascot) return;
+    const node = document.getElementById('astridHomeMount');
+    if (node) window.AstridMascot.renderInto(node, { pose: 'waving', size: 120 });
+  }
 
   // ─── Learner profile integration ────────────────────────────────────────
   function initLearnerProfile() {
