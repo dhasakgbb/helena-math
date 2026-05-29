@@ -34,9 +34,9 @@
 
   <p class="text-muted description">
     {#if score >= 9}
-      Amazing! Helena, you crushed this round! Astrid is dancing with joy.
+      Flawless run. You're lighting up the leaderboards.
     {:else}
-      Great practicing today. Every question you answer helps you build your math superpowers!
+      Good practice. Keep grinding and you'll hit that high score soon.
     {/if}
   </p>
 

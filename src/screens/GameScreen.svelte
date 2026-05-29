@@ -112,12 +112,12 @@
     'speed-add': 'Speed Add',
     'number-sort': 'Number Sort',
     'fractions-visual': 'Fraction Garden',
-    'place-value': 'Place Value Cosmos',
+    'place-value': 'Place Value Orchard',
     'multiplication-grid': 'Multiplication Grid',
-    'long-division': 'Division Space',
+    'long-division': 'Division Stones',
     'decimals-grid': 'Decimal Shading',
-    'geometry-angles': 'Constellation Maps',
-    'pemdas-tree': 'PEMDAS Collapser'
+    'geometry-angles': 'Garden Star Maps',
+    'pemdas-tree': 'PEMDAS Trees'
   } as Record<string, string>;
 </script>
 
