@@ -13,12 +13,12 @@
     { id: 'speed-add', name: 'Speed Add', color: '#00ffe0', rx: 62, ry: 35 },
     { id: 'number-sort', name: 'Number Sort', color: '#00e676', rx: 99, ry: 35 },
     { id: 'fractions-visual', name: 'Fraction Garden', color: '#ff8e00', rx: 136, ry: 35 },
-    { id: 'place-value', name: 'Place Value', color: '#ff00e0', rx: 173, ry: 35 },
+    { id: 'place-value', name: 'Place Value Orchard', color: '#ff00e0', rx: 173, ry: 35 },
     { id: 'multiplication-grid', name: 'Multiplication Grid', color: '#ffd000', rx: 25, ry: 75 },
-    { id: 'long-division', name: 'Division Space', color: '#00bfff', rx: 62, ry: 75 },
+    { id: 'long-division', name: 'Division Stones', color: '#00bfff', rx: 62, ry: 75 },
     { id: 'decimals-grid', name: 'Decimal Shading', color: '#7cfc00', rx: 99, ry: 75 },
-    { id: 'geometry-angles', name: 'Constellation Maps', color: '#ff4500', rx: 136, ry: 75 },
-    { id: 'pemdas-tree', name: 'PEMDAS Collapser', color: '#9d4edd', rx: 173, ry: 75 }
+    { id: 'geometry-angles', name: 'Garden Star Maps', color: '#ff4500', rx: 136, ry: 75 },
+    { id: 'pemdas-tree', name: 'PEMDAS Trees', color: '#9d4edd', rx: 173, ry: 75 }
   ] as const;
 
   // Determine plant stage based on mastery value (0 to 1)
@@ -49,7 +49,7 @@
 
 <div class="garden-panel glass-panel">
   <h2>Helena's Number Garden</h2>
-  <p class="text-muted">Master math modules to grow and bloom your space plants! Click any plant to play.</p>
+  <p class="text-muted">Master math modules to grow and bloom your glowing plants! Click any plant to play.</p>
 
   <div class="svg-container">
     <svg viewBox="0 0 200 100" class="garden-svg">
