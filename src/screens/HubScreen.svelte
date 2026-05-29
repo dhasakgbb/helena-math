@@ -1008,4 +1008,32 @@
       align-self: center;
     }
   }
+
+  /* Modern Web Guidance: Scroll-driven entry animations */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports ((animation-timeline: view()) and (animation-range: entry)) {
+      @keyframes pop-in {
+        from {
+          opacity: 0;
+          transform: translateY(60px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .mode-card {
+        animation: pop-in linear both;
+        animation-timeline: view();
+        animation-range: entry 10% cover 25%;
+      }
+
+      .zone-header {
+        animation: pop-in linear both;
+        animation-timeline: view();
+        animation-range: entry 5% cover 15%;
+      }
+    }
+  }
 </style>

@@ -52,21 +52,43 @@ body::before {
 /* Glowing pollen / ambient orbs */
 body::after {
   content: '';
-  position: absolute;
-  top: 15%;
+  position: fixed;
+  top: 10%;
   left: 10%;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, light-dark(rgba(255, 220, 100, 0.15), rgba(255, 200, 50, 0.1)) 0%, transparent 70%);
-  filter: blur(40px);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 220, 100, 0.25) 0%, transparent 60%);
+  filter: blur(50px);
   pointer-events: none;
   z-index: 0;
-  animation: float-pollen 15s ease-in-out infinite alternate;
+  animation: float-pollen 20s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+}
+
+/* Second background orb for depth */
+#app::before {
+  content: '';
+  position: fixed;
+  bottom: 5%;
+  right: 5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(100, 255, 150, 0.15) 0%, transparent 60%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+  animation: float-orb-2 25s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate-reverse;
 }
 
 @keyframes float-pollen {
   0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  100% { transform: translate(120px, 80px) scale(1.15) rotate(45deg); }
+  50% { transform: translate(150px, 50px) scale(1.2) rotate(45deg); }
+  100% { transform: translate(50px, 150px) scale(0.9) rotate(90deg); }
+}
+
+@keyframes float-orb-2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-100px, -150px) scale(1.3); }
+  100% { transform: translate(-200px, 50px) scale(0.8); }
 }
 
 /* Scrollbars */
@@ -150,7 +172,7 @@ button {
   border-color: var(--color-text-muted);
 }
 
-/* Glassmorphism Panel */
+/* Premium Glassmorphism Panel */
 .glass-panel {
   width: 100%;
   max-width: 650px;
@@ -158,20 +180,33 @@ button {
   background: var(--color-panel);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: var(--r-lg);
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--glass-shadow), inset 0 0 20px rgba(255,255,255,0.05);
   padding: 2rem;
   position: relative;
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-              box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-              border-color 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4), transparent 40%, rgba(255,255,255,0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 .glass-panel:hover {
-  border-color: light-dark(rgba(50, 150, 80, 0.2), rgba(200, 255, 210, 0.2));
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px 0 light-dark(rgba(0, 50, 20, 0.12), rgba(0, 0, 0, 0.45));
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 20px 40px -10px rgba(0, 50, 20, 0.3), inset 0 0 30px rgba(255,255,255,0.15);
 }
 
 /* Animation utilities */
