@@ -1,0 +1,87 @@
+:root {
+  /* Premium Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Fredoka', var(--font-sans);
+
+  /* Color Design Tokens (OKLCH for uniform perception) */
+  --color-primary-light: oklch(65% 0.18 140); /* Fresh Green */
+  --color-primary-dark: oklch(50% 0.15 140);  /* Deep Forest Green */
+  
+  --color-accent-light: oklch(85% 0.18 80);  /* Sunflower Gold */
+  --color-accent-dark: oklch(75% 0.15 80);   /* Warm Sun */
+  
+  --color-bg-light: oklch(98% 0.02 110);     /* Soft Creamy Green */
+  --color-bg-dark: oklch(20% 0.04 140);      /* Dark earthy green */
+
+  --color-panel-light: rgba(255, 255, 255, 0.85);
+  --color-panel-dark: rgba(20, 35, 25, 0.85);
+  
+  --color-border-light: rgba(30, 80, 40, 0.15);
+  --color-border-dark: rgba(200, 255, 210, 0.15);
+
+  /* Functional Mappings */
+  color-scheme: light dark;
+  --color-primary: light-dark(var(--color-primary-light), var(--color-primary-dark));
+  --color-accent: light-dark(var(--color-accent-light), var(--color-accent-dark));
+  --color-bg: light-dark(var(--color-bg-light), var(--color-bg-dark));
+  --color-panel: light-dark(var(--color-panel-light), var(--color-panel-dark));
+  --color-border: light-dark(var(--color-border-light), var(--color-border-dark));
+  --color-text: light-dark(oklch(20% 0.05 140), oklch(98% 0.02 110));
+  --color-text-muted: light-dark(oklch(45% 0.05 140), oklch(85% 0.05 140));
+
+  /* Neon Glow Accent Tokens (Mapped to floral/garden colors) */
+  --neon-cyan: #00d084; /* Leaf Green */
+  --neon-purple: #b87333; /* Wood brown */
+  --neon-pink: #ff6b81; /* Rose Pink */
+  --neon-yellow: #feca57; /* Sun Yellow */
+  --success: #1dd1a1;
+  --danger: #ff6b6b;
+
+  /* Glows */
+  --glow-cyan: 0 0 20px rgba(0, 208, 132, 0.3), 0 0 40px rgba(0, 208, 132, 0.1);
+  --glow-purple: 0 0 20px rgba(184, 115, 51, 0.3);
+
+  /* Glassmorphism Configuration */
+  --glass-blur: blur(16px) saturate(120%);
+  --glass-shadow: 0 8px 32px 0 light-dark(rgba(0, 50, 20, 0.08), rgba(0, 0, 0, 0.35));
+
+  /* Radii & Layout Constants */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  
+  --touch: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+@media print {
+  @page { margin: 0.6in; }
+  html, body {
+    background: white !important;
+    background-image: none !important;
+    color: black !important;
+    font-size: 11pt;
+  }
+  body::before, body::after {
+    display: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .glass-panel {
+    background: white !important;
+    color: black !important;
+    border: 1px solid #999 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+}
