@@ -169,7 +169,6 @@
           draggable="true"
           ondragstart={(e) => handleDragStart(e, q.n)}
           onclick={() => selectTile(q.n)}
-          onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectTile(q.n); } }}
           aria-label={`Select number ${q.n}`}
         >
           {q.n}
@@ -190,7 +189,6 @@
         ondragleave={() => hoveredBin = null}
         ondrop={(e) => handleDrop(e, binType as any)}
         onclick={() => handleBinClick(binType as any)}
-        onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleBinClick(binType as any); } }}
         aria-label={`Sort selected number into the ${binType} bin`}
       >
         <span class="bin-label">{binType.toUpperCase()}</span>
