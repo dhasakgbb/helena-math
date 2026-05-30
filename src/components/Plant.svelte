@@ -1,6 +1,8 @@
 <script lang="ts">
+  import type { PlantSpecies } from './SpeciesMap';
+
   interface Props {
-    species?: 'moonflower'; // Plan 2 adds more species
+    species?: PlantSpecies;
     stage: 0 | 1 | 2 | 3 | 4;
     glow?: string; // CSS color; default firefly gold
     size?: number; // px height of the pod
@@ -280,40 +282,152 @@
         <!-- LAYER 1: wide soft halo (blurred copy of the petal disc) -->
         <circle cx="32" cy="22" r="13" fill="var(--glow-c)" opacity="0.45" filter="url(#plant-halo)" />
 
-        <!-- LAYER 2: five petals around the center, hand-tuned teardrops.
-             Each petal is one bezier loop; the ring reads as a moonflower. -->
-        <g class="petals">
-          <!-- top -->
-          <path
-            d="M32 22 C 29.5 14 30.5 7 32 6 C 33.5 7 34.5 14 32 22 Z"
-            fill="var(--glow-c)"
-            opacity="0.92"
-          />
-          <!-- upper-right -->
-          <path
-            d="M32 22 C 38 18 43.5 16 44.5 17.5 C 44.5 19.5 39.5 23 32 22 Z"
-            fill="var(--glow-c)"
-            opacity="0.85"
-          />
-          <!-- lower-right -->
-          <path
-            d="M32 22 C 38 25 42 30 41 31.5 C 39 32 33.5 29 32 22 Z"
-            fill="var(--glow-c)"
-            opacity="0.8"
-          />
-          <!-- lower-left -->
-          <path
-            d="M32 22 C 26 25 22 30 23 31.5 C 25 32 30.5 29 32 22 Z"
-            fill="var(--glow-c)"
-            opacity="0.82"
-          />
-          <!-- upper-left (most lit by the key light, slightly brighter) -->
-          <path
-            d="M32 22 C 26 18 20.5 16 19.5 17.5 C 19.5 19.5 24.5 23 32 22 Z"
-            fill="var(--glow-c)"
-            opacity="0.95"
-          />
-        </g>
+        <!-- LAYER 2: petal/head group, branched by species. All groups center
+             on (32,22), fill var(--glow-c) so per-grove glow flows through, and
+             obey the upper-left moonlight key (lit elements highest opacity). -->
+        {#if species === 'moonflower'}
+          <!-- five rounded teardrop petals — soft open moonflower -->
+          <g class="petals">
+            <!-- top -->
+            <path
+              d="M32 22 C 29.5 14 30.5 7 32 6 C 33.5 7 34.5 14 32 22 Z"
+              fill="var(--glow-c)"
+              opacity="0.92"
+            />
+            <!-- upper-right -->
+            <path
+              d="M32 22 C 38 18 43.5 16 44.5 17.5 C 44.5 19.5 39.5 23 32 22 Z"
+              fill="var(--glow-c)"
+              opacity="0.85"
+            />
+            <!-- lower-right -->
+            <path
+              d="M32 22 C 38 25 42 30 41 31.5 C 39 32 33.5 29 32 22 Z"
+              fill="var(--glow-c)"
+              opacity="0.8"
+            />
+            <!-- lower-left -->
+            <path
+              d="M32 22 C 26 25 22 30 23 31.5 C 25 32 30.5 29 32 22 Z"
+              fill="var(--glow-c)"
+              opacity="0.82"
+            />
+            <!-- upper-left (most lit by the key light, slightly brighter) -->
+            <path
+              d="M32 22 C 26 18 20.5 16 19.5 17.5 C 19.5 19.5 24.5 23 32 22 Z"
+              fill="var(--glow-c)"
+              opacity="0.95"
+            />
+          </g>
+        {:else if species === 'starbloom'}
+          <!-- five sharp slender spikes radiating from (32,22) — reads as a star.
+               Each spike is a thin kite: tip → two shoulders → back to center.
+               Longer and thinner than the moonflower teardrops. -->
+          <g class="petals">
+            <!-- top spike -->
+            <path
+              d="M32 22 L 30.6 9 L 32 3.5 L 33.4 9 Z"
+              fill="var(--glow-c)"
+              opacity="0.9"
+            />
+            <!-- upper-right spike -->
+            <path
+              d="M32 22 L 41.5 14.5 L 46.5 11.5 L 43 17 Z"
+              fill="var(--glow-c)"
+              opacity="0.86"
+            />
+            <!-- lower-right spike -->
+            <path
+              d="M32 22 L 40 30.5 L 43 35.5 L 37.5 32.5 Z"
+              fill="var(--glow-c)"
+              opacity="0.8"
+            />
+            <!-- lower-left spike -->
+            <path
+              d="M32 22 L 24 30.5 L 21 35.5 L 26.5 32.5 Z"
+              fill="var(--glow-c)"
+              opacity="0.83"
+            />
+            <!-- upper-left spike (most lit by the key light) -->
+            <path
+              d="M32 22 L 22.5 14.5 L 17.5 11.5 L 21 17 Z"
+              fill="var(--glow-c)"
+              opacity="0.95"
+            />
+          </g>
+        {:else if species === 'bellflower'}
+          <!-- three drooping bells hanging from a slightly higher node (~32,18),
+               each flaring downward (foxglove/bluebell feel). Side bells angle
+               out-and-down; the lit (left) bell carries the highest opacity. -->
+          <g class="petals">
+            <!-- right bell (away from key light, shaded) -->
+            <path
+              d="M32 18 C 40 21 43.5 28.5 40 33 C 37.5 34.5 34 32 32 27 C 31.4 24 31.4 21 32 18 Z"
+              fill="var(--glow-c)"
+              opacity="0.82"
+            />
+            <!-- center bell, pointing straight down -->
+            <path
+              d="M32 18 C 26.5 25 26.5 32.5 29 35.5 C 30.3 36.6 33.7 36.6 35 35.5 C 37.5 32.5 37.5 25 32 18 Z"
+              fill="var(--glow-c)"
+              opacity="0.88"
+            />
+            <!-- left bell (most lit by the key light) -->
+            <path
+              d="M32 18 C 24 21 20.5 28.5 24 33 C 26.5 34.5 30 32 32 27 C 32.6 24 32.6 21 32 18 Z"
+              fill="var(--glow-c)"
+              opacity="0.92"
+            />
+          </g>
+        {:else}
+          <!-- gembud: faceted crystal cluster around (32,22). Four angular
+               diamond facets at stepped opacity (upper-left brightest), with
+               thin bright rim lines on the lit upper-left edges to read as cut
+               crystal. -->
+          <g class="petals gem">
+            <!-- right facet (shaded) -->
+            <path
+              d="M37 18 L 42.5 24 L 36 32.5 L 32 24 Z"
+              fill="var(--glow-c)"
+              opacity="0.8"
+            />
+            <!-- bottom facet -->
+            <path
+              d="M28 32.5 L 32 24 L 36 32.5 L 32 37.5 Z"
+              fill="var(--glow-c)"
+              opacity="0.83"
+            />
+            <!-- top facet -->
+            <path
+              d="M32 9.5 L 37 18 L 32 24 L 27 18 Z"
+              fill="var(--glow-c)"
+              opacity="0.9"
+            />
+            <!-- left facet (most lit by the key light) -->
+            <path
+              d="M27 18 L 32 24 L 28 32.5 L 21.5 24 Z"
+              fill="var(--glow-c)"
+              opacity="0.95"
+            />
+            <!-- bright rim lines on the lit upper-left facet edges -->
+            <path
+              d="M32 9.5 L 27 18 L 21.5 24"
+              fill="none"
+              stroke="oklch(95% 0.02 280)"
+              stroke-width="0.4"
+              stroke-linejoin="round"
+              opacity="0.7"
+            />
+            <path
+              d="M27 18 L 32 24"
+              fill="none"
+              stroke="oklch(95% 0.02 280)"
+              stroke-width="0.4"
+              stroke-linecap="round"
+              opacity="0.6"
+            />
+          </g>
+        {/if}
 
         <!-- LAYER 3: tight bright core -->
         <circle cx="32" cy="22" r="5.4" fill="url(#plant-bloom)" />
