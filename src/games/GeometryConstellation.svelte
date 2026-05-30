@@ -161,11 +161,6 @@
 </script>
 
 <div class="game-container">
-  <div class="status-bar">
-    <span>Constellation {questionIndex + 1} of {questions.length}</span>
-    <span>Score: {score}</span>
-  </div>
-
   {#if currentQuestion}
     <div class="instruction">
       Plot coordinates to draw the <strong class="shape-lbl">{currentQuestion.shapeName}</strong>:
@@ -182,10 +177,10 @@
         <!-- Grid lines -->
         {#each Array(10) as _, i}
           <!-- vertical lines -->
-          <line x1={10 + i * 10} y1="0" x2={10 + i * 10} y2="100" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" />
+          <line x1={10 + i * 10} y1="0" x2={10 + i * 10} y2="100" stroke="var(--color-border)" stroke-width="0.5" opacity="0.4" />
           <!-- horizontal lines -->
-          <line x1="10" y1={i * 10} x2="110" y2={i * 10} stroke="rgba(255,255,255,0.06)" stroke-width="0.5" />
-          
+          <line x1="10" y1={i * 10} x2="110" y2={i * 10} stroke="var(--color-border)" stroke-width="0.5" opacity="0.4" />
+
           <!-- axis labels -->
           <text x={10 + i * 10} y="105" text-anchor="middle" font-size="3" fill="var(--color-text-muted)">{i}</text>
           <text x="5" y={100 - i * 10 + 1} text-anchor="middle" font-size="3" fill="var(--color-text-muted)">{i}</text>
@@ -195,17 +190,16 @@
         <line x1="10" y1="0" x2="10" y2="100" stroke="var(--color-border)" stroke-width="1" />
         <line x1="10" y1="100" x2="110" y2="100" stroke="var(--color-border)" stroke-width="1" />
 
-        <!-- Plotted Lines (Constellation connection) -->
+        <!-- Plotted Lines (Constellation connection) — draw through userPoints, NOT currentQuestion.points -->
         {#if drawLines && userPoints.length > 1}
-          <!-- Loop through vertices and close path -->
-          {#each currentQuestion.points as pt, idx}
-            {@const nextPt = currentQuestion.points[(idx + 1) % currentQuestion.points.length]}
+          {#each userPoints as pt, idx}
+            {@const nextPt = userPoints[(idx + 1) % userPoints.length]}
             <line
               x1={10 + pt.x * 10}
               y1={100 - pt.y * 10}
               x2={10 + nextPt.x * 10}
               y2={100 - nextPt.y * 10}
-              stroke="var(--neon-cyan)"
+              stroke="var(--glow-blossom)"
               stroke-width="1.5"
               stroke-dasharray="2, 2"
               class="glow-line"
@@ -236,7 +230,7 @@
       <button onclick={connectConstellation} disabled={userPoints.length < currentQuestion.points.length || disabled} class="btn-primary">
         Connect Stars 🌌
       </button>
-      <button onclick={clearAll} {disabled} class="btn-ghost size-btn delete">
+      <button onclick={clearAll} {disabled} class="btn-ghost size-btn reset-btn">
         Reset Grid
       </button>
     </div>
@@ -258,18 +252,10 @@
     width: 100%;
   }
 
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    color: var(--color-text-muted);
-    font-size: 0.95rem;
-    font-weight: 500;
-  }
-
   .instruction {
     font-size: 1.05rem;
     text-align: center;
+    color: var(--color-text);
   }
   .shape-lbl {
     color: var(--color-primary);
@@ -279,28 +265,33 @@
     display: flex;
     gap: 0.5rem;
     justify-content: center;
+    flex-wrap: wrap;
     margin-top: 0.4rem;
   }
 
   .coord-badge {
-    background: rgba(255, 208, 0, 0.1);
-    border: 1px solid rgba(255, 208, 0, 0.2);
-    color: var(--color-accent);
-    padding: 0.15rem 0.5rem;
+    --glow-c: var(--glow-blossom);
+    background: var(--color-panel);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    padding: 0.25rem 0.6rem;
     border-radius: 4px;
     font-size: 0.85rem;
     font-weight: 600;
+    min-height: 2rem;
+    display: inline-flex;
+    align-items: center;
   }
 
   /* Grid SVG */
   .grid-wrapper {
-    width: 250px;
-    height: 250px;
-    background: rgba(0, 0, 0, 0.25);
+    width: 260px;
+    height: 260px;
+    background: var(--color-panel);
     border: 2px solid var(--color-border);
     border-radius: var(--r-md);
     padding: 0.6rem;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 32px oklch(0% 0 0 / 0.3);
   }
 
   .coordinate-grid {
@@ -309,42 +300,47 @@
   }
 
   .grid-dot {
-    fill: rgba(255, 255, 255, 0.15);
+    fill: oklch(60% 0 0 / 0.2);
     cursor: pointer;
     transition: all 0.2s ease;
   }
   .grid-dot:hover {
-    fill: var(--neon-cyan);
-    r: 3;
+    fill: var(--color-primary);
   }
   .grid-dot.plotted {
-    fill: var(--neon-yellow);
-    r: 3;
-    filter: drop-shadow(0 0 4px var(--neon-yellow));
+    fill: var(--glow-blossom);
+    filter: drop-shadow(0 0 4px var(--glow-blossom));
   }
 
   .glow-line {
-    filter: drop-shadow(0 0 6px var(--neon-cyan));
+    filter: drop-shadow(0 0 6px var(--glow-blossom));
     animation: pulse-line 1s infinite alternate;
   }
-  @keyframes pulse-line {
-    from { stroke-width: 1.2; }
-    to { stroke-width: 1.8; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes pulse-line {
+      from { stroke-width: 1.2; }
+      to { stroke-width: 1.8; }
+    }
   }
 
   .control-row {
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .size-btn {
     font-size: 0.9rem;
     padding: 0.5rem 1rem;
+    min-height: 48px;
+    min-width: 48px;
   }
-  .size-btn.delete:hover {
-    color: var(--danger);
-    background: rgba(255, 23, 68, 0.05);
-    border-color: rgba(255, 23, 68, 0.15);
+
+  .reset-btn:hover {
+    color: var(--color-retry);
+    border-color: var(--color-retry);
   }
 
   .feedback-msg {
@@ -357,11 +353,30 @@
     text-align: center;
   }
   .feedback-msg.correct {
-    color: var(--success);
-    background: rgba(0, 230, 118, 0.1);
+    color: var(--color-correct);
+    background: oklch(from var(--color-correct) l c h / 0.1);
+    animation: glow-pulse 0.6s ease-out;
   }
   .feedback-msg.wrong {
-    color: var(--danger);
-    background: rgba(255, 23, 68, 0.1);
+    color: var(--color-retry);
+    background: oklch(from var(--color-retry) l c h / 0.1);
+    border: 1px solid oklch(from var(--color-retry) l c h / 0.3);
+    animation: shake 0.4s ease-out;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes glow-pulse {
+      0% { box-shadow: none; }
+      50% { box-shadow: 0 0 16px oklch(from var(--color-correct) l c h / 0.4); }
+      100% { box-shadow: none; }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
   }
 </style>

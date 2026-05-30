@@ -169,11 +169,6 @@
 </script>
 
 <div class="game-container">
-  <div class="status-bar">
-    <span>Division Problem {questionIndex + 1} of 5</span>
-    <span>Score: {score}</span>
-  </div>
-
   {#if currentQuestion}
     <div class="instruction">
       Help Astrid solve the long division:
@@ -185,15 +180,15 @@
       <div class="dividend-container">
         <!-- Quotient line -->
         <div class="quotient-row">
-          <span>{activeStep > 0 ? currentQuestion.step0Ans : ''}</span>
-          <span>{activeStep === 3 && feedbackClass === 'correct' ? currentQuestion.step3Ans : ''}</span>
+          <span class:filled={activeStep > 0}>{activeStep > 0 ? currentQuestion.step0Ans : ''}</span>
+          <span class:filled={activeStep === 3 && feedbackClass === 'correct'}>{activeStep === 3 && feedbackClass === 'correct' ? currentQuestion.step3Ans : ''}</span>
         </div>
         <div class="bracket-roof"></div>
         <div class="dividend-row">
           <span class="digit-tens">{currentQuestion.tensDigit}</span>
           <span class="digit-ones">{currentQuestion.onesDigit}</span>
         </div>
-        
+
         <!-- Step 1 subtraction lines -->
         {#if activeStep >= 1}
           <div class="work-row subtract">
@@ -229,7 +224,7 @@
     <div class="step-card">
       <span class="step-title">STEP {activeStep + 1}: {STEP_DETAILS[activeStep].title.toUpperCase()}</span>
       <p class="step-prompt">{STEP_DETAILS[activeStep].prompt}</p>
-      
+
       <div class="input-row">
         <input
           type="number"
@@ -264,17 +259,9 @@
     width: 100%;
   }
 
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    color: var(--color-text-muted);
-    font-size: 0.95rem;
-    font-weight: 500;
-  }
-
   .instruction {
     font-size: 1.05rem;
+    color: var(--color-text-muted);
   }
 
   /* Division Bracket Layout */
@@ -302,7 +289,7 @@
 
   .bracket-roof {
     height: 3px;
-    background: var(--color-text);
+    background: var(--color-border);
     width: 100%;
     margin-bottom: 2px;
   }
@@ -312,14 +299,20 @@
     gap: 0.8rem;
     height: 38px;
     padding-left: 0.2rem;
-    color: var(--neon-cyan);
-    text-shadow: var(--glow-cyan);
+    color: var(--color-text-muted);
+  }
+
+  .quotient-row span.filled {
+    --glow-c: var(--glow-blossom);
+    color: var(--color-text);
+    text-shadow: var(--glow-sm);
   }
 
   .dividend-row {
     display: flex;
     gap: 0.8rem;
     padding-left: 0.2rem;
+    color: var(--color-text);
   }
 
   .work-row {
@@ -330,18 +323,26 @@
     color: var(--color-text-muted);
     padding-right: 0.2rem;
   }
+
   .work-row.subtract {
-    color: var(--neon-pink);
+    color: var(--color-primary);
   }
+
   .work-row.remainder {
-    color: var(--neon-yellow);
+    color: var(--color-correct);
     font-size: 1.4rem;
   }
 
   .bring-down {
-    color: var(--neon-cyan);
-    animation: bounce 1s infinite alternate;
+    color: var(--color-primary);
   }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .bring-down {
+      animation: bounce 1s infinite alternate;
+    }
+  }
+
   @keyframes bounce {
     from { transform: translateY(0); }
     to { transform: translateY(4px); }
@@ -358,7 +359,7 @@
   .step-card {
     width: 100%;
     max-width: 420px;
-    background: rgba(0, 0, 0, 0.12);
+    background: var(--color-panel);
     border: 1px solid var(--color-border);
     border-radius: var(--r-md);
     padding: 1.2rem;
@@ -372,13 +373,14 @@
   .step-title {
     font-size: 0.75rem;
     font-weight: bold;
-    color: var(--neon-purple);
+    color: var(--color-primary);
     letter-spacing: 0.08em;
   }
 
   .step-prompt {
     font-size: 0.95rem;
     margin: 0.3rem 0;
+    color: var(--color-text);
   }
 
   .input-row {
@@ -390,7 +392,8 @@
 
   .step-input {
     width: 100px;
-    background: rgba(0,0,0,0.25);
+    min-height: var(--touch, 48px);
+    background: var(--color-panel);
     border: 1px solid var(--color-border);
     border-radius: var(--r-sm);
     color: var(--color-text);
@@ -398,10 +401,31 @@
     text-align: center;
     font-size: 1.2rem;
     font-weight: bold;
+    font-variant-numeric: tabular-nums lining-nums;
   }
-  .step-input:focus {
+
+  .step-input:focus-visible {
     outline: none;
+    --glow-c: var(--glow-blossom);
     border-color: var(--color-primary);
+    box-shadow: var(--glow-md);
+  }
+
+  .btn-primary {
+    min-height: var(--touch, 48px);
+    padding: 0 1.2rem;
+    background: var(--color-primary);
+    color: var(--color-text);
+    border: none;
+    border-radius: var(--r-sm);
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
   }
 
   .feedback-msg {
@@ -413,12 +437,43 @@
     border-radius: var(--r-sm);
     text-align: center;
   }
+
   .feedback-msg.correct {
-    color: var(--success);
-    background: rgba(0, 230, 118, 0.1);
+    color: var(--color-correct);
+    border: 1px solid var(--color-correct);
+    background: transparent;
+    --glow-c: var(--glow-blossom);
   }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .feedback-msg.correct {
+      animation: glow-pulse 0.6s ease-out;
+    }
+  }
+
+  @keyframes glow-pulse {
+    0% { box-shadow: none; }
+    50% { box-shadow: var(--glow-md); }
+    100% { box-shadow: none; }
+  }
+
   .feedback-msg.wrong {
-    color: var(--danger);
-    background: rgba(255, 23, 68, 0.1);
+    color: var(--color-retry);
+    border: 1px solid var(--color-retry);
+    background: transparent;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .feedback-msg.wrong {
+      animation: shake 0.4s ease-out;
+    }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
   }
 </style>

@@ -88,7 +88,7 @@
     if (!q) return;
 
     disabled = true;
-    
+
     const ansQ1 = parseInt(uQ1, 10);
     const ansQ2 = parseInt(uQ2, 10);
     const ansQ3 = q.aTens > 0 ? parseInt(uQ3, 10) : 0;
@@ -127,19 +127,14 @@
 </script>
 
 <div class="game-container">
-  <div class="status-bar">
-    <span>Question {questionIndex + 1} of 10</span>
-    <span>Score: {score}</span>
-  </div>
-
   {#if currentQuestion}
     <div class="instruction">
       Fill out the area model values for: <strong class="math-expr">{currentQuestion.a} &times; {currentQuestion.b}</strong>
     </div>
 
     <!-- Area Model Grid -->
-    <div class="area-model-container">
-      
+    <div class="area-model-container {feedbackClass === 'correct' ? 'grid-pulse' : ''} {feedbackClass === 'wrong' ? 'grid-shake' : ''}">
+
       <!-- Top header (bTens + bOnes) -->
       <div class="grid-header-row">
         <div class="corner-cell"></div>
@@ -197,7 +192,7 @@
           type="number"
           bind:value={uSum}
           {disabled}
-          class="sum-input"
+          class="sum-input {feedbackClass === 'correct' ? 'sum-correct' : ''} {feedbackClass === 'wrong' ? 'sum-wrong' : ''}"
           placeholder="Total Sum"
           aria-label="Total Sum"
         />
@@ -225,22 +220,16 @@
     width: 100%;
   }
 
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    color: var(--color-text-muted);
-    font-size: 0.95rem;
-    font-weight: 500;
-  }
-
   .instruction {
     font-size: 1.05rem;
     text-align: center;
+    color: var(--color-text);
   }
+
   .math-expr {
-    color: var(--neon-cyan);
-    text-shadow: var(--glow-cyan);
+    color: var(--color-primary);
+    --glow-c: var(--glow-moonflower);
+    text-shadow: var(--glow-sm);
     font-size: 1.3rem;
   }
 
@@ -271,7 +260,7 @@
   }
 
   .input-cell {
-    background: rgba(0, 0, 0, 0.15);
+    background: var(--color-panel);
     border: 1px solid var(--color-border);
     border-radius: var(--r-md);
     padding: 0.6rem;
@@ -290,7 +279,8 @@
 
   .grid-input {
     width: 90%;
-    background: rgba(0,0,0,0.2);
+    min-height: var(--touch, 48px);
+    background: oklch(20% 0.02 260 / 0.6);
     border: 1px solid var(--color-border);
     border-radius: var(--r-sm);
     color: var(--color-text);
@@ -298,17 +288,21 @@
     text-align: center;
     font-size: 1rem;
     font-weight: bold;
-  }
-  .grid-input:focus {
-    outline: none;
-    border-color: var(--color-primary);
+    font-variant-numeric: tabular-nums lining-nums;
   }
 
-  /* Color-coding quadrants */
-  .q1-color { border-left: 3px solid var(--neon-cyan); }
-  .q2-color { border-left: 3px solid var(--neon-purple); }
-  .q3-color { border-left: 3px solid var(--neon-pink); }
-  .q4-color { border-left: 3px solid var(--neon-yellow); }
+  .grid-input:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    --glow-c: var(--glow-moonflower);
+    box-shadow: var(--glow-md);
+  }
+
+  /* Color-coding quadrants using twilight tokens */
+  .q1-color { border-left: 3px solid var(--color-primary); }
+  .q2-color { border-left: 3px solid oklch(72% 0.14 300); }
+  .q3-color { border-left: 3px solid oklch(78% 0.13 200); }
+  .q4-color { border-left: 3px solid oklch(80% 0.13 55); }
 
   .sum-container {
     width: 100%;
@@ -323,11 +317,13 @@
     align-items: center;
     font-weight: bold;
     font-size: 1.1rem;
+    color: var(--color-text);
   }
 
   .sum-input {
     max-width: 150px;
-    background: rgba(0,0,0,0.15);
+    min-height: var(--touch, 48px);
+    background: oklch(20% 0.02 260 / 0.6);
     border: 2px solid var(--color-border);
     border-radius: var(--r-md);
     color: var(--color-text);
@@ -335,10 +331,26 @@
     text-align: center;
     font-size: 1.2rem;
     font-weight: 700;
+    font-variant-numeric: tabular-nums lining-nums;
   }
-  .sum-input:focus {
+
+  .sum-input:focus-visible {
     outline: none;
     border-color: var(--color-primary);
+    --glow-c: var(--glow-moonflower);
+    box-shadow: var(--glow-md);
+  }
+
+  .sum-input.sum-correct {
+    border-color: var(--color-correct);
+    --glow-c: var(--color-correct);
+    box-shadow: var(--glow-sm);
+  }
+
+  .sum-input.sum-wrong {
+    border-color: var(--color-retry);
+    --glow-c: var(--color-retry);
+    box-shadow: var(--glow-sm);
   }
 
   .feedback-msg {
@@ -350,12 +362,41 @@
     border-radius: var(--r-sm);
     text-align: center;
   }
+
   .feedback-msg.correct {
-    color: var(--success);
-    background: rgba(0, 230, 118, 0.1);
+    color: var(--color-correct);
+    background: oklch(55% 0.16 150 / 0.12);
   }
+
   .feedback-msg.wrong {
-    color: var(--danger);
-    background: rgba(255, 23, 68, 0.1);
+    color: var(--color-retry);
+    background: oklch(72% 0.13 75 / 0.12);
+  }
+
+  /* Motion gated by preference */
+  @media (prefers-reduced-motion: no-preference) {
+    .area-model-container.grid-pulse {
+      animation: gridGlowPulse 0.7s ease-out;
+    }
+    .area-model-container.grid-shake {
+      animation: gentleShake 0.45s ease-in-out;
+    }
+  }
+
+  @keyframes gridGlowPulse {
+    0% { box-shadow: none; }
+    40% {
+      --glow-c: var(--color-correct);
+      box-shadow: var(--glow-lg);
+    }
+    100% { box-shadow: none; }
+  }
+
+  @keyframes gentleShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(2px); }
   }
 </style>

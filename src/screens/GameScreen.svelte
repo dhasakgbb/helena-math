@@ -53,6 +53,12 @@
 
   const total = $derived(TOTALS[mode] ?? 10);
 
+  const GLOW: Record<string, string> = {
+    'times-tables': 'var(--glow-firefly)', 'speed-add': 'var(--glow-firefly)', 'number-sort': 'var(--glow-firefly)',
+    'fractions-visual': 'var(--glow-moonflower)', 'multiplication-grid': 'var(--glow-moonflower)', 'decimals-grid': 'var(--glow-moonflower)',
+    'place-value': 'var(--glow-blossom)', 'long-division': 'var(--glow-blossom)', 'geometry-angles': 'var(--glow-blossom)', 'pemdas-tree': 'var(--glow-blossom)',
+  };
+
   // Live answered counter — incremented by both handleCorrect and handleIncorrect
   let answered = $state(0);
 
@@ -150,6 +156,7 @@
   questionIndex={answered}
   {total}
   {onBack}
+  glow={GLOW[mode] ?? 'var(--glow-firefly)'}
 >
   {#snippet mascot()}
     <div class="mascot-wrapper">

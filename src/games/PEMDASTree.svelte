@@ -241,18 +241,13 @@
 </script>
 
 <div class="game-container">
-  <div class="status-bar">
-    <span>Equation {questionIndex + 1} of {questions.length}</span>
-    <span>Score: {score}</span>
-  </div>
-
   {#if currentQuestion}
     <div class="instruction">
       Click on the operator that should be evaluated <strong>next</strong>:
     </div>
 
     <!-- Active collapsing equation display -->
-    <div class="expr-display">
+    <div class="expr-display {feedbackClass === 'correct' ? 'pulse' : ''} {feedbackClass === 'wrong' ? 'shake' : ''}">
       {#each tokenize(currentQuestion.steps[activeStepIdx].expr) as token}
         {#if token.type === 'op'}
           <button
@@ -274,7 +269,7 @@
     <!-- PEMDAS priorities display banner -->
     <div class="pemdas-banner">
       <div class="p-letter group-p">P</div>
-      <div class="p-letter group-md">E</div>
+      <div class="p-letter group-e">E</div>
       <div class="p-letter group-md">M</div>
       <div class="p-letter group-md">D</div>
       <div class="p-letter group-as">A</div>
@@ -298,17 +293,9 @@
     width: 100%;
   }
 
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    color: var(--color-text-muted);
-    font-size: 0.95rem;
-    font-weight: 500;
-  }
-
   .instruction {
     font-size: 1.05rem;
+    color: var(--color-text-muted);
     text-align: center;
   }
 
@@ -320,8 +307,11 @@
     font-family: var(--font-display);
     font-size: 2.2rem;
     font-weight: bold;
+    font-variant-numeric: tabular-nums;
     min-height: 80px;
     margin: 1rem 0;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .num-lbl {
@@ -333,34 +323,39 @@
   }
 
   .op-btn {
-    background: linear-gradient(135deg, var(--color-primary), var(--neon-purple));
-    color: light-dark(#ffffff, #0b0c16);
-    width: 44px;
-    height: 44px;
+    --glow-c: var(--glow-blossom);
+    background: oklch(18% 0.05 300 / 0.75);
+    color: var(--color-text);
+    width: 52px;
+    height: 52px;
+    min-width: 48px;
+    min-height: 48px;
     border-radius: var(--r-sm);
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 1.8rem;
-    box-shadow: 0 4px 12px rgba(157,78,221,0.25);
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
   }
-  .op-btn:hover {
-    transform: scale(1.08) translateY(-2px);
-    box-shadow: 0 6px 16px rgba(157,78,221,0.4);
+  .op-btn:hover:not(:disabled),
+  .op-btn:focus-visible:not(:disabled) {
+    border-color: var(--color-primary);
+    box-shadow: var(--glow-md);
+    outline: none;
   }
   .op-btn:disabled {
-    opacity: 0.5;
-    transform: none;
-    box-shadow: none;
+    opacity: 0.45;
     cursor: not-allowed;
+    box-shadow: none;
   }
 
   /* PEMDAS visual aid */
   .pemdas-banner {
     display: flex;
     gap: 0.3rem;
-    background: rgba(0, 0, 0, 0.15);
+    background: var(--color-panel);
     border: 1px solid var(--color-border);
     padding: 0.4rem 0.8rem;
     border-radius: var(--r-md);
@@ -370,17 +365,34 @@
     font-family: var(--font-display);
     font-size: 1.1rem;
     font-weight: bold;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid var(--color-border);
   }
-  
-  .group-p { background: rgba(157,78,221,0.2); color: var(--neon-purple); border: 1px solid rgba(157,78,221,0.3); }
-  .group-md { background: rgba(0,255,224,0.15); color: var(--neon-cyan); border: 1px solid rgba(0,255,224,0.3); }
-  .group-as { background: rgba(255,0,127,0.15); color: var(--neon-pink); border: 1px solid rgba(255,0,127,0.3); }
+
+  .group-p {
+    background: oklch(20% 0.06 300 / 0.6);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+  .group-e {
+    background: oklch(20% 0.06 270 / 0.6);
+    color: var(--color-text-muted);
+  }
+  .group-md {
+    background: oklch(20% 0.05 200 / 0.6);
+    color: var(--color-correct);
+    border-color: var(--color-correct);
+  }
+  .group-as {
+    background: oklch(20% 0.06 60 / 0.6);
+    color: var(--color-retry);
+    border-color: var(--color-retry);
+  }
 
   .feedback-msg {
     font-family: var(--font-display);
@@ -390,14 +402,39 @@
     padding: 0.5rem 1rem;
     border-radius: var(--r-sm);
     text-align: center;
-    max-width: 320px;
+    max-width: 340px;
   }
   .feedback-msg.correct {
-    color: var(--success);
-    background: rgba(0, 230, 118, 0.1);
+    color: var(--color-correct);
+    background: oklch(80% 0.16 150 / 0.12);
   }
   .feedback-msg.wrong {
-    color: var(--danger);
-    background: rgba(255, 23, 68, 0.1);
+    color: var(--color-retry);
+    background: oklch(82% 0.15 75 / 0.12);
+    border: 1px solid oklch(82% 0.15 75 / 0.3);
+  }
+
+  /* All animation is keyframe-based and gated by no-preference */
+  @media (prefers-reduced-motion: no-preference) {
+    .expr-display.pulse {
+      animation: glowPulse 0.7s ease-out;
+    }
+    .expr-display.shake {
+      animation: gentleShake 0.45s ease-in-out;
+    }
+
+    @keyframes glowPulse {
+      0% { filter: none; }
+      40% { filter: drop-shadow(0 0 8px oklch(80% 0.16 150 / 0.8)); }
+      100% { filter: none; }
+    }
+
+    @keyframes gentleShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-5px); }
+      40% { transform: translateX(5px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(3px); }
+    }
   }
 </style>
