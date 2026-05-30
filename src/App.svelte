@@ -25,6 +25,16 @@
   let toastClass = $state<'ok' | 'bad' | ''>('');
 
   onMount(() => {
+    const hour = new Date().getHours();
+    const isDay = hour >= 6 && hour < 18;
+    if (isDay) {
+      document.documentElement.classList.add('theme-day');
+      document.documentElement.classList.remove('theme-night');
+    } else {
+      document.documentElement.classList.add('theme-night');
+      document.documentElement.classList.remove('theme-day');
+    }
+
     // Try to import profile from hash
     const importResult = profileStore.tryImportFromHash();
     if (importResult === 'imported') {

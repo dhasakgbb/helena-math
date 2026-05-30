@@ -188,13 +188,13 @@
         <stop offset="100%" stop-color="var(--sky-bot)" />
       </linearGradient>
       <radialGradient id="gs-moon" cx="0.5" cy="0.5" r="0.5">
-        <stop offset="0%" stop-color="oklch(98% 0.02 250)" />
-        <stop offset="70%" stop-color="oklch(92% 0.04 250)" />
-        <stop offset="100%" stop-color="oklch(92% 0.04 250 / 0)" />
+        <stop offset="0%" stop-color="var(--gs-moon-outer, oklch(98% 0.02 250))" />
+        <stop offset="70%" stop-color="var(--gs-moon-inner, oklch(92% 0.04 250))" />
+        <stop offset="100%" stop-color="var(--gs-moon-fade, oklch(92% 0.04 250 / 0))" />
       </radialGradient>
       <linearGradient id="gs-path" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="oklch(60% 0.05 250 / 0.55)" />
-        <stop offset="100%" stop-color="oklch(70% 0.06 200 / 0.35)" />
+        <stop offset="0%" stop-color="var(--gs-path1, oklch(60% 0.05 250 / 0.55))" />
+        <stop offset="100%" stop-color="var(--gs-path2, oklch(70% 0.06 200 / 0.35))" />
       </linearGradient>
     </defs>
 
@@ -204,19 +204,19 @@
     <!-- LAYER 1 (far, depth 0.15): star-field + moon + rolling hills -->
     <g class="parallax-layer" style="--depth:0.15">
       <circle cx="1040" cy="95" r="74" fill="url(#gs-moon)" />
-      <circle cx="1040" cy="95" r="40" fill="oklch(97% 0.02 250)" opacity="0.9" />
+      <circle cx="1040" cy="95" r="40" fill="var(--gs-moon-core, oklch(97% 0.02 250))" opacity="0.9" />
       {#each Array.from({ length: 60 }, (_, i) => i) as i (i)}
         <circle
           cx={(i * 197) % 1200}
           cy={(i * 83) % 360}
           r={0.6 + ((i * 7) % 3) * 0.5}
-          fill="oklch(96% 0.02 250)"
+          fill="var(--gs-star, oklch(96% 0.02 250))"
           opacity={0.3 + ((i % 5) * 0.12)}
         />
       {/each}
       <path
         d="M-40 470 C 200 410 420 470 640 440 C 880 408 1060 470 1240 430 L 1240 780 L -40 780 Z"
-        fill="oklch(30% 0.06 270)"
+        fill="var(--gs-hill1, oklch(30% 0.06 270))"
       />
     </g>
 
@@ -224,7 +224,7 @@
     <g class="parallax-layer" style="--depth:0.4">
       <path
         d="M-40 540 C 180 480 420 560 660 520 C 900 482 1080 560 1240 520 L 1240 780 L -40 780 Z"
-        fill="oklch(26% 0.06 280)"
+        fill="var(--gs-hill2, oklch(26% 0.06 280))"
       />
       <!-- the serpentine path the pods sit along -->
       <path
@@ -241,10 +241,10 @@
     <g class="parallax-layer" style="--depth:0.7">
       <path
         d="M-40 600 C 240 540 520 600 760 560 C 980 524 1120 590 1240 560 L 1240 780 L -40 780 Z"
-        fill="oklch(22% 0.05 285)"
+        fill="var(--gs-hill3, oklch(22% 0.05 285))"
       />
       {#each [180, 470, 760, 1040] as bx (bx)}
-        <ellipse cx={bx} cy="620" rx="150" ry="34" fill="oklch(40% 0.05 200 / 0.18)" />
+        <ellipse cx={bx} cy="620" rx="150" ry="34" fill="var(--gs-mound-shadow, oklch(40% 0.05 200 / 0.18))" />
       {/each}
     </g>
 

@@ -61,13 +61,13 @@
     border-radius: var(--r-lg); overflow: hidden; padding: 2rem;
   }
   .welcome { position: relative; z-index: 1; text-align: center; max-width: 30rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .lantern { filter: drop-shadow(0 0 18px oklch(88% 0.15 95 / 0.5)); }
+  .lantern { filter: drop-shadow(0 0 18px var(--lantern-glow, oklch(88% 0.15 95 / 0.5))); }
   .title { font-family: var(--font-display); font-weight: 700; color: var(--color-text); font-size: 1.7rem; }
   .sub { color: var(--color-text-muted); line-height: 1.5; max-width: 26rem; }
   .btn-seed {
     --glow-c: var(--glow-firefly);
     min-height: var(--touch); padding: 0 1.6rem; border-radius: var(--r-md);
-    background: var(--color-primary); color: oklch(20% 0.03 280); font-weight: 700; font-family: var(--font-display);
+    background: var(--color-primary); color: var(--btn-text, oklch(20% 0.03 280)); font-weight: 700; font-family: var(--font-display);
     box-shadow: var(--glow-md); border: none; cursor: pointer; font-size: 1.05rem;
   }
   .btn-seed:focus-visible { outline: 3px solid var(--color-text); outline-offset: 3px; }

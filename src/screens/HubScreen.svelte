@@ -31,18 +31,21 @@
   const pick = $derived(profileStore.smartPick);
   const childName = $derived(profileStore.profile?.child_label || 'gardener');
 
+  const isDay = new Date().getHours() >= 6 && new Date().getHours() < 18;
+  const timeOfDayStr = isDay ? "today" : "tonight";
+
   // A short, encouraging one-liner — no pressure, just an invitation.
   const speech = $derived.by(() => {
     const name = childName;
     const mode = MODE_NAMES[pick];
     const mastery = (profileStore.profile?.module_overrides?.math as any)?.mastery?.[pick] ?? 0;
     if (mastery >= 0.85) {
-      return `Lovely work, ${name} — ${mode} is in full bloom. Want to tend it again tonight?`;
+      return `Lovely work, ${name} — ${mode} is in full bloom. Want to tend it again ${timeOfDayStr}?`;
     }
     if (mastery > 0) {
-      return `Hi ${name}! ${mode} is growing nicely. A little water tonight?`;
+      return `Hi ${name}! ${mode} is growing nicely. A little water ${timeOfDayStr}?`;
     }
-    return `Hi ${name}! The moon is out. ${mode} looks like a nice spot to plant tonight.`;
+    return `Hi ${name}! ${isDay ? "The sun is shining." : "The moon is out."} ${mode} looks like a nice spot to plant ${timeOfDayStr}.`;
   });
 
   let showGridModal = $state(false);
@@ -95,7 +98,7 @@
             />
           </svg>
           <span class="tonight-label">
-            <span class="tonight-kicker">Tonight's Plant</span>
+            <span class="tonight-kicker">{isDay ? "Today's" : "Tonight's"} Plant</span>
             <span class="tonight-mode">{MODE_NAMES[pick]}</span>
           </span>
         </button>
@@ -127,7 +130,7 @@
     padding: 1.25rem;
     border-radius: var(--r-lg);
     background:
-      radial-gradient(120% 90% at 80% -10%, oklch(40% 0.08 250 / 0.5), transparent 60%),
+      radial-gradient(120% 90% at 80% -10%, var(--sky-radial, oklch(40% 0.08 250 / 0.5)), transparent 60%),
       linear-gradient(to bottom, var(--sky-top), var(--sky-mid) 60%, var(--sky-bot));
     color: var(--color-text);
     overflow: hidden;
@@ -192,8 +195,8 @@
     max-width: 46ch;
     padding: 0.85rem 1.15rem;
     border-radius: var(--r-md);
-    background: oklch(30% 0.05 275 / 0.55);
-    border: 1px solid oklch(85% 0.02 280 / 0.16);
+    background: var(--color-panel);
+    border: 1px solid var(--color-border);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
@@ -206,8 +209,8 @@
     width: 16px;
     height: 16px;
     background: inherit;
-    border-left: 1px solid oklch(85% 0.02 280 / 0.16);
-    border-bottom: 1px solid oklch(85% 0.02 280 / 0.16);
+    border-left: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
     transform: rotate(45deg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -232,21 +235,21 @@
     border: 1px solid var(--color-primary);
     border-radius: var(--r-md);
     cursor: pointer;
-    color: oklch(20% 0.04 280);
+    color: var(--btn-text, oklch(20% 0.04 280));
     background:
-      radial-gradient(120% 140% at 30% 0%, oklch(90% 0.13 80), var(--color-primary) 70%);
+      radial-gradient(120% 140% at 30% 0%, var(--btn-highlight, oklch(90% 0.13 80)), var(--color-primary) 70%);
     font-family: var(--font-display);
     --glow-c: var(--color-primary);
     box-shadow:
       0 0 0 0 transparent,
       var(--glow-md),
-      0 8px 24px -6px oklch(20% 0.04 280 / 0.6);
+      0 8px 24px -6px var(--btn-shadow, oklch(20% 0.04 280 / 0.6));
     transition: transform 0.18s ease, box-shadow 0.22s ease, filter 0.18s ease;
   }
 
   .tonight-btn:hover {
     transform: translateY(-2px);
-    box-shadow: var(--glow-lg), 0 12px 30px -6px oklch(20% 0.04 280 / 0.65);
+    box-shadow: var(--glow-lg), 0 12px 30px -6px var(--btn-shadow, oklch(20% 0.04 280 / 0.65));
     filter: brightness(1.04);
   }
 

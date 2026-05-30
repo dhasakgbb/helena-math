@@ -346,7 +346,7 @@
   .gb-backdrop {
     position: fixed;
     inset: 0;
-    background: oklch(10% 0.04 280 / 0.55);
+    background: var(--gb-backdrop, oklch(10% 0.04 280 / 0.55));
     z-index: 900;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -371,11 +371,11 @@
     bottom: 0;
     width: min(400px, 94vw);
     z-index: 901;
-    background: oklch(27% 0.06 275 / 0.92);
+    background: var(--gb-sheet-bg, oklch(27% 0.06 275 / 0.92));
     backdrop-filter: blur(24px) saturate(1.4);
     -webkit-backdrop-filter: blur(24px) saturate(1.4);
     border-left: 1px solid var(--color-border);
-    box-shadow: -8px 0 40px oklch(10% 0.04 280 / 0.5);
+    box-shadow: -8px 0 40px var(--gb-sheet-shadow, oklch(10% 0.04 280 / 0.5));
     display: flex;
     flex-direction: column;
     gap: 0;

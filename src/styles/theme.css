@@ -44,6 +44,49 @@
   --touch: 48px;
 }
 
+:root.theme-day {
+  /* Day sky */
+  --sky-radial: oklch(90% 0.08 230 / 0.8); /* sun glow */
+  --sky-top: oklch(75% 0.1 230);
+  --sky-mid: oklch(88% 0.08 220);
+  --sky-bot: oklch(95% 0.05 210);
+  --color-bg: var(--sky-top);
+
+  --color-panel: oklch(100% 0.02 240 / 0.75);
+  --color-border: oklch(50% 0.03 250 / 0.15);
+
+  color-scheme: light;
+  --color-text: oklch(20% 0.03 250);
+  --color-text-muted: oklch(45% 0.03 250);
+
+  /* Primary color remains roughly the same, button shadows adjust */
+  --btn-text: oklch(20% 0.04 280);
+  --btn-highlight: oklch(85% 0.13 80);
+  --btn-shadow: oklch(70% 0.1 70 / 0.4);
+
+  /* Adjust glow colors for light bg */
+  --glow-moonflower: oklch(50% 0.15 220);
+  --glow-firefly: oklch(65% 0.18 75);
+  --glow-blossom: oklch(60% 0.20 340);
+  
+  --color-correct: oklch(60% 0.15 150);
+  --color-retry: oklch(65% 0.18 65);
+
+  /* GardenScene specifics for day mode */
+  --gs-moon-outer: oklch(98% 0.1 90 / 0.8);
+  --gs-moon-inner: oklch(95% 0.15 80 / 0.6);
+  --gs-moon-fade: oklch(95% 0.15 80 / 0);
+  --gs-moon-core: oklch(98% 0.12 85); /* Sun */
+  --gs-star: transparent;
+  
+  --gs-hill1: oklch(75% 0.12 140);
+  --gs-hill2: oklch(68% 0.14 135);
+  --gs-hill3: oklch(62% 0.12 130);
+  --gs-path1: oklch(80% 0.05 100 / 0.8);
+  --gs-path2: oklch(85% 0.06 90 / 0.5);
+  --gs-mound-shadow: oklch(40% 0.05 130 / 0.15);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
