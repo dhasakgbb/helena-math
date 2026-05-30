@@ -47,9 +47,8 @@
     <!-- Moonlight key from the upper-left: lit face cooler/brighter, shaded
          face falls into the warm glow color. -->
     <linearGradient id="plant-pot" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="oklch(46% 0.05 270)" />
-      <stop offset="55%" stop-color="oklch(38% 0.05 275)" />
-      <stop offset="100%" stop-color="oklch(28% 0.05 280)" />
+      <stop offset="0%" stop-color="var(--gs-pot-lit, oklch(64% 0.12 45))" />
+      <stop offset="100%" stop-color="var(--gs-pot-shade, oklch(44% 0.11 40))" />
     </linearGradient>
     <!-- Ambient occlusion inside the rim: dark pools toward bottom-right. -->
     <radialGradient id="plant-soil" cx="0.38" cy="0.32" r="0.85">
@@ -86,14 +85,14 @@
          C 21 91.5 19.5 90.6 19.5 89
          Z"
       fill="url(#plant-pot)"
-      stroke="oklch(52% 0.05 270)"
+      stroke="oklch(40% 0.08 40)"
       stroke-width="0.8"
     />
     <!-- moonlit highlight running down the upper-left wall -->
     <path
       d="M20 72 C 21 80 21.5 85 22.5 89.5"
       fill="none"
-      stroke="oklch(82% 0.04 260)"
+      stroke="oklch(86% 0.06 60)"
       stroke-width="1.1"
       stroke-linecap="round"
       opacity="0.5"
@@ -112,14 +111,14 @@
       rx="16.5"
       ry="4.4"
       fill="none"
-      stroke="oklch(58% 0.05 268)"
+      stroke="oklch(48% 0.07 45)"
       stroke-width="1.1"
     />
     <!-- rim top-left specular -->
     <path
       d="M19 68.4 C 22 66.6 27 66 32 66"
       fill="none"
-      stroke="oklch(88% 0.03 255)"
+      stroke="oklch(90% 0.05 65)"
       stroke-width="1"
       stroke-linecap="round"
       opacity="0.55"
@@ -127,7 +126,7 @@
     <!-- soil mound inside the rim, lit top-left -->
     <path
       d="M21 70.5 C 25 67.8 39 67.8 43 70.5 C 39 71.8 25 71.8 21 70.5 Z"
-      fill="oklch(30% 0.04 60)"
+      fill="oklch(32% 0.05 55)"
     />
   </g>
 
