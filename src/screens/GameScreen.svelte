@@ -259,6 +259,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'pemdas-tree'}
     <PEMDASTree
