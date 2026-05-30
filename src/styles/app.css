@@ -77,14 +77,14 @@ body::after {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
+  background: oklch(100% 0 0 / 0.05);
 }
 ::-webkit-scrollbar-thumb {
-  background: light-dark(rgba(0, 0, 0, 0.15), rgba(0, 255, 224, 0.2));
+  background: oklch(70% 0.03 280 / 0.25);
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: light-dark(rgba(0, 0, 0, 0.25), rgba(0, 255, 224, 0.4));
+  background: oklch(75% 0.04 280 / 0.4);
 }
 
 #app {
@@ -113,7 +113,7 @@ button {
 
 .btn-primary {
   background: var(--color-primary);
-  color: #ffffff;
+  color: oklch(20% 0.03 280);
   padding: 0.8rem 1.8rem;
   border-radius: 999px; /* Pill shape for Apple style */
   font-weight: 600;
@@ -146,7 +146,7 @@ button {
   color: var(--color-text-muted);
 }
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: oklch(100% 0 0 / 0.06);
   color: var(--color-text);
   border-color: var(--color-text-muted);
 }
@@ -155,11 +155,11 @@ button {
 .glass-panel {
   width: 100%;
   background: var(--color-panel);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
   border-radius: var(--r-lg);
-  box-shadow: var(--glass-shadow);
+  box-shadow: 0 10px 40px -12px oklch(15% 0.05 285 / 0.6);
   padding: 2rem;
   position: relative;
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), 
@@ -168,7 +168,7 @@ button {
 
 .glass-panel:hover {
   transform: scale(1.01) translateY(-2px);
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 18px 48px -12px oklch(12% 0.05 285 / 0.7);
 }
 
 /* Animation utilities */
