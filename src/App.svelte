@@ -53,8 +53,8 @@
   function handleSelectMode(mode: string) {
     selectedMode = mode as MathMode;
     
-    // Record telemetry launch
-    const recommended = profileStore.recommendedMathMode;
+    // Record telemetry launch — smartPick is the single source of truth (spec §10.6)
+    const recommended = profileStore.smartPick;
     profileStore.recordLaunch(selectedMode, recommended);
     profileStore.advanceSession();
 
@@ -155,12 +155,10 @@
     left: 50%;
     transform: translateX(-50%);
     background: var(--color-panel);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--color-border);
     padding: 0.8rem 1.5rem;
     border-radius: var(--r-md);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
     z-index: 999;
     font-size: 0.95rem;
     font-weight: 600;
@@ -168,11 +166,11 @@
     text-align: center;
   }
   .toast-popup.ok {
-    color: var(--success);
-    border-color: rgba(0, 230, 118, 0.3);
+    color: var(--color-correct);
+    border-color: oklch(70% 0.18 165 / 0.35);
   }
   .toast-popup.bad {
-    color: var(--danger);
-    border-color: rgba(255, 23, 68, 0.3);
+    color: var(--color-retry);
+    border-color: oklch(65% 0.20 25 / 0.35);
   }
 </style>
