@@ -35,12 +35,12 @@
     'times-tables': 'Times Tables',
     'speed-add': 'Speed Add',
     'number-sort': 'Number Sort',
-    'fractions-visual': 'Fractions',
+    'fractions-visual': 'Fraction Garden',
     'multiplication-grid': 'Multiplication Grid',
-    'decimals-grid': 'Decimals Grid',
+    'decimals-grid': 'Decimal Shading',
     'place-value': 'Place Value',
     'long-division': 'Long Division',
-    'geometry-angles': 'Angles',
+    'geometry-angles': 'Coordinate Plot',
     'pemdas-tree': 'Order of Operations',
   };
 
