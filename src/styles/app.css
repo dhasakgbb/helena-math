@@ -154,8 +154,6 @@ button {
 /* Clean Bento Box Panel */
 .glass-panel {
   width: 100%;
-  max-width: 650px;
-  margin: 1.5rem auto;
   background: var(--color-panel);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
