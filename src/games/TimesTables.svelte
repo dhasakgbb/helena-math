@@ -33,14 +33,6 @@
   let questions = $state<Question[]>([]);
   let focusTable = $state<number | null>(null);
 
-  // Read mastery from store reactively to show live growth
-  const currentFocusMastery = $derived.by(() => {
-    if (!focusTable) return 0;
-    const mathOverrides = (profileStore.profile?.module_overrides?.math as any) || {};
-    const facts = mathOverrides.times_tables_facts || {};
-    return Math.min(5, facts[focusTable] || 0);
-  });
-
   onMount(() => {
     determineFocusAndGenerate();
     focusInput();
@@ -145,7 +137,7 @@
     disabled = true;
     if (val === q.answer) {
       score++;
-      feedback = '✓ Correct';
+      feedback = 'Correct!';
       feedbackClass = 'correct';
       
       const elapsedMs = Date.now() - startTime;
@@ -216,47 +208,45 @@
 </script>
 
 <div class="game-container">
-  <!-- Progress Header -->
-  <div class="progress-header">
-    <div class="status-bar">
-      <span>Question {questionIndex + 1} of 10</span>
-      <span>Score: {score}</span>
-    </div>
-    
-    {#if focusTable}
-      <div class="mastery-tracker">
-        <div class="tracker-top">
-          <span class="target-label">Target: <strong>{focusTable}s Table</strong></span>
-          <span class="mastery-count">{currentFocusMastery} / 5</span>
-        </div>
-        <div class="tracker-bar">
-          <div class="tracker-fill" style="width: {(currentFocusMastery / 5) * 100}%"></div>
-        </div>
-        {#if currentFocusMastery >= 5}
-          <div class="bloomed-badge animate-bounce">🌸 Bloomed!</div>
-        {/if}
-      </div>
-    {/if}
-  </div>
-
   {#if questions.length > 0}
-    <div class="question-box">
-      <div class="math-expr">
+    <div class="question-box {feedbackClass}">
+      <div class="math-expr {feedbackClass === 'correct' ? 'pulse' : ''}">
         {questions[questionIndex].a} &times; {questions[questionIndex].b} = ?
       </div>
-      <input
-        type="number"
-        bind:this={inputEl}
-        bind:value={currentVal}
-        {disabled}
-        onkeydown={handleKeydown}
-        class="answer-input {isFluent ? 'fluent-flash' : ''}"
-        inputmode="numeric"
-        pattern="[0-9]*"
-        placeholder="Type here..."
-        aria-label="Type your answer"
-      />
-      <button onclick={handleCheck} disabled={currentVal.trim() === '' || disabled} class="btn-primary">
+
+      <div class="input-wrap {feedbackClass === 'wrong' ? 'shake' : ''}">
+        <input
+          type="number"
+          bind:this={inputEl}
+          bind:value={currentVal}
+          {disabled}
+          onkeydown={handleKeydown}
+          class="answer-input {feedbackClass} {feedbackClass === 'correct' ? 'pulse' : ''}"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          placeholder="…"
+          aria-label="Type your answer"
+        />
+
+        {#if feedbackClass === 'correct'}
+          <span class="check-glyph" aria-hidden="true">✓</span>
+        {/if}
+
+        {#if isFluent && feedbackClass === 'correct'}
+          <div class="sparkles" aria-hidden="true">
+            <span class="spark spark-1"></span>
+            <span class="spark spark-2"></span>
+            <span class="spark spark-3"></span>
+            <span class="spark spark-4"></span>
+          </div>
+        {/if}
+      </div>
+
+      <button
+        onclick={handleCheck}
+        disabled={currentVal.trim() === '' || disabled}
+        class="btn-check"
+      >
         Check Answer
       </button>
 
@@ -273,127 +263,83 @@
   .game-container {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
     align-items: center;
     width: 100%;
-  }
-
-  .progress-header {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 16px;
-    padding: 1rem 1.5rem;
-    border: 1px solid rgba(255, 0, 127, 0.15);
-  }
-
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    color: var(--color-text-muted);
-    font-size: 0.95rem;
-    font-weight: 500;
-  }
-
-  .mastery-tracker {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    position: relative;
-  }
-
-  .tracker-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
-    color: #fff;
-  }
-
-  .target-label strong {
-    color: #ff007f; /* Times Tables Theme Color */
-  }
-
-  .mastery-count {
-    font-weight: 700;
-    color: #ff007f;
-  }
-
-  .tracker-bar {
-    width: 100%;
-    height: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    overflow: hidden;
-  }
-
-  .tracker-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #ff007f, #ff7ab8);
-    border-radius: 6px;
-    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .bloomed-badge {
-    position: absolute;
-    right: 0;
-    top: -30px;
-    background: #ff007f;
-    color: #fff;
-    padding: 0.2rem 0.8rem;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 0.8rem;
-    box-shadow: 0 4px 10px rgba(255, 0, 127, 0.4);
-  }
-
-  .animate-bounce {
-    animation: bouncePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  }
-
-  @keyframes bouncePop {
-    0% { transform: scale(0); opacity: 0; }
-    80% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
   }
 
   .question-box {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.75rem;
     width: 100%;
-    margin-top: 1rem;
   }
 
+  /* The big "6 × 7" question — large display type, tabular numerals so digits don't jitter */
   .math-expr {
     font-family: var(--font-display);
-    font-size: 3.5rem;
+    font-size: clamp(2.6rem, 9vw, 3.75rem);
     font-weight: 700;
-    color: var(--color-primary);
-    text-shadow: 0 4px 12px rgba(98, 154, 258, 0.15);
+    line-height: 1.1;
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums lining-nums;
+    text-shadow: 0 0 18px oklch(82% 0.15 75 / 0.18);
+  }
+  .math-expr.pulse {
+    color: var(--color-correct);
+    --glow-c: var(--color-correct);
   }
 
+  .input-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* Pale-glowing field on dark */
   .answer-input {
     width: 100%;
-    max-width: 220px;
-    padding: 0.8rem 1rem;
+    max-width: 240px;
+    min-height: var(--touch);
+    padding: 0.7rem 1rem;
     border-radius: var(--r-md);
-    background: rgba(0, 0, 0, 0.15);
+    background: oklch(22% 0.04 280 / 0.55);
     border: 2px solid var(--color-border);
     color: var(--color-text);
-    font-size: 2rem;
-    text-align: center;
+    font-family: var(--font-display);
+    font-size: 2.25rem;
     font-weight: 700;
-    transition: border-color 0.2s ease;
+    line-height: 1.2;
+    text-align: center;
+    font-variant-numeric: tabular-nums lining-nums;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
   }
+  .answer-input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.55;
+  }
+  /* Clear glowing focus ring */
   .answer-input:focus {
     outline: none;
-    border-color: #ff007f;
-    box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+    border-color: var(--color-primary);
+    --glow-c: var(--color-primary);
+    box-shadow: var(--glow-md);
+    background: oklch(26% 0.04 280 / 0.6);
+  }
+  .answer-input.correct {
+    border-color: var(--color-correct);
+    --glow-c: var(--color-correct);
+    box-shadow: var(--glow-md);
+  }
+  /* Wrong = amber retry outline (no red) */
+  .answer-input.wrong {
+    border-color: var(--color-retry);
+    --glow-c: var(--color-retry);
+    box-shadow: var(--glow-sm);
   }
   .answer-input::-webkit-outer-spin-button,
   .answer-input::-webkit-inner-spin-button {
@@ -401,30 +347,121 @@
     margin: 0;
   }
 
+  /* Check glyph — accompanies the green so feedback isn't color-alone */
+  .check-glyph {
+    position: absolute;
+    right: max(0px, calc(50% - 145px));
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--color-correct);
+    --glow-c: var(--color-correct);
+    text-shadow: var(--glow-sm);
+    pointer-events: none;
+  }
+
+  .btn-check {
+    min-height: var(--touch);
+    padding: 0 1.75rem;
+    border: none;
+    border-radius: var(--r-md);
+    background: var(--color-primary);
+    color: oklch(22% 0.05 280);
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    --glow-c: var(--color-primary);
+    box-shadow: var(--glow-sm);
+    transition: transform 0.12s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+  .btn-check:hover:not(:disabled) {
+    background: var(--color-primary-strong);
+    box-shadow: var(--glow-md);
+  }
+  .btn-check:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .btn-check:disabled {
+    opacity: 0.45;
+    cursor: default;
+    box-shadow: none;
+  }
+
   .feedback-msg {
     font-family: var(--font-display);
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 600;
-    margin-top: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 1.1rem;
     border-radius: var(--r-sm);
   }
   .feedback-msg.correct {
-    color: var(--success);
-    background: rgba(0, 230, 118, 0.1);
+    color: var(--color-correct);
+    background: oklch(80% 0.16 150 / 0.12);
   }
   .feedback-msg.wrong {
-    color: var(--danger);
-    background: rgba(255, 23, 68, 0.1);
+    color: var(--color-retry);
+    background: oklch(82% 0.15 75 / 0.12);
   }
 
-  .fluent-flash {
-    animation: fluentGlow 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  /* Firefly sparkles — fast-correct flourish, marks SPEED distinct from accuracy */
+  .sparkles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .spark {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--glow-firefly);
+    --glow-c: var(--glow-firefly);
+    box-shadow: var(--glow-sm);
+    opacity: 0;
+  }
+  .spark-1 { top: -6px; left: 28%; }
+  .spark-2 { top: 4px; right: 24%; }
+  .spark-3 { bottom: -4px; left: 38%; }
+  .spark-4 { bottom: 2px; right: 32%; }
+
+  /* All motion is keyframe-based + gated by no-preference, so reduced-motion neutralizes it */
+  @media (prefers-reduced-motion: no-preference) {
+    .math-expr.pulse,
+    .answer-input.pulse {
+      animation: bloomPulse 0.7s ease-out;
+    }
+    .input-wrap.shake {
+      animation: gentleShake 0.45s ease-in-out;
+    }
+    .spark-1 { animation: twinkle 0.9s ease-out 0.02s; }
+    .spark-2 { animation: twinkle 0.9s ease-out 0.12s; }
+    .spark-3 { animation: twinkle 0.9s ease-out 0.08s; }
+    .spark-4 { animation: twinkle 0.9s ease-out 0.18s; }
   }
 
-  @keyframes fluentGlow {
-    0% { box-shadow: 0 0 0 rgba(0, 230, 118, 0); border-color: var(--success); }
-    50% { box-shadow: 0 0 20px rgba(0, 230, 118, 0.8); border-color: var(--success); transform: scale(1.05); }
-    100% { box-shadow: 0 0 10px rgba(0, 230, 118, 0.4); border-color: var(--success); transform: scale(1); }
+  @keyframes bloomPulse {
+    0% { box-shadow: 0 0 0 oklch(80% 0.16 150 / 0); }
+    45% {
+      box-shadow: 0 0 10px var(--color-correct), 0 0 36px -4px var(--color-correct);
+      transform: scale(1.04);
+    }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes gentleShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(2px); }
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0; transform: scale(0.3); }
+    40% { opacity: 1; transform: scale(1.1); }
+    100% { opacity: 0; transform: scale(0.4) translateY(-8px); }
   }
 </style>
