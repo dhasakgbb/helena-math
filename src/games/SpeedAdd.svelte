@@ -1,14 +1,16 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
+  import type { GameHelp } from '../lib/help';
 
   interface Props {
     grade: number;
     onCorrect: (a?: number, b?: number, timeMs?: number) => void;
     onIncorrect: (details: { question: string; answer: number; userVal: number }) => void;
     onFinished: (score: number, total: number) => void;
+    help?: GameHelp | null;
   }
 
-  let { grade, onCorrect, onIncorrect, onFinished }: Props = $props();
+  let { grade, onCorrect, onIncorrect, onFinished, help = $bindable(null) }: Props = $props();
 
   let questionIndex = $state(0);
   let score = $state(0);
@@ -27,6 +29,22 @@
     answer: number;
   }
   let questions = $state<Question[]>([]);
+
+  $effect(() => {
+    const q = questions[questionIndex];
+    if (!q) { help = null; return; }
+    const a = q.a, b = q.b;
+    const big = Math.max(a, b), small = Math.min(a, b);
+    help = {
+      howToPlay: "Listen to the sum and type the total. Example: 'four plus five' → 9.",
+      hint: 'Add the bigger number first, then count on.',
+      steps: [
+        `Start at ${big}`,
+        `Count on ${small} more`,
+        `${a} + ${b} = ${a + b}`,
+      ],
+    };
+  });
 
   onMount(() => {
     generateQuestions();
