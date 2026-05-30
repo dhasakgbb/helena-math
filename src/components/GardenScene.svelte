@@ -182,6 +182,22 @@
     d: (i % 7) * 0.5,
     r: 0.8 + (i % 3) * 0.4,
   }));
+
+  // Glowing mushrooms scattered along the floor band (y≈580–680). Hand-placed
+  // in the gaps between the plant mounds (mound centers x≈180/470/760/1040) and
+  // along the path so they read as ground decor. They live in the SVG foreground
+  // layer, behind the HTML pod overlay, so they never block taps. Each is drawn
+  // inline via the {#each} below (stem + cap + spots + layered glow).
+  const MUSHROOMS = [
+    { x: 96, y: 642, scale: 1.05 },
+    { x: 300, y: 668, scale: 0.82 },
+    { x: 392, y: 600, scale: 0.92 },
+    { x: 600, y: 660, scale: 1.0 },
+    { x: 678, y: 596, scale: 0.78 },
+    { x: 892, y: 650, scale: 1.1 },
+    { x: 980, y: 592, scale: 0.86 },
+    { x: 1150, y: 636, scale: 0.95 },
+  ];
 </script>
 
 <div
@@ -284,6 +300,52 @@
 
     <!-- LAYER 4 (foreground, depth 1.1): grass blades + drifting fireflies -->
     <g class="parallax-layer fg" style="--depth:1.1">
+      <!-- Glowing mushrooms: ground decor in the floor band, drawn before the
+           grass so blades overlap their stems and they nestle into the bed.
+           Each: layered cap glow (wide halo + tight core) → slightly-curved
+           stem → domed cap (lit upper-left) → 2–3 light spots. -->
+      {#each MUSHROOMS as m, i (i)}
+        {@const s = m.scale}
+        <g class="mushroom" transform="translate({m.x} {m.y}) scale({s})" style="--mi:{i}">
+          <!-- layered cap glow: wide soft halo behind, tighter core in front -->
+          <ellipse
+            class="m-glow m-glow-halo"
+            cx="0"
+            cy="-20"
+            rx="34"
+            ry="26"
+            fill="var(--gs-mushroom-glow)"
+          />
+          <ellipse
+            class="m-glow m-glow-core"
+            cx="0"
+            cy="-20"
+            rx="17"
+            ry="13"
+            fill="var(--gs-mushroom-glow)"
+          />
+          <!-- slightly-curved stem rising from the floor baseline -->
+          <path
+            d="M-4.5 1 C -5.5 -8 -4 -14 -1.5 -18 L 4 -18 C 5.5 -13 6 -7 5 1 Z"
+            fill="var(--gs-mushroom-stem)"
+          />
+          <!-- domed cap, sitting on the stem -->
+          <path
+            d="M-15 -17 C -15 -29 -8 -34 0 -34 C 8 -34 15 -29 15 -17 C 9 -20 -9 -20 -15 -17 Z"
+            fill="var(--gs-mushroom-cap)"
+          />
+          <!-- lit upper-left highlight on the cap -->
+          <path
+            d="M-13 -19 C -12 -28 -6 -32 0 -32 C -5 -29 -10 -25 -12 -18 Z"
+            fill="var(--gs-mushroom-glow)"
+            opacity="0.45"
+          />
+          <!-- light spots on the cap -->
+          <circle cx="-6" cy="-26" r="2.4" fill="var(--gs-mushroom-glow)" opacity="0.85" />
+          <circle cx="4" cy="-28" r="1.9" fill="var(--gs-mushroom-glow)" opacity="0.8" />
+          <circle cx="7" cy="-23" r="1.5" fill="var(--gs-mushroom-glow)" opacity="0.75" />
+        </g>
+      {/each}
       {#each BLADES as b (b.x)}
         <!-- blade body: rises from the foreground baseline, leaning naturally -->
         <path
@@ -401,6 +463,21 @@
     transform-origin: center;
   }
 
+  /* Mushroom cap glow: soft blurred halo + tighter core. Held opacities here
+     so reduced-motion / calm-mode (no animation) still shows a steady glow. */
+  .fg :global(.m-glow) {
+    filter: blur(7px);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .fg :global(.m-glow-halo) {
+    opacity: 0.3;
+  }
+  .fg :global(.m-glow-core) {
+    filter: blur(3px);
+    opacity: 0.55;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .fg :global(.firefly) {
       animation: gs-drift 5.5s ease-in-out infinite;
@@ -415,6 +492,36 @@
       50% {
         opacity: 0.85;
         transform: translate(6px, -8px) scale(1.15);
+      }
+    }
+
+    /* Gentle cap-glow pulse, staggered per mushroom by index (--mi). */
+    .fg :global(.mushroom .m-glow-halo) {
+      animation: gs-shroom-halo 6s ease-in-out infinite;
+      animation-delay: calc(var(--mi, 0) * -0.8s);
+    }
+    .fg :global(.mushroom .m-glow-core) {
+      animation: gs-shroom-core 6s ease-in-out infinite;
+      animation-delay: calc(var(--mi, 0) * -0.8s);
+    }
+    @keyframes gs-shroom-halo {
+      0%,
+      100% {
+        opacity: 0.22;
+        transform: scale(0.92);
+      }
+      50% {
+        opacity: 0.42;
+        transform: scale(1.08);
+      }
+    }
+    @keyframes gs-shroom-core {
+      0%,
+      100% {
+        opacity: 0.45;
+      }
+      50% {
+        opacity: 0.7;
       }
     }
   }
