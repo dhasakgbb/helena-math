@@ -48,7 +48,7 @@
       { num: 4, den: 8 }, // equivalent to 1/2
       { num: 6, den: 8 }  // equivalent to 3/4
     ];
-    
+
     // Sort / filter based on grade if necessary
     // Let's shuffle and pick 10
     const list = [...fractionPool].sort(() => 0.5 - Math.random()).slice(0, 10);
@@ -94,7 +94,7 @@
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      
+
       if (type === 'drop') {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, ctx.currentTime);
@@ -112,11 +112,11 @@
         osc2.type = 'sine';
         osc.frequency.setValueAtTime(freq, ctx.currentTime);
         osc2.frequency.setValueAtTime(freq * 2.76, ctx.currentTime);
-        
+
         gain.gain.setValueAtTime(0, ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
-        
+
         osc.connect(gain);
         osc2.connect(gain);
         gain.connect(ctx.destination);
@@ -185,13 +185,13 @@
     <div class="target-container">
       <span class="target-label">Water the flower to match:</span>
       <div class="target-visual-wrapper">
-        <div class="fraction-display animate-pulse">
+        <div class="fraction-display {feedbackClass === 'correct' ? 'pulse' : ''}">
           <span class="numerator">{target.num}</span>
           <span class="fraction-line"></span>
           <span class="denominator">{target.den}</span>
         </div>
         <svg viewBox="0 0 100 100" class="target-pie">
-          <circle cx="50" cy="50" r="46" fill="rgba(255,255,255,0.05)" stroke="var(--color-border)" />
+          <circle cx="50" cy="50" r="46" fill="oklch(22% 0.04 280 / 0.3)" stroke="var(--color-border)" />
           {#each Array(target.den) as _, i}
             <path
               d={getSlicePath(i, target.den)}
@@ -204,14 +204,14 @@
     </div>
 
     <!-- The Garden Plot -->
-    <div class="garden-plot">
+    <div class="garden-plot {feedbackClass === 'wrong' ? 'shake' : ''}">
       <svg viewBox="0 0 100 100" class="flower-svg">
         <defs>
           <linearGradient id="waterGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stop-color="#00f2fe" />
-            <stop offset="100%" stop-color="#4facfe" />
+            <stop offset="0%" stop-color="oklch(78% 0.15 200)" />
+            <stop offset="100%" stop-color="oklch(88% 0.12 195)" />
           </linearGradient>
-          <filter id="glow">
+          <filter id="petalGlow">
             <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
             <feMerge>
               <feMergeNode in="coloredBlur"/>
@@ -220,8 +220,8 @@
           </filter>
         </defs>
         <!-- Dirt / Plot background -->
-        <circle cx="50" cy="50" r="46" fill="rgba(112, 98, 235, 0.03)" stroke="var(--color-border)" stroke-width="1" />
-        
+        <circle cx="50" cy="50" r="46" fill="oklch(18% 0.04 280 / 0.5)" stroke="var(--color-border)" stroke-width="1" />
+
         <!-- Petals -->
         {#each Array(selectedDenominator) as _, i}
           <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -237,10 +237,10 @@
             aria-label="Petal {i + 1}"
           />
         {/each}
-        
+
         <!-- Center of Flower -->
-        <circle cx="50" cy="50" r="10" fill="var(--color-accent)" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
-        <text x="50" y="53" text-anchor="middle" font-size="7" font-weight="bold" fill="#0b0c16">
+        <circle cx="50" cy="50" r="10" fill="var(--color-accent)" stroke="var(--color-border)" stroke-width="2" />
+        <text x="50" y="53" text-anchor="middle" font-size="7" font-weight="bold" fill="oklch(10% 0.02 280)">
           {getWateredCount()}/{selectedDenominator}
         </text>
       </svg>
@@ -267,7 +267,7 @@
       </div>
     </div>
 
-    <button onclick={checkEquivalent} disabled={getWateredCount() === 0 || disabled} class="btn-primary">
+    <button onclick={checkEquivalent} disabled={getWateredCount() === 0 || disabled} class="btn-water">
       Water Flower
     </button>
 
@@ -319,19 +319,19 @@
   .target-pie {
     width: 60px;
     height: 60px;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 8px oklch(0% 0 0 / 0.3));
   }
-  
+
   .target-slice {
     fill: transparent;
     stroke: var(--color-border);
     stroke-width: 1;
     transition: fill 0.3s ease;
   }
-  
+
   .target-slice.filled {
-    fill: var(--neon-cyan);
-    opacity: 0.8;
+    --glow-c: var(--glow-moonflower);
+    fill: oklch(78% 0.15 200 / 0.8);
   }
 
   .fraction-display {
@@ -341,15 +341,17 @@
     font-family: var(--font-display);
     font-size: 2.2rem;
     font-weight: 700;
-    color: var(--neon-cyan);
-    text-shadow: var(--glow-cyan);
+    color: var(--color-primary);
+    --glow-c: var(--glow-moonflower);
+    text-shadow: var(--glow-sm);
   }
   .fraction-line {
     width: 100%;
     height: 3px;
-    background: var(--neon-cyan);
+    background: var(--color-primary);
     margin: 2px 0;
-    box-shadow: 0 0 8px var(--neon-cyan);
+    --glow-c: var(--glow-moonflower);
+    box-shadow: var(--glow-sm);
   }
 
   .garden-plot {
@@ -363,32 +365,30 @@
   .flower-svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.2));
+    filter: drop-shadow(0 6px 16px oklch(0% 0 0 / 0.2));
   }
 
   .petal {
-    fill: rgba(255, 255, 255, 0.04);
+    fill: oklch(22% 0.04 280 / 0.5);
     stroke: var(--color-border);
     stroke-width: 1.5;
     cursor: pointer;
-    transition: fill 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.6s ease, transform 0.3s ease;
+    transition: fill 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.6s ease;
     transform-origin: 50px 50px;
   }
   .petal:hover {
-    fill: rgba(255, 255, 255, 0.12);
-    transform: scale(1.02);
+    fill: oklch(30% 0.06 280 / 0.7);
   }
   .petal.watered {
     fill: url(#waterGrad);
-    stroke: rgba(255, 255, 255, 0.4);
-    filter: url(#glow);
-    transform: scale(1.05);
+    stroke: oklch(78% 0.15 200 / 0.6);
+    filter: url(#petalGlow);
   }
 
   .control-panel {
     width: 100%;
     max-width: 320px;
-    background: rgba(0, 0, 0, 0.12);
+    background: var(--color-panel, oklch(18% 0.04 280 / 0.6));
     border: 1px solid var(--color-border);
     border-radius: var(--r-md);
     padding: 0.8rem 1.2rem;
@@ -423,16 +423,64 @@
     height: 6px;
     border-radius: 3px;
     outline: none;
+    cursor: pointer;
   }
   .denom-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background: var(--color-primary);
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    --glow-c: var(--glow-moonflower);
+    box-shadow: var(--glow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .denom-slider::-webkit-slider-thumb:hover {
+    --glow-c: var(--glow-moonflower);
+    box-shadow: var(--glow-md);
+  }
+  .denom-slider::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    cursor: pointer;
+    border: none;
+    --glow-c: var(--glow-moonflower);
+    box-shadow: var(--glow-sm);
+  }
+  .denom-slider:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  .btn-water {
+    min-height: 48px;
+    padding: 0 1.75rem;
+    border: none;
+    border-radius: var(--r-md);
+    background: var(--color-primary);
+    color: oklch(12% 0.03 280);
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    --glow-c: var(--glow-moonflower);
+    box-shadow: var(--glow-sm);
+    transition: transform 0.12s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+  .btn-water:hover:not(:disabled) {
+    box-shadow: var(--glow-md);
+  }
+  .btn-water:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .btn-water:disabled {
+    opacity: 0.45;
+    cursor: default;
+    box-shadow: none;
   }
 
   .feedback-msg {
@@ -445,11 +493,38 @@
     text-align: center;
   }
   .feedback-msg.correct {
-    color: var(--success);
-    background: rgba(0, 230, 118, 0.1);
+    color: var(--color-correct);
+    background: oklch(80% 0.16 150 / 0.12);
   }
   .feedback-msg.wrong {
-    color: var(--danger);
-    background: rgba(255, 23, 68, 0.1);
+    color: var(--color-retry);
+    background: oklch(82% 0.15 75 / 0.12);
+  }
+
+  /* All animation is keyframe-based and gated by no-preference */
+  @media (prefers-reduced-motion: no-preference) {
+    .fraction-display.pulse {
+      animation: glowPulse 0.7s ease-out;
+    }
+    .garden-plot.shake {
+      animation: gentleShake 0.45s ease-in-out;
+    }
+  }
+
+  @keyframes glowPulse {
+    0% { text-shadow: none; }
+    45% {
+      text-shadow: 0 0 10px var(--color-correct), 0 0 28px oklch(80% 0.16 150 / 0.5);
+      transform: scale(1.05);
+    }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes gentleShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(2px); }
   }
 </style>
