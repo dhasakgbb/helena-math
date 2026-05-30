@@ -100,9 +100,6 @@
           <span class="tonight-label">
             <span class="tonight-kicker">{isDay ? "Today's" : "Tonight's"} Plant</span>
             <span class="tonight-mode">{MODE_NAMES[pick]}</span>
-            <!-- DR-05: lightweight recommended indicator using astrid tokens for platform cohesion.
-                 Subtle firefly glow + pill radius; full garden personality preserved. -->
-            <span class="recommended-pill" aria-label="Recommended by Astrid for your profile">RECOMMENDED</span>
           </span>
         </button>
 
@@ -272,8 +269,7 @@
     min-height: 56px;
     padding: 0.75rem 1.5rem;
     border: 1px solid var(--color-primary);
-    /* DR-05: astrid radius + motion on the primary recommended action in hub */
-    border-radius: var(--astrid-radius-lg);
+    border-radius: var(--r-md);
     cursor: pointer;
     color: var(--btn-text, oklch(20% 0.04 280));
     background:
@@ -284,9 +280,7 @@
       0 0 0 0 transparent,
       var(--glow-md),
       0 8px 24px -6px var(--btn-shadow, oklch(20% 0.04 280 / 0.6));
-    transition: transform var(--astrid-motion-duration-fast) var(--astrid-motion-easing-ease-out),
-                box-shadow var(--astrid-motion-duration-base) var(--astrid-motion-easing-ease-out),
-                filter var(--astrid-motion-duration-fast) var(--astrid-motion-easing-ease-out);
+    transition: transform 0.18s ease, box-shadow 0.22s ease, filter 0.18s ease;
   }
 
   .tonight-btn:hover {
@@ -301,10 +295,9 @@
 
   .tonight-btn:focus-visible {
     outline: none;
-    /* DR-05: platform focus ring */
     box-shadow:
-      0 0 0 3px var(--astrid-color-focus-ring-offset),
-      0 0 0 6px var(--astrid-color-focus-ring),
+      0 0 0 3px oklch(98% 0.02 250 / 0.95),
+      0 0 0 6px var(--color-primary),
       var(--glow-md);
   }
 
@@ -333,24 +326,6 @@
   .tonight-mode {
     font-size: 1.2rem;
     font-weight: 700;
-  }
-
-  /* DR-05 recommended indicator — uses astrid tokens for scale/cohesion.
-     Garden twilight colors (no cyan flood), pill + small glow from tokens. */
-  .recommended-pill {
-    align-self: flex-start;
-    margin-top: 2px;
-    font-size: 0.58rem;
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    padding: var(--astrid-spacing-1) var(--astrid-spacing-2);
-    border-radius: var(--astrid-radius-pill);
-    background: color-mix(in oklch, var(--glow-firefly), transparent 30%);
-    color: var(--color-text);
-    border: 1px solid color-mix(in oklch, var(--glow-firefly), transparent 10%);
-    box-shadow: var(--astrid-shadow-glow-yellow-sm);
-    text-transform: uppercase;
-    pointer-events: none;
   }
 
   /* ---- Garden band ---- */
