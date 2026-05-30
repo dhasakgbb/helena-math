@@ -197,15 +197,14 @@
 
         <!-- Plotted Lines (Constellation connection) -->
         {#if drawLines && userPoints.length > 1}
-          <!-- Loop through vertices and close path -->
-          {#each currentQuestion.points as pt, idx}
-            {@const nextPt = currentQuestion.points[(idx + 1) % currentQuestion.points.length]}
+          {#each userPoints as pt, idx}
+            {@const nextPt = userPoints[(idx + 1) % userPoints.length]}
             <line
               x1={10 + pt.x * 10}
               y1={100 - pt.y * 10}
               x2={10 + nextPt.x * 10}
               y2={100 - nextPt.y * 10}
-              stroke="var(--neon-cyan)"
+              stroke="var(--glow-moonflower)"
               stroke-width="1.5"
               stroke-dasharray="2, 2"
               class="glow-line"
