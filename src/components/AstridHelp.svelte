@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import type { GameHelp } from '../lib/help';
 
   interface Props {
@@ -39,14 +38,15 @@
     if (e.key === 'Escape') close();
   }
 
-  onMount(() => {
-    if (seenKey && help) {
-      let seen = false;
-      try { seen = localStorage.getItem(seenKey) === '1'; } catch (_) {}
-      if (!seen) {
-        openAt(0);
-        try { localStorage.setItem(seenKey, '1'); } catch (_) {}
-      }
+  let autoOpenDone = false;
+  $effect(() => {
+    if (autoOpenDone || !help || !seenKey) return;
+    autoOpenDone = true; // latch: only ever consider once help first arrives
+    let seen = false;
+    try { seen = localStorage.getItem(seenKey) === '1'; } catch (_) {}
+    if (!seen) {
+      openAt(0);
+      try { localStorage.setItem(seenKey, '1'); } catch (_) {}
     }
   });
 
@@ -175,6 +175,19 @@
   .advance { min-height: var(--touch, 48px); width: 100%; border-radius: var(--r-sm); background: transparent; border: 1px solid var(--color-border); color: var(--color-primary); font-weight: 600; font-family: var(--font-display); cursor: pointer; }
   .advance:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
   .howto-link { display: block; margin-top: 0.5rem; background: none; border: none; color: var(--color-text-muted); text-decoration: underline; font: inherit; font-size: 0.8rem; cursor: pointer; padding: 0.3rem; }
+
+  @media (max-width: 600px) {
+    .panel {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      top: auto;
+      bottom: 1rem;
+      width: min(22rem, calc(100vw - 1.5rem));
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+  }
 
   @media (prefers-reduced-motion: no-preference) {
     .panel { animation: help-pop 0.18s ease-out; }
