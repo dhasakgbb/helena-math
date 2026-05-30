@@ -3,6 +3,7 @@
   import { profileStore } from '../lib/profile.svelte';
   import Mascot from '../components/Mascot.svelte';
   import GameShell from '../components/GameShell.svelte';
+  import { speciesFor } from '../components/SpeciesMap';
   import TimesTables from '../games/TimesTables.svelte';
   import SpeedAdd from '../games/SpeedAdd.svelte';
   import NumberSort from '../games/NumberSort.svelte';
@@ -157,6 +158,7 @@
   {total}
   {onBack}
   glow={GLOW[mode] ?? 'var(--glow-firefly)'}
+  species={speciesFor(mode)}
 >
   {#snippet mascot()}
     <div class="mascot-wrapper">

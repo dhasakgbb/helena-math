@@ -3,6 +3,7 @@
   import Mascot from '../components/Mascot.svelte';
   import Plant from '../components/Plant.svelte';
   import { profileStore } from '../lib/profile.svelte';
+  import { speciesFor } from '../components/SpeciesMap';
 
   interface Props {
     mode: string;
@@ -172,7 +173,7 @@
 
     <div class="bed-plant">
       <Plant
-        species="moonflower"
+        species={speciesFor(mode)}
         stage={bedStage}
         glow="var(--glow-moonflower)"
         size={132}

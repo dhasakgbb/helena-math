@@ -1,6 +1,7 @@
 <script lang="ts">
   import Plant from './Plant.svelte';
   import { profileStore, MATH_MODES, type MathMode } from '../lib/profile.svelte';
+  import { speciesFor } from './SpeciesMap';
   interface Props { onSelect: (m: MathMode) => void }
   let { onSelect }: Props = $props();
 
@@ -290,7 +291,7 @@
               aria-label={`${PRETTY[m]}: ${STAGE_LABEL[st]}`}
               onclick={() => activate(m)}
             >
-              <Plant stage={st} glow={GROVE_GLOW[group.grove]} size={88} />
+              <Plant stage={st} glow={GROVE_GLOW[group.grove]} size={88} species={speciesFor(m)} />
               <span class="pod-name">{PRETTY[m]}</span>
             </button>
           {/each}
@@ -321,7 +322,7 @@
           onclick={() => activate(pod.id)}
           onkeydown={(e) => onKey(e, pod.id)}
         >
-          <Plant stage={st} glow={GROVE_GLOW[pod.grove]} size={104} />
+          <Plant stage={st} glow={GROVE_GLOW[pod.grove]} size={104} species={speciesFor(pod.id)} />
           <span class="pod-name">{PRETTY[pod.id]}</span>
         </button>
       {/each}

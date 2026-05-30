@@ -2,6 +2,7 @@
   import type { Snippet } from 'svelte';
   import Plant from './Plant.svelte';
   import { profileStore } from '../lib/profile.svelte';
+  import type { PlantSpecies } from './SpeciesMap';
 
   interface Props {
     title: string;
@@ -10,11 +11,12 @@
     total: number;           // 5 or 10
     onBack: () => void;
     glow?: string;
+    species?: PlantSpecies;
     mascot?: Snippet;        // top-right reacting mascot + speech
     children: Snippet;       // the game body
   }
 
-  let { title, plantModeId, questionIndex, total, onBack, glow = 'var(--glow-firefly)', mascot, children }: Props = $props();
+  let { title, plantModeId, questionIndex, total, onBack, glow = 'var(--glow-firefly)', species = 'moonflower', mascot, children }: Props = $props();
 
   function thumbStage(id: string): 0 | 1 | 2 | 3 | 4 {
     const v =
@@ -67,7 +69,7 @@
     <div class="title-area">
       <h1 class="game-title">{title}</h1>
       <div class="plant-thumb">
-        <Plant {stage} size={40} glow={glow} />
+        <Plant {stage} size={40} glow={glow} {species} />
       </div>
     </div>
 
