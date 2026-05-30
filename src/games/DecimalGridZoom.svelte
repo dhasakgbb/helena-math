@@ -35,7 +35,7 @@
   onMount(() => {
     generateQuestions();
     loadQuestion(0);
-    
+
     // Add pointerup listener on window to terminate drag-to-shade safely
     window.addEventListener('pointerup', handlePointerUp);
   });
@@ -51,7 +51,7 @@
   function generateQuestions() {
     const list: Question[] = [];
     const decimals = [0.1, 0.25, 0.4, 0.52, 0.7, 0.85, 0.3, 0.64, 0.15, 0.9];
-    
+
     decimals.forEach((d, idx) => {
       const format = idx % 3 === 0 ? 'decimal' : idx % 3 === 1 ? 'fraction' : 'word';
       list.push({ type: 'shade', targetVal: d, format });
@@ -148,8 +148,8 @@
     const ones = val % 10;
     const tensNames = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
     const onesNames = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-    const prefix = tens === 1 
-      ? ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'][ones] 
+    const prefix = tens === 1
+      ? ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'][ones]
       : `${tensNames[tens]}${ones > 0 ? '-' + onesNames[ones] : ''}`;
     return `${prefix} hundredths`;
   }
@@ -190,11 +190,6 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="game-container" onpointerup={handlePointerUp} onpointerleave={handlePointerUp}>
-  <div class="status-bar">
-    <span>Question {questionIndex + 1} of 10</span>
-    <span>Score: {score}</span>
-  </div>
-
   {#if currentQuestion}
     <div class="instruction">
       Shade the grid to represent: <strong class="target-val">{getFormatPrompt(currentQuestion)}</strong>
@@ -221,16 +216,16 @@
       {/each}
     </div>
 
-    <div class="control-row mt-4">
-      <button onclick={fillTen} {disabled} class="btn-ghost size-btn">
-        ⚡ Fill +10 Blocks
+    <div class="control-row">
+      <button onclick={fillTen} {disabled} class="btn-helper">
+        ✦ Fill +10
       </button>
-      <button onclick={clearAll} {disabled} class="btn-ghost size-btn delete">
+      <button onclick={clearAll} {disabled} class="btn-helper btn-clear">
         Clear All
       </button>
     </div>
 
-    <button onclick={handleCheck} disabled={disabled} class="btn-primary mt-4">
+    <button onclick={handleCheck} disabled={disabled} class="btn-submit">
       Submit Grid
     </button>
 
@@ -252,22 +247,16 @@
     user-select: none;
   }
 
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+  .instruction {
+    font-size: 1.05rem;
+    text-align: center;
     color: var(--color-text-muted);
-    font-size: 0.95rem;
-    font-weight: 500;
   }
 
-  .instruction {
-    font-size: 1.1rem;
-    text-align: center;
-  }
   .target-val {
-    color: var(--neon-cyan);
-    text-shadow: var(--glow-cyan);
+    --glow-c: var(--glow-moonflower);
+    color: var(--color-primary);
+    text-shadow: var(--glow-sm);
     font-size: 1.4rem;
   }
 
@@ -275,6 +264,7 @@
     font-size: 0.95rem;
     color: var(--color-text-muted);
   }
+
   .val-lbl {
     font-family: var(--font-display);
     font-size: 1.15rem;
@@ -285,63 +275,145 @@
   /* Shading Grid */
   .shade-grid {
     display: grid;
-    grid-template-columns: repeat(10, 24px);
-    grid-template-rows: repeat(10, 24px);
+    grid-template-columns: repeat(10, 26px);
+    grid-template-rows: repeat(10, 26px);
     gap: 2px;
-    border: 3px solid var(--color-border);
-    background: rgba(0, 0, 0, 0.2);
+    border: 2px solid var(--color-border);
+    background: oklch(12% 0.04 280 / 0.6);
     border-radius: var(--r-sm);
-    padding: 3px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    padding: 4px;
+    box-shadow: 0 8px 24px oklch(0% 0 0 / 0.4);
   }
 
   .grid-cell {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: oklch(22% 0.04 280 / 0.5);
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
     cursor: pointer;
     touch-action: none;
     transition: background 0.1s ease;
   }
+
   .grid-cell:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: oklch(32% 0.06 280 / 0.7);
   }
+
   .grid-cell.shaded {
+    --glow-c: var(--glow-moonflower);
     background: var(--color-primary);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 6px var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: var(--glow-sm);
   }
 
   .control-row {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
-  .size-btn {
+  .btn-helper {
+    min-height: 48px;
+    padding: 0 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-md);
+    background: oklch(22% 0.04 280 / 0.5);
+    color: var(--color-text);
+    font-family: var(--font-display);
     font-size: 0.9rem;
-    padding: 0.5rem 1rem;
     font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   }
-  .size-btn.delete:hover {
-    color: var(--danger);
-    background: rgba(255, 23, 68, 0.05);
-    border-color: rgba(255, 23, 68, 0.15);
+
+  .btn-helper:hover:not(:disabled) {
+    background: oklch(28% 0.06 280 / 0.7);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .btn-helper:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .btn-clear:hover:not(:disabled) {
+    background: oklch(28% 0.06 60 / 0.15);
+    border-color: var(--color-retry);
+    color: var(--color-retry);
+  }
+
+  .btn-submit {
+    min-height: 48px;
+    padding: 0 2rem;
+    border: none;
+    border-radius: var(--r-md);
+    background: var(--color-primary);
+    color: oklch(12% 0.03 280);
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    --glow-c: var(--glow-moonflower);
+    box-shadow: var(--glow-sm);
+    transition: transform 0.12s ease, box-shadow 0.2s ease;
+  }
+
+  .btn-submit:hover:not(:disabled) {
+    box-shadow: var(--glow-md);
+  }
+
+  .btn-submit:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.45;
+    cursor: default;
+    box-shadow: none;
   }
 
   .feedback-msg {
     font-family: var(--font-display);
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 600;
-    margin-top: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.2rem;
     border-radius: var(--r-sm);
     text-align: center;
+    border: 1px solid transparent;
   }
+
   .feedback-msg.correct {
-    color: var(--success);
-    background: rgba(0, 230, 118, 0.1);
+    color: var(--color-correct);
+    background: oklch(80% 0.16 150 / 0.12);
+    border-color: oklch(80% 0.16 150 / 0.25);
   }
+
   .feedback-msg.wrong {
-    color: var(--danger);
-    background: rgba(255, 23, 68, 0.1);
+    color: var(--color-retry);
+    background: oklch(82% 0.15 75 / 0.12);
+    border-color: oklch(82% 0.15 75 / 0.25);
+  }
+
+  /* All animation is keyframe-based and gated by no-preference */
+  @media (prefers-reduced-motion: no-preference) {
+    .feedback-msg.correct {
+      animation: glowPulse 0.7s ease-out;
+    }
+    .feedback-msg.wrong {
+      animation: gentleShake 0.45s ease-in-out;
+    }
+  }
+
+  @keyframes glowPulse {
+    0% { box-shadow: none; }
+    45% { box-shadow: 0 0 10px var(--color-correct), 0 0 28px oklch(80% 0.16 150 / 0.4); }
+    100% { box-shadow: none; }
+  }
+
+  @keyframes gentleShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(2px); }
   }
 </style>
