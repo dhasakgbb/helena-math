@@ -158,6 +158,23 @@
     }
   }
 
+  // ~70 foreground grass blades. Height / lean / width / opacity are all
+  // derived from the index so the band reads dense but non-uniform. Blades
+  // span the full 1200-wide box and sit in the low foreground band, behind
+  // the HTML pod overlay (so they never cover hit targets/labels).
+  const BLADES = Array.from({ length: 70 }, (_, i) => {
+    const x = (i * 17.3) % 1212 - 6;
+    const wob = ((i * 53) % 100) / 100; // pseudo-random 0..1
+    const wob2 = ((i * 37) % 100) / 100;
+    return {
+      x,
+      h: 46 + wob * 52, // blade height 46..98
+      lean: (wob2 - 0.5) * 26, // lean -13..+13 px
+      w: 2.4 + wob2 * 1.6, // stroke width 2.4..4.0
+      o: 0.6 + wob * 0.3, // opacity 0.6..0.9
+    };
+  });
+
   // Pre-computed firefly drift positions for the foreground layer.
   const FIREFLIES = Array.from({ length: 14 }, (_, i) => ({
     x: (i * 67) % 100,
@@ -196,6 +213,16 @@
         <stop offset="0%" stop-color="var(--gs-path1, oklch(60% 0.05 250 / 0.55))" />
         <stop offset="100%" stop-color="var(--gs-path2, oklch(70% 0.06 200 / 0.35))" />
       </linearGradient>
+      <!-- Bioluminescent floor glow: brightest along the mound's lit top edge,
+           fading down into the bed. Token carries the day/night color + alpha. -->
+      <linearGradient id="gs-ground-glow" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--gs-ground-glow, oklch(70% 0.12 160 / 0.22))" stop-opacity="0" />
+        <stop offset="35%" stop-color="var(--gs-ground-glow, oklch(70% 0.12 160 / 0.22))" />
+        <stop offset="100%" stop-color="var(--gs-ground-glow, oklch(70% 0.12 160 / 0.22))" stop-opacity="0" />
+      </linearGradient>
+      <filter id="gs-ground-blur" x="-10%" y="-40%" width="120%" height="180%">
+        <feGaussianBlur stdDeviation="22" />
+      </filter>
     </defs>
 
     <!-- sky always fills -->
@@ -243,6 +270,13 @@
         d="M-40 600 C 240 540 520 600 760 560 C 980 524 1120 590 1240 560 L 1240 780 L -40 780 Z"
         fill="var(--gs-hill3, oklch(22% 0.05 285))"
       />
+      <!-- Soft glowing band hugging the lit top edge of the mound. The gradient
+           fades top→bottom; the blur melts it into the floor so it reads lit. -->
+      <path
+        d="M-40 600 C 240 540 520 600 760 560 C 980 524 1120 590 1240 560 L 1240 700 C 1120 730 980 664 760 700 C 520 740 240 680 -40 740 Z"
+        fill="url(#gs-ground-glow)"
+        filter="url(#gs-ground-blur)"
+      />
       {#each [180, 470, 760, 1040] as bx (bx)}
         <ellipse cx={bx} cy="620" rx="150" ry="34" fill="var(--gs-mound-shadow, oklch(40% 0.05 200 / 0.18))" />
       {/each}
@@ -250,14 +284,24 @@
 
     <!-- LAYER 4 (foreground, depth 1.1): grass blades + drifting fireflies -->
     <g class="parallax-layer fg" style="--depth:1.1">
-      {#each Array.from({ length: 40 }, (_, i) => i) as i (i)}
+      {#each BLADES as b (b.x)}
+        <!-- blade body: rises from the foreground baseline, leaning naturally -->
         <path
-          d="M{i * 31} 700 C {i * 31 + 4} 660 {i * 31 - 4} 650 {i * 31 + 2} 624"
+          d="M{b.x} 700 C {b.x + b.lean * 0.35} {700 - b.h * 0.45} {b.x + b.lean * 0.75} {700 - b.h * 0.78} {b.x + b.lean} {700 - b.h}"
           fill="none"
-          stroke="oklch(34% 0.08 150)"
-          stroke-width="3"
+          stroke="var(--gs-grass)"
+          stroke-width={b.w}
           stroke-linecap="round"
-          opacity="0.7"
+          opacity={b.o}
+        />
+        <!-- rim-lit tip: brighter highlight on the upper third -->
+        <path
+          d="M{b.x + b.lean * 0.7} {700 - b.h * 0.7} C {b.x + b.lean * 0.82} {700 - b.h * 0.82} {b.x + b.lean * 0.92} {700 - b.h * 0.92} {b.x + b.lean} {700 - b.h}"
+          fill="none"
+          stroke="var(--gs-grass-tip)"
+          stroke-width={b.w * 0.7}
+          stroke-linecap="round"
+          opacity={b.o * 0.95}
         />
       {/each}
       <g class="fireflies">
