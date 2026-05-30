@@ -36,13 +36,13 @@
     generateQuestions();
     loadQuestion(0);
     
-    // Add mouseup listener on window to terminate drag-to-shade safely
-    window.addEventListener('mouseup', handleMouseUp);
+    // Add pointerup listener on window to terminate drag-to-shade safely
+    window.addEventListener('pointerup', handlePointerUp);
   });
 
   onDestroy(() => {
     if (typeof window !== 'undefined') {
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('pointerup', handlePointerUp);
     }
   });
 
@@ -76,8 +76,8 @@
     return parseFloat((getShadedCount() / 100).toFixed(2));
   }
 
-  // Mouse handlers for drag-to-shade
-  function handleMouseDown(idx: number) {
+  // Pointer handlers for drag-to-shade (mouse + touch)
+  function handlePointerDown(idx: number) {
     if (disabled) return;
     isDrawing = true;
     drawMode = !shaded[idx];
@@ -85,13 +85,13 @@
     playTone(200 + idx * 5);
   }
 
-  function handleMouseEnter(idx: number) {
+  function handlePointerEnter(idx: number) {
     if (disabled || !isDrawing) return;
     shaded[idx] = drawMode;
     playTone(200 + idx * 5);
   }
 
-  function handleMouseUp() {
+  function handlePointerUp() {
     isDrawing = false;
   }
 
@@ -189,7 +189,7 @@
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="game-container" onmouseup={handleMouseUp}>
+<div class="game-container" onpointerup={handlePointerUp} onpointerleave={handlePointerUp}>
   <div class="status-bar">
     <span>Question {questionIndex + 1} of 10</span>
     <span>Score: {score}</span>
@@ -212,8 +212,8 @@
         <div
           class="grid-cell"
           class:shaded={shaded[i]}
-          onmousedown={() => handleMouseDown(i)}
-          onmouseenter={() => handleMouseEnter(i)}
+          onpointerdown={(e) => { (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId); handlePointerDown(i); }}
+          onpointerenter={() => handlePointerEnter(i)}
           role="gridcell"
           tabindex="-1"
           aria-label="Cell {i + 1}"
@@ -299,6 +299,7 @@
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
+    touch-action: none;
     transition: background 0.1s ease;
   }
   .grid-cell:hover {
