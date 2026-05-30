@@ -1,4 +1,4 @@
-import { MATH_MODES, type MathMode } from './profile.svelte';
+import { MATH_MODES, type MathMode } from './modes';
 
 /**
  * App-side Smart Pick covering all 10 modes (the schema recommender only covers 3).
@@ -6,7 +6,7 @@ import { MATH_MODES, type MathMode } from './profile.svelte';
  * returns the lowest-mastery mode, ties broken by MATH_MODES order (deterministic).
  */
 export function pickSmartMode(
-  schemaPick: string | null,
+  schemaPick: string | null, // schema's 3-mode candidate; may not be one of MATH_MODES
   mastery: Record<string, number>,
 ): MathMode {
   const fill = (m: string) => (typeof mastery[m] === 'number' ? mastery[m] : 0);

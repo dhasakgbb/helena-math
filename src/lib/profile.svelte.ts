@@ -14,19 +14,8 @@ const SESSION_INDEX_KEY = 'helena-math:profile:session-index:v1';
 const LAUNCH_HISTORY_MAX = 12;
 const OVERRIDE_NUDGE_THRESHOLD = 3;
 
-export const MATH_MODES = [
-  'times-tables',
-  'speed-add',
-  'number-sort',
-  'fractions-visual',
-  'place-value',
-  'multiplication-grid',
-  'long-division',
-  'decimals-grid',
-  'geometry-angles',
-  'pemdas-tree'
-] as const;
-export type MathMode = typeof MATH_MODES[number];
+export { MATH_MODES, type MathMode } from './modes';
+import { type MathMode } from './modes';
 
 export interface MathTelemetry {
   followed: Record<string, number>;
@@ -146,6 +135,7 @@ class ProfileStore {
 
   /** All-10 Smart Pick used by the UI AND by recordLaunch telemetry (single source of truth). */
   get smartPick(): MathMode {
+    // missing mastery → treat all modes as 0 fill
     const mastery = ((this.profile?.module_overrides?.math as any)?.mastery) || {};
     return pickSmartMode(this.recommendedMathMode, mastery);
   }

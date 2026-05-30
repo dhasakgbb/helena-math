@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { pickSmartMode } from './recommender';
-import { MATH_MODES } from './profile.svelte';
+import { MATH_MODES } from './modes';
 
 describe('pickSmartMode', () => {
   it('returns the schema pick when it is among the lowest-mastery modes', () => {
@@ -18,5 +18,9 @@ describe('pickSmartMode', () => {
   it('is deterministic: ties resolve in MATH_MODES order', () => {
     const mastery: Record<string, number> = {}; // all undefined -> treated as 0
     expect(pickSmartMode(null, mastery)).toBe(MATH_MODES[0]);
+  });
+
+  it('ignores an unknown schemaPick string and uses the lowest-mastery fallback', () => {
+    expect(pickSmartMode('nonexistent-mode', {})).toBe(MATH_MODES[0]);
   });
 });
