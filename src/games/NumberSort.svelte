@@ -169,7 +169,8 @@
           draggable="true"
           ondragstart={(e) => handleDragStart(e, q.n)}
           onclick={() => selectTile(q.n)}
-          aria-label="Number {q.n}"
+          onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectTile(q.n); } }}
+          aria-label={`Select number ${q.n}`}
         >
           {q.n}
         </button>
@@ -189,7 +190,8 @@
         ondragleave={() => hoveredBin = null}
         ondrop={(e) => handleDrop(e, binType as any)}
         onclick={() => handleBinClick(binType as any)}
-        aria-label="Place in {binType} bin"
+        onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleBinClick(binType as any); } }}
+        aria-label={`Sort selected number into the ${binType} bin`}
       >
         <span class="bin-label">{binType.toUpperCase()}</span>
         <div class="bin-contents">
@@ -395,5 +397,10 @@
     color: var(--danger, #ff1744);
     background: rgba(255, 23, 68, 0.15);
     border: 1px solid rgba(255, 23, 68, 0.3);
+  }
+
+  .tile:focus-visible, .bin:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
   }
 </style>
