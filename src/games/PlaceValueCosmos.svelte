@@ -58,10 +58,10 @@
       // Determine max value based on grade
       const maxVal = grade <= 3 ? 1000 : grade === 4 ? 20000 : 99999;
       const minVal = grade <= 3 ? 100 : 1000;
-      
+
       const targetNumber = minVal + Math.floor(Math.random() * (maxVal - minVal));
       const type = Math.random() > 0.5 ? 'build' : 'expanded';
-      
+
       if (type === 'expanded') {
         const str = String(targetNumber);
         const parts: string[] = [];
@@ -140,7 +140,7 @@
       onIncorrect({
         question: q.type === 'build' ? `Build ${q.targetNumber}` : `Solve ${q.expandedParts?.join(' + ')}`,
         answer: correctAnsStr,
-        userVal: userAnsStr
+        userVal: userAnsStr,
       });
     }
 
@@ -161,11 +161,6 @@
 </script>
 
 <div class="game-container">
-  <div class="status-bar">
-    <span>Question {questionIndex + 1} of 10</span>
-    <span>Score: {score}</span>
-  </div>
-
   {#if currentQuestion}
     {#if currentQuestion.type === 'build'}
       <div class="instruction">
@@ -181,20 +176,30 @@
         {#each COLUMNS as col}
           <!-- Hide Ten-Thousands column for smaller numbers to keep it clean -->
           {#if col.key !== '10k' || currentQuestion.targetNumber >= 10000}
-            <div class="col-panel" style="border-color: {col.color}">
-              <span class="col-title" style="color: {col.color}">{col.key.toUpperCase()}</span>
-              
+            <div class="col-panel" style="--col-color: {col.color}">
+              <span class="col-title">{col.key.toUpperCase()}</span>
+
               <!-- Gem Visuals Area -->
               <div class="gem-slots">
                 {#each Array(userDigits[col.key]) as _}
-                  <div class="gem animate-pulse" style="background: {col.color}"></div>
+                  <div class="gem"></div>
                 {/each}
               </div>
 
               <div class="col-controls">
-                <button onclick={() => incrementDigit(col.key)} {disabled} class="control-btn" style="color: var(--success);">+</button>
+                <button
+                  onclick={() => incrementDigit(col.key)}
+                  {disabled}
+                  class="control-btn control-btn--inc"
+                  aria-label="Increase {col.label}"
+                >+</button>
                 <span class="digit-count">{userDigits[col.key]}</span>
-                <button onclick={() => decrementDigit(col.key)} {disabled} class="control-btn" style="color: var(--danger);">&minus;</button>
+                <button
+                  onclick={() => decrementDigit(col.key)}
+                  {disabled}
+                  class="control-btn control-btn--dec"
+                  aria-label="Decrease {col.label}"
+                >&minus;</button>
               </div>
             </div>
           {/if}
@@ -239,7 +244,9 @@
 </div>
 
 <style>
+  /* ── Grove 3 local glow colour ──────────────────────────────────── */
   .game-container {
+    --glow-c: var(--glow-blossom);
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
@@ -247,36 +254,37 @@
     width: 100%;
   }
 
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    color: var(--color-text-muted);
-    font-size: 0.95rem;
-    font-weight: 500;
-  }
-
+  /* ── Instruction / target number ─────────────────────────────────── */
   .instruction {
     font-size: 1.1rem;
     text-align: center;
-  }
-  .target-num {
-    color: var(--neon-cyan);
-    text-shadow: var(--glow-cyan);
-    font-size: 1.3rem;
+    color: var(--color-text);
   }
 
+  .target-num {
+    --glow-c: var(--glow-blossom);
+    color: var(--color-primary);
+    font-size: 1.3rem;
+    box-shadow: 0 0 var(--glow-sm) var(--glow-c), 0 0 var(--glow-md) var(--glow-c);
+    border-radius: 4px;
+    padding: 0 0.2em;
+  }
+
+  /* ── Running built value ─────────────────────────────────────────── */
   .built-display {
     font-size: 0.95rem;
     color: var(--color-text-muted);
   }
+
   .built-val {
     font-family: var(--font-display);
     font-size: 1.2rem;
     font-weight: bold;
     color: var(--color-text);
+    font-variant-numeric: tabular-nums lining-nums;
   }
 
+  /* ── Column layout ───────────────────────────────────────────────── */
   .columns-container {
     display: flex;
     gap: 0.8rem;
@@ -287,8 +295,8 @@
   }
 
   .col-panel {
-    background: rgba(0, 0, 0, 0.15);
-    border: 2px dashed var(--color-border);
+    background: var(--color-panel);
+    border: 2px dashed var(--col-color, var(--color-border));
     border-radius: var(--r-md);
     width: 90px;
     display: flex;
@@ -301,8 +309,11 @@
     font-size: 0.85rem;
     font-weight: 700;
     margin-bottom: 0.6rem;
+    color: var(--col-color, var(--color-text));
+    text-shadow: 0 0 var(--glow-sm) var(--col-color, transparent);
   }
 
+  /* ── Gem slots ───────────────────────────────────────────────────── */
   .gem-slots {
     display: flex;
     flex-direction: column-reverse;
@@ -317,13 +328,17 @@
   }
 
   .gem {
+    --glow-c: var(--glow-blossom);
     width: 16px;
     height: 12px;
     border-radius: 50%;
-    box-shadow: 0 0 6px currentColor;
-    border: 1px solid rgba(255,255,255,0.2);
+    background: var(--col-color, var(--color-primary));
+    border: 1px solid oklch(from var(--col-color, var(--color-primary)) calc(l + 0.15) c h / 0.5);
+    box-shadow: 0 0 var(--glow-sm) var(--col-color, var(--glow-c)),
+                0 0 var(--glow-md) var(--glow-c);
   }
 
+  /* ── +/- stepper controls ≥48px ─────────────────────────────────── */
   .col-controls {
     display: flex;
     flex-direction: column;
@@ -335,53 +350,93 @@
     font-size: 1.4rem;
     font-weight: bold;
     line-height: 1;
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.05);
+    background: var(--color-panel);
     display: flex;
     align-items: center;
     justify-content: center;
     border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    transition: background 0.15s, box-shadow 0.15s;
   }
-  .control-btn:hover {
-    background: rgba(255,255,255,0.12);
+
+  .control-btn--inc {
+    --glow-c: var(--color-correct);
+    color: var(--color-correct);
+  }
+
+  .control-btn--dec {
+    --glow-c: var(--color-retry);
+    color: var(--color-retry);
+  }
+
+  .control-btn:hover:not(:disabled) {
+    background: oklch(from var(--color-panel) calc(l + 0.05) c h);
+    box-shadow: 0 0 var(--glow-sm) var(--glow-c, var(--glow-blossom));
+  }
+
+  .control-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .control-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 
   .digit-count {
     font-family: var(--font-display);
     font-size: 1.2rem;
     font-weight: bold;
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--color-text);
   }
 
+  /* ── Expanded form expression ────────────────────────────────────── */
   .expanded-expr {
+    --glow-c: var(--glow-blossom);
     font-family: var(--font-display);
     font-size: 1.8rem;
     font-weight: 600;
     color: var(--color-primary);
-    text-shadow: 0 4px 12px rgba(98, 154, 258, 0.15);
+    text-shadow: 0 0 var(--glow-sm) var(--glow-c), 0 0 var(--glow-lg) var(--glow-c);
     text-align: center;
     word-break: break-word;
     max-width: 100%;
+    font-variant-numeric: tabular-nums lining-nums;
   }
 
+  /* ── Typed answer input ──────────────────────────────────────────── */
   .answer-input {
+    --glow-c: var(--glow-blossom);
     width: 100%;
     max-width: 250px;
     padding: 0.8rem 1rem;
     border-radius: var(--r-md);
-    background: rgba(0, 0, 0, 0.15);
+    background: var(--color-panel);
     border: 2px solid var(--color-border);
     color: var(--color-text);
     font-size: 1.6rem;
     text-align: center;
     font-weight: 700;
-  }
-  .answer-input:focus {
-    outline: none;
-    border-color: var(--color-primary);
+    min-height: var(--touch);
+    font-variant-numeric: tabular-nums lining-nums;
   }
 
+  .answer-input:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 var(--glow-sm) var(--glow-c), 0 0 var(--glow-md) var(--glow-c);
+  }
+
+  .answer-input:disabled {
+    opacity: 0.5;
+  }
+
+  /* ── Feedback ────────────────────────────────────────────────────── */
   .feedback-msg {
     font-family: var(--font-display);
     font-size: 1.1rem;
@@ -390,13 +445,45 @@
     padding: 0.5rem 1rem;
     border-radius: var(--r-sm);
     text-align: center;
+    border: 2px solid transparent;
   }
+
   .feedback-msg.correct {
-    color: var(--success);
-    background: rgba(0, 230, 118, 0.1);
+    --glow-c: var(--color-correct);
+    color: var(--color-correct);
+    background: oklch(from var(--color-correct) l c h / 0.1);
+    border-color: oklch(from var(--color-correct) l c h / 0.35);
   }
+
   .feedback-msg.wrong {
-    color: var(--danger);
-    background: rgba(255, 23, 68, 0.1);
+    --glow-c: var(--color-retry);
+    color: var(--color-retry);
+    background: oklch(from var(--color-retry) l c h / 0.1);
+    border-color: oklch(from var(--color-retry) l c h / 0.35);
+  }
+
+  /* ── Motion-safe keyframes ───────────────────────────────────────── */
+  @media (prefers-reduced-motion: no-preference) {
+    .feedback-msg.correct {
+      animation: glowPulse 0.6s ease-out;
+    }
+
+    .feedback-msg.wrong {
+      animation: gentleShake 0.4s ease-out;
+    }
+
+    @keyframes glowPulse {
+      0% { box-shadow: 0 0 0 0 var(--color-correct); }
+      50% { box-shadow: 0 0 var(--glow-md) var(--glow-lg) oklch(from var(--color-correct) l c h / 0.5); }
+      100% { box-shadow: 0 0 0 0 var(--color-correct); }
+    }
+
+    @keyframes gentleShake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-6px); }
+      40%       { transform: translateX(6px); }
+      60%       { transform: translateX(-4px); }
+      80%       { transform: translateX(4px); }
+    }
   }
 </style>
