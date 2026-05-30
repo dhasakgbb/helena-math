@@ -14,6 +14,8 @@
   import DecimalGridZoom from '../games/DecimalGridZoom.svelte';
   import CoordinatePlot from '../games/CoordinatePlot.svelte';
   import PEMDASTree from '../games/PEMDASTree.svelte';
+  import AstridHelp from '../components/AstridHelp.svelte';
+  import type { GameHelp } from '../lib/help';
 
   interface Props {
     mode: string;
@@ -62,6 +64,10 @@
 
   // Live answered counter — incremented by both handleCorrect and handleIncorrect
   let answered = $state(0);
+
+  let currentHelp = $state<GameHelp | null>(null);
+  let missCount = $state(0);
+  let autoOffer = $state(false);
 
   // Mascot reactive pose state
   let mascotPose = $state<'thinking' | 'happy' | 'wow' | 'sad' | 'sleeping'>('thinking');
@@ -129,6 +135,7 @@
   function handleCorrect(a?: number, b?: number, timeMs?: number) {
     answered++;
     currentStreak++;
+    missCount = 0;
     if (currentStreak >= 3) {
       triggerPose('wow', 2000);
     } else {
@@ -143,6 +150,8 @@
   function handleIncorrect(details?: any) {
     answered++;
     currentStreak = 0;
+    missCount += 1;
+    if (missCount >= 2) autoOffer = true;
     triggerPose('sad', 1800);
 
     if (mode === 'times-tables' && details?.a && details?.b) {
@@ -170,6 +179,13 @@
         </div>
       {/if}
     </div>
+    <AstridHelp
+      help={currentHelp}
+      glow={GLOW[mode] ?? 'var(--glow-firefly)'}
+      autoOffer={autoOffer}
+      onAutoOfferHandled={() => (autoOffer = false)}
+      seenKey={`helena-math:help:seen:${mode}`}
+    />
   {/snippet}
 
   {#if mode === 'times-tables'}
@@ -179,6 +195,7 @@
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
       {setAstridMessage}
+      bind:help={currentHelp}
     />
   {:else if mode === 'speed-add'}
     <SpeedAdd
@@ -186,6 +203,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'number-sort'}
     <NumberSort
@@ -193,6 +211,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'fractions-visual'}
     <FractionGarden
@@ -200,6 +219,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'place-value'}
     <PlaceValue
@@ -207,6 +227,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'multiplication-grid'}
     <MultiplicationGrid
@@ -214,6 +235,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'long-division'}
     <LongDivision
@@ -221,6 +243,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'decimals-grid'}
     <DecimalGridZoom
@@ -228,6 +251,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'geometry-angles'}
     <CoordinatePlot
@@ -235,6 +259,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'pemdas-tree'}
     <PEMDASTree
@@ -242,6 +267,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {/if}
 </GameShell>

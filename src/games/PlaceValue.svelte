@@ -1,14 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { GameHelp } from '../lib/help';
 
   interface Props {
     grade: number;
     onCorrect: () => void;
     onIncorrect: (details: { question: string; answer: string; userVal: string }) => void;
     onFinished: (score: number, total: number) => void;
+    help?: GameHelp | null;
   }
 
-  let { grade, onCorrect, onIncorrect, onFinished }: Props = $props();
+  let { grade, onCorrect, onIncorrect, onFinished, help = $bindable(null) }: Props = $props();
 
   let questionIndex = $state(0);
   let score = $state(0);
@@ -24,6 +26,25 @@
   }
   let questions = $state<Question[]>([]);
   let currentQuestion = $derived(questions[questionIndex]);
+
+  $effect(() => {
+    const q = currentQuestion;
+    if (!q) { help = null; return; }
+    const target = q.targetNumber;
+    const places = [
+      { name: 'ten-thousands', v: 10000 }, { name: 'thousands', v: 1000 },
+      { name: 'hundreds', v: 100 }, { name: 'tens', v: 10 }, { name: 'ones', v: 1 },
+    ];
+    const placeSteps = places
+      .map(p => ({ ...p, d: Math.floor(target / p.v) % 10 }))
+      .filter(p => p.d > 0 || p.v === 1)
+      .map(p => `${p.d} in the ${p.name} = ${p.d * p.v}`);
+    help = {
+      howToPlay: 'Build the number by setting each place column (ones, tens, …).',
+      hint: 'Read it place by place: how many thousands, hundreds, tens, ones?',
+      steps: [...placeSteps.slice(0, 3), `Altogether that's ${target}`],
+    };
+  });
 
   // User input states
   // For 'build' type: counters for columns: Ten-Thousands (10k), Thousands (1k), Hundreds (100), Tens (10), Ones (1)

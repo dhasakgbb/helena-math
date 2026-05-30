@@ -1,14 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { GameHelp } from '../lib/help';
 
   interface Props {
     grade: number;
     onCorrect: () => void;
     onIncorrect: (details: { question: string; answer: string; userVal: string }) => void;
     onFinished: (score: number, total: number) => void;
+    help?: GameHelp | null;
   }
 
-  let { grade, onCorrect, onIncorrect, onFinished }: Props = $props();
+  let { grade, onCorrect, onIncorrect, onFinished, help = $bindable(null) }: Props = $props();
 
   let questionIndex = $state(0);
   let score = $state(0);
@@ -32,6 +34,37 @@
   }
   let questions = $state<Question[]>([]);
   let currentQuestion = $derived(questions[questionIndex]);
+
+  $effect(() => {
+    const q = currentQuestion;
+    if (!q) { help = null; return; }
+    const a = q.a, b = q.b;
+    if (q.aTens > 0) {
+      // 4-box area model (grade > 3)
+      help = {
+        howToPlay: 'Fill each box (a partial product), then add the boxes for the total.',
+        hint: 'Split each number into tens and ones, multiply the boxes, then add.',
+        steps: [
+          `Split: ${a} = ${q.aTens} + ${q.aOnes};  ${b} = ${q.bTens} + ${q.bOnes}`,
+          `Top row: ${q.aTens} × ${q.bTens} = ${q.q1},  ${q.aTens} × ${q.bOnes} = ${q.q2}`,
+          `Bottom row: ${q.aOnes} × ${q.bTens} = ${q.q3},  ${q.aOnes} × ${q.bOnes} = ${q.q4}`,
+          `Add all boxes: ${a} × ${b} = ${q.answer}`,
+        ],
+      };
+    } else {
+      // 2-box area model (grade ≤ 3): single-digit a, split b into tens/ones
+      help = {
+        howToPlay: 'Fill each box (a partial product), then add the boxes for the total.',
+        hint: 'Split the bigger number into tens and ones, multiply each part, then add.',
+        steps: [
+          `Split: ${b} = ${q.bTens} + ${q.bOnes}`,
+          `Left box: ${a} × ${q.bTens} = ${a * q.bTens}`,
+          `Right box: ${a} × ${q.bOnes} = ${a * q.bOnes}`,
+          `Add the boxes: ${a} × ${b} = ${q.answer}`,
+        ],
+      };
+    }
+  });
 
   // User input states
   let uQ1 = $state<string>('');

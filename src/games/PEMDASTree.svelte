@@ -1,14 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { GameHelp } from '../lib/help';
 
   interface Props {
     grade: number;
     onCorrect: () => void;
     onIncorrect: (details: { question: string; answer: string; userVal: string }) => void;
     onFinished: (score: number, total: number) => void;
+    help?: GameHelp | null;
   }
 
-  let { grade: _grade, onCorrect, onIncorrect, onFinished }: Props = $props();
+  let { grade: _grade, onCorrect, onIncorrect, onFinished, help = $bindable(null) }: Props = $props();
 
   let questionIndex = $state(0);
   let score = $state(0);
@@ -33,6 +35,18 @@
 
   // Active step in equation collapse
   let activeStepIdx = $state(0);
+
+  $effect(() => {
+    const steps = currentQuestion?.steps;
+    if (!steps || steps.length === 0) { help = null; return; }
+    const idx = activeStepIdx;
+    const cur = steps[idx] ?? steps[0];
+    help = {
+      howToPlay: 'Tap the operation to do next, following PEMDAS (parentheses, ×÷, +−).',
+      hint: cur.incorrectFeedback ?? 'Do parentheses first, then × and ÷, then + and −.',
+      steps: steps.map((s) => s.incorrectFeedback ?? '').filter(Boolean).slice(0, 4),
+    };
+  });
 
   onMount(() => {
     generateQuestions();

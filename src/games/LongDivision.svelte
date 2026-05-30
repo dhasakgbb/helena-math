@@ -1,14 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { GameHelp } from '../lib/help';
 
   interface Props {
     grade: number;
     onCorrect: () => void;
     onIncorrect: (details: { question: string; answer: string; userVal: string }) => void;
     onFinished: (score: number, total: number) => void;
+    help?: GameHelp | null;
   }
 
-  let { grade: _grade, onCorrect, onIncorrect, onFinished }: Props = $props();
+  let { grade: _grade, onCorrect, onIncorrect, onFinished, help = $bindable(null) }: Props = $props();
 
   let questionIndex = $state(0);
   let score = $state(0);
@@ -33,6 +35,16 @@
   }
   let questions = $state<Question[]>([]);
   let currentQuestion = $derived(questions[questionIndex]);
+
+  $effect(() => {
+    const q = currentQuestion;
+    if (!q) { help = null; return; }
+    help = {
+      howToPlay: 'Solve one step at a time: divide, multiply, subtract, bring down.',
+      hint: `How many times does ${q.divisor} fit? Then multiply and subtract.`,
+      steps: STEP_DETAILS.map((s) => s.prompt),
+    };
+  });
 
   // User input states
   let userStepVal = $state<string>('');

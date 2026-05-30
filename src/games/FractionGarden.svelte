@@ -1,14 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { GameHelp } from '../lib/help';
 
   interface Props {
     grade: number;
     onCorrect: () => void;
     onIncorrect: (details: { question: string; answer: string; userVal: string }) => void;
     onFinished: (score: number, total: number) => void;
+    help?: GameHelp | null;
   }
 
-  let { grade: _grade, onCorrect, onIncorrect, onFinished }: Props = $props();
+  let { grade: _grade, onCorrect, onIncorrect, onFinished, help = $bindable(null) }: Props = $props();
 
   let questionIndex = $state(0);
   let score = $state(0);
@@ -27,6 +29,23 @@
   // User input state
   let selectedDenominator = $state(4);
   let wateredPetals = $state<Record<number, boolean>>({});
+
+  $effect(() => {
+    const q = target;
+    if (!q) { help = null; return; }
+    const targetLabel = `${q.num}/${q.den}`;
+    const den = selectedDenominator;
+    const needed = Math.round((q.num / q.den) * den);
+    help = {
+      howToPlay: 'Water petals to match the target fraction. Pick a denominator first.',
+      hint: 'Make the bottom number match, then count how many equal petals you need.',
+      steps: [
+        `Target is ${targetLabel}`,
+        `With ${den} petals, you need ${needed}`,
+        `Water ${needed} of ${den}`,
+      ],
+    };
+  });
 
   onMount(() => {
     generateQuestions();

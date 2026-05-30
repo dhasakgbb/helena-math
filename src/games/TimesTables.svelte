@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { profileStore } from '../lib/profile.svelte';
+  import type { GameHelp } from '../lib/help';
 
   interface Props {
     grade: number;
@@ -8,9 +9,10 @@
     onIncorrect: (details: { a?: number; b?: number; question: string; answer: number; userVal: number }) => void;
     onFinished: (score: number, total: number) => void;
     setAstridMessage?: (msg: string, pose?: 'thinking' | 'happy' | 'wow' | 'sad' | 'sleeping', duration?: number) => void;
+    help?: GameHelp | null;
   }
 
-  let { grade, onCorrect, onIncorrect, onFinished, setAstridMessage }: Props = $props();
+  let { grade, onCorrect, onIncorrect, onFinished, setAstridMessage, help = $bindable(null) }: Props = $props();
 
   let questionIndex = $state(0);
   let score = $state(0);
@@ -32,6 +34,23 @@
   }
   let questions = $state<Question[]>([]);
   let focusTable = $state<number | null>(null);
+
+  $effect(() => {
+    const q = questions[questionIndex];
+    if (!q) { help = null; return; }
+    const a = q.a, b = q.b;
+    const bl = Math.floor(b / 2), bh = b - bl;
+    help = {
+      howToPlay: 'Type the answer to each multiplication. Example: 3 × 4 = 12.',
+      hint: `Count up by ${a}s, or split it: ${a}×${b} = ${a}×${bl} + ${a}×${bh}.`,
+      steps: [
+        `${a} × ${bl} = ${a * bl}`,
+        `${a} × ${bh} = ${a * bh}`,
+        `${a * bl} + ${a * bh} = ${a * b}`,
+        `So ${a} × ${b} = ${a * b}`,
+      ],
+    };
+  });
 
   onMount(() => {
     determineFocusAndGenerate();

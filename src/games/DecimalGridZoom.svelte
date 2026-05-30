@@ -1,14 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { GameHelp } from '../lib/help';
 
   interface Props {
     grade: number;
     onCorrect: () => void;
     onIncorrect: (details: { question: string; answer: string; userVal: string }) => void;
     onFinished: (score: number, total: number) => void;
+    help?: GameHelp | null;
   }
 
-  let { grade: _grade, onCorrect, onIncorrect, onFinished }: Props = $props();
+  let { grade: _grade, onCorrect, onIncorrect, onFinished, help = $bindable(null) }: Props = $props();
 
   let questionIndex = $state(0);
   let score = $state(0);
@@ -24,6 +26,23 @@
   }
   let questions = $state<Question[]>([]);
   let currentQuestion = $derived(questions[questionIndex]);
+
+  $effect(() => {
+    const q = currentQuestion;
+    if (!q) { help = null; return; }
+    const value = q.targetVal;
+    const squares = Math.round(value * 100);
+    const label = getFormatPrompt(q);
+    help = {
+      howToPlay: 'Shade squares to match the value. The whole grid is 100 (hundredths).',
+      hint: '0.1 is 10 squares, 0.25 is 25 squares.',
+      steps: [
+        `Target is ${label}`,
+        `${label} = ${squares} hundredths`,
+        `Shade ${squares} squares`,
+      ],
+    };
+  });
 
   // Shaded cells state: 100 elements (boolean)
   let shaded = $state<boolean[]>(Array(100).fill(false));

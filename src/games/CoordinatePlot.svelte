@@ -1,14 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { GameHelp } from '../lib/help';
 
   interface Props {
     grade: number;
     onCorrect: () => void;
     onIncorrect: (details: { question: string; answer: string; userVal: string }) => void;
     onFinished: (score: number, total: number) => void;
+    help?: GameHelp | null;
   }
 
-  let { grade: _grade, onCorrect, onIncorrect, onFinished }: Props = $props();
+  let { grade: _grade, onCorrect, onIncorrect, onFinished, help = $bindable(null) }: Props = $props();
 
   let questionIndex = $state(0);
   let score = $state(0);
@@ -31,6 +33,23 @@
   // User plotted points
   let userPoints = $state<Point[]>([]);
   let drawLines = $state(false);
+
+  $effect(() => {
+    const q = currentQuestion;
+    if (!q) { help = null; return; }
+    const pts = q.points;
+    // next target point not yet in userPoints (fall back to the first)
+    const next = pts.find((p) => !userPoints.some((u) => u.x === p.x && u.y === p.y)) ?? pts[0];
+    help = {
+      howToPlay: 'Tap grid points to plot each (x, y), then press Connect.',
+      hint: 'Find the column (x) first, then count up for y.',
+      steps: [
+        `Next point: (${next.x}, ${next.y})`,
+        `Go right to ${next.x}`,
+        `Then up to ${next.y}, and tap`,
+      ],
+    };
+  });
 
   onMount(() => {
     generateQuestions();

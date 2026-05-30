@@ -155,6 +155,37 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   }
 
+  /* ── Mobile: two-row header to prevent Ask-Astrid pill from
+       squeezing the game title into the back-leaf button.
+       Row 1: back-leaf | title   (2-col, no mascot-slot column needed)
+       Row 2 (mascot-slot spans full width): mascot avatar + Ask-Astrid pill  ── */
+  @media (max-width: 600px) {
+    .top-bar {
+      grid-template-columns: 48px 1fr;
+      grid-template-rows: auto auto;
+      row-gap: 0.4rem;
+    }
+
+    .back-leaf {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .title-area {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .mascot-slot {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      justify-content: center;
+      flex-direction: row;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+  }
+
   /* back-leaf button */
   .back-leaf {
     width: 48px;
