@@ -13,7 +13,7 @@
 
   let { onSelectMode }: Props = $props();
 
-  // Honest, plain-spoken names for the 10 modes (used in Astrid's copy).
+  // Honest, plain-spoken names for the 10 modes.
   const MODE_NAMES: Record<MathMode, string> = {
     'times-tables': 'Times Tables',
     'speed-add': 'Speed Add',
@@ -27,25 +27,23 @@
     'pemdas-tree': 'Order of Operations',
   };
 
-  // Smart Pick drives both the speech bubble and the primary button.
   const pick = $derived(profileStore.smartPick);
   const childName = $derived(profileStore.profile?.child_label || 'gardener');
 
   const isDay = new Date().getHours() >= 6 && new Date().getHours() < 18;
   const timeOfDayStr = isDay ? "today" : "tonight";
 
-  // A short, encouraging one-liner — no pressure, just an invitation.
   const speech = $derived.by(() => {
     const name = childName;
     const mode = MODE_NAMES[pick];
     const mastery = (profileStore.profile?.module_overrides?.math as any)?.mastery?.[pick] ?? 0;
     if (mastery >= 0.85) {
-      return `Lovely work, ${name} — ${mode} is in full bloom. Want to tend it again ${timeOfDayStr}?`;
+      return `Lovely work, ${name} — ${mode} is fully crystallized. Ready to align it again ${timeOfDayStr}?`;
     }
     if (mastery > 0) {
-      return `Hi ${name}! ${mode} is growing nicely. A little water ${timeOfDayStr}?`;
+      return `Hi ${name}! The energy in ${mode} is coalescing nicely. A little reinforcement ${timeOfDayStr}?`;
     }
-    return `Hi ${name}! ${isDay ? "The sun is shining." : "The moon is out."} ${mode} looks like a nice spot to plant ${timeOfDayStr}.`;
+    return `Hi ${name}! ${isDay ? "The sun is shining." : "The moon is out."} ${mode} is ready to be initialized ${timeOfDayStr}.`;
   });
 
   let showGridModal = $state(false);
@@ -64,48 +62,44 @@
   }
 </script>
 
-{#if false}
+<!-- Drifting mesh blobs in background -->
+<div class="mesh-bg" aria-hidden="true">
+  <div class="mesh-blob mesh-blob-1"></div>
+  <div class="mesh-blob mesh-blob-2"></div>
+</div>
+
+{#if !profileStore.profile}
   <EmptyGardenState onStart={() => {}} />
 {:else}
-  <div class="hub vignette">
-    <section class="sky-band">
-      <GardenerBadge />
+  <div class="hub-container animate-entrance">
+    <!-- Header band with profile badge and HUD capsule -->
+    <header class="hub-header">
+      <div class="header-top">
+        <h1 class="hub-logo">helena</h1>
+        <GardenerBadge />
+      </div>
 
-      <div class="dashboard-container">
-        <!-- The big glassy pill -->
-        <div class="dashboard-capsule">
-          <div class="robot-slot">
-            <Mascot pose="waving" size={170} />
-            <!-- The speech bubble -->
-            <div class="robot-bubble">
-              <p class="bubble-text">{speech}</p>
-            </div>
+      <!-- Glassmorphic HUD capsule with Astrid and GlowMeters -->
+      <div class="hud-capsule glass-panel">
+        <div class="astrid-hud">
+          <div class="astrid-avatar">
+            <Mascot pose="waving" size={96} />
           </div>
-          <div class="meters-slot">
-            <GlowMeters />
+          <div class="astrid-speech-bubble">
+            <p class="bubble-text">{speech}</p>
           </div>
         </div>
-        
-        <!-- The today's plant button -->
-        <div class="today-plant-wrap">
-          <button class="today-plant-btn" onclick={() => handleSelect(pick)}>
-            <div class="tp-content">
-              <span class="tp-kicker">
-                <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M21 14.2A8.4 8.4 0 0 1 9.8 3 8.4 8.4 0 1 0 21 14.2Z"/>
-                </svg>
-                {isDay ? "TODAY'S PLANT:" : "TONIGHT'S PLANT:"}
-              </span>
-              <span class="tp-mode">{MODE_NAMES[pick]}</span>
-            </div>
-          </button>
+        <div class="meters-hud">
+          <GlowMeters />
         </div>
       </div>
-    </section>
+    </header>
 
-    <section class="garden-band">
+    <!-- Main Topology Grid -->
+    <main class="grid-section">
+      <h2 class="section-title">Mathematical Topology Grid</h2>
       <GardenScene onSelect={handleSelect} />
-    </section>
+    </main>
   </div>
 
   {#if showGridModal}
@@ -114,170 +108,160 @@
 {/if}
 
 <style>
-  /* Base hub */
-  .hub {
-    position: relative;
+  .hub-container {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    border-radius: var(--r-lg);
-    background:
-      radial-gradient(120% 90% at 80% -10%, var(--sky-radial, oklch(40% 0.08 250 / 0.5)), transparent 60%),
-      linear-gradient(to bottom, var(--sky-top), var(--sky-mid) 60%, var(--sky-bot));
-    color: var(--color-text);
-    overflow: hidden;
+    gap: 2rem;
+    padding: 1.5rem 1rem;
+    position: relative;
+    z-index: 5;
   }
 
-  .sky-band {
-    position: relative;
-    z-index: 20;
-    pointer-events: none;
-    padding: 2rem;
-  }
-  
-  .sky-band > *, .dashboard-container * {
-    pointer-events: auto;
-  }
-  
-  .sky-band :global(.gb-badge) {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 25;
-  }
-
-  .garden-band {
-    flex: 1;
-    display: flex;
-    position: relative;
-    width: 100%;
-  }
-
-  .dashboard-container {
-    position: relative;
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
+  .hub-header {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
   }
 
-  .dashboard-capsule {
+  .header-top {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     width: 100%;
-    gap: 2rem;
-    padding: 1.5rem 2rem 1.5rem 2rem;
-    background: linear-gradient(135deg, rgba(200, 240, 255, 0.25) 0%, rgba(150, 200, 255, 0.1) 100%);
-    border: 1.5px solid rgba(255, 255, 255, 0.5);
-    border-radius: 999px;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 8px 32px rgba(0, 50, 100, 0.2), inset 0 2px 10px rgba(255, 255, 255, 0.3);
-    position: relative;
-    z-index: 10;
+    padding: 0 0.5rem;
   }
 
-  .robot-slot {
-    position: relative;
-    z-index: 20;
+  .hub-logo {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--color-primary);
+    margin: 0;
+    letter-spacing: -0.03em;
+    text-shadow: 0 0 10px oklch(0.70 0.12 190 / 0.2);
   }
 
-  .robot-bubble {
+  /* Glassmorphic Capsule Layout */
+  .hud-capsule {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2.5rem;
+    padding: 1.5rem 2rem;
+    width: 100%;
+    border-radius: var(--r-xl);
+    background: var(--glass-bg);
+  }
+
+  .hud-capsule:hover {
+    transform: none; /* disable card hover pop here */
+  }
+
+  .astrid-hud {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex: 1;
+  }
+
+  .astrid-avatar {
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .astrid-speech-bubble {
+    position: relative;
+    background: oklch(0.14 0.02 210 / 0.5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-md);
+    padding: 1rem 1.25rem;
+    max-width: 440px;
+    box-shadow: inset 0 1px 1px oklch(1 0 0 / 0.05);
+  }
+
+  /* Arrow pointing towards mascot */
+  .astrid-speech-bubble::before {
+    content: '';
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: calc(100% - 10px);
-    width: 240px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1.5px solid rgba(255, 255, 255, 0.4);
-    border-radius: 20px;
-    padding: 1rem;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.5);
-    z-index: 31;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    width: 14px;
+    height: 14px;
+    background: oklch(0.14 0.02 210 / 0.5);
+    border-left: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .bubble-text {
     margin: 0;
-    color: #fff;
-    font-weight: 500;
-    font-family: var(--font-display);
     font-size: 1rem;
-    line-height: 1.4;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--color-text);
   }
 
-  .today-plant-wrap {
-    margin-top: -20px; /* Overlap the capsule */
-    z-index: 35;
+  .meters-hud {
+    flex-shrink: 0;
   }
 
-  .today-plant-btn {
-    background: linear-gradient(to bottom, #FFE8A1, #FFB922);
-    border: 2px solid rgba(255,255,255,0.9);
-    border-radius: 999px;
-    padding: 0.5rem 2.5rem;
-    box-shadow: 0 10px 24px rgba(255, 185, 34, 0.5), inset 0 2px 5px rgba(255,255,255,0.9);
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
-  }
-  
-  .today-plant-btn:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 14px 30px rgba(255, 185, 34, 0.6), inset 0 2px 5px rgba(255,255,255,0.9);
-    filter: brightness(1.05);
-  }
-  
-  .tp-content {
+  .grid-section {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    color: #4A3300;
+    gap: 1rem;
+    width: 100%;
   }
-  
-  .tp-kicker {
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    opacity: 0.85;
-    text-transform: uppercase;
-  }
-  
-  .tp-mode {
-    font-size: 1.5rem;
-    font-weight: 800;
+
+  .section-title {
     font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--text-muted);
+    margin: 0 0.5rem;
   }
-  
-  @media (max-width: 900px) {
-    .dashboard-capsule {
+
+  /* Responsive styling */
+  @media (max-width: 960px) {
+    .hud-capsule {
       flex-direction: column;
-      padding: 1rem;
-      border-radius: 30px;
+      align-items: stretch;
+      gap: 1.5rem;
+      padding: 1.5rem;
     }
-    .robot-slot {
-      position: relative;
-      left: 0; bottom: 0;
-      margin-bottom: 1rem;
-      display: flex;
+
+    .astrid-hud {
+      width: 100%;
+    }
+
+    .astrid-speech-bubble {
+      max-width: none;
+      width: 100%;
+    }
+
+    .meters-hud {
+      width: 100%;
+      border-top: 1px solid var(--color-border);
+      padding-top: 1rem;
+    }
+  }
+
+  @media (max-width: 580px) {
+    .astrid-hud {
       flex-direction: column;
       align-items: center;
+      text-align: center;
+      gap: 1rem;
     }
-    .robot-bubble {
-      position: relative;
-      left: 0; top: 0;
-      transform: none;
-      margin-top: 1rem;
+
+    .astrid-speech-bubble::before {
+      display: none; /* Hide side arrow on mobile stacked views */
     }
   }
 </style>

@@ -1,9 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Mascot from '../components/Mascot.svelte';
-  import Plant from '../components/Plant.svelte';
+  import MasteryCell from '../components/MasteryCell.svelte';
   import { profileStore } from '../lib/profile.svelte';
-  import { speciesFor } from '../components/SpeciesMap';
 
   interface Props {
     mode: string;
@@ -31,14 +30,7 @@
     onSelectNext,
   }: Props = $props();
 
-  // Grove-matched glow for the watered-bed Plant on EndScreen.
-  const GROVE_GLOW: Record<string, string> = {
-    'times-tables': 'var(--glow-firefly)', 'speed-add': 'var(--glow-firefly)', 'number-sort': 'var(--glow-firefly)',
-    'fractions-visual': 'var(--glow-moonflower)', 'multiplication-grid': 'var(--glow-moonflower)', 'decimals-grid': 'var(--glow-moonflower)',
-    'place-value': 'var(--glow-blossom)', 'long-division': 'var(--glow-blossom)', 'geometry-angles': 'var(--glow-blossom)', 'pemdas-tree': 'var(--glow-blossom)',
-  };
-
-  // Honest, plain-spoken names for the 10 modes (mirrors HubScreen MODE_NAMES).
+  // Mode Names
   const MODE_NAMES: Record<string, string> = {
     'times-tables': 'Times Tables',
     'speed-add': 'Speed Add',
@@ -52,87 +44,85 @@
     'pemdas-tree': 'Order of Operations',
   };
 
-  const modeName = $derived(MODE_NAMES[mode] ?? 'this bed');
+  const modeName = $derived(MODE_NAMES[mode] ?? 'this cell');
   const ratio = $derived(total > 0 ? score / total : 0);
 
-  // Ratio tiers — intrinsic only, no leaderboards, no peer comparison.
   const tierHeadline = $derived(
     ratio >= 0.9
-      ? 'Your brightest night yet!'
+      ? 'Outstanding Synchronization!'
       : ratio >= 0.7
-        ? 'This bed is glowing brighter!'
-        : "Good practice — let's tend it again.",
+        ? 'Core stabilizing nicely!'
+        : "Nurturing complete — let's reinforce it.",
   );
 
   const mascotPose = $derived(ratio >= 0.7 ? 'cheering' : 'waving');
 
-  // Plant stage derived from the AFTER fill (where the bed stands now).
-  function stageFor(fill: number): 0 | 1 | 2 | 3 | 4 {
-    if (fill >= 0.85) return 4;
-    if (fill >= 0.6) return 3;
-    if (fill >= 0.3) return 2;
-    if (fill > 0) return 1;
-    return 0;
-  }
-  const bedStage = $derived(stageFor(ringTo));
-
   const ringPct = (f: number) => Math.round(f * 100);
   const ringCaption = $derived(
     ringTo > ringFrom
-      ? `You moved this skill from ${ringPct(ringFrom)}% to ${ringPct(ringTo)}%`
-      : `This bed is holding steady at ${ringPct(ringTo)}%`,
+      ? `You stabilized this cell from ${ringPct(ringFrom)}% to ${ringPct(ringTo)}%`
+      : `This cell is holding steady at ${ringPct(ringTo)}%`,
   );
 
   const smartPick = $derived(profileStore.smartPick);
-  const smartPickName = $derived(MODE_NAMES[smartPick] ?? 'a new bed');
+  const smartPickName = $derived(MODE_NAMES[smartPick] ?? 'another cell');
 
-  // ----- Skippable celebration + reduced-motion ---------------------------
-  // skipped jumps ring + droplets + bloom to their FINAL state instantly.
+  // Celebratory animations skippable state
   let skipped = $state(false);
-
-  // The ring target. We render at ringFrom initially, then drive to ringTo via
-  // a keyframe (motion only). When skipped/reduced-motion, the final value
-  // (ringTo) is what shows — guaranteed by binding the stroke offset to `to`.
-  let mounted = $state(false);
   let reducedMotion = $state(false);
-  const ringValue = $derived(skipped || !mounted || reducedMotion ? ringTo : undefined);
+  
+  // Transition fill value representation
+  let displayValue = $state(0);
 
   onMount(() => {
     reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // Defer one frame so the from→to keyframe has a start state to animate from.
-    requestAnimationFrame(() => {
-      mounted = true;
-    });
+    if (reducedMotion || skipped) {
+      displayValue = ringTo;
+    } else {
+      displayValue = ringFrom;
+      setTimeout(() => {
+        // Smoothly count up to the new value
+        const duration = 1200; // ms
+        const steps = 30;
+        const stepTime = duration / steps;
+        let currentStep = 0;
+        const interval = setInterval(() => {
+          currentStep++;
+          const t = currentStep / steps;
+          // Ease-out quad
+          const ease = t * (2 - t);
+          displayValue = ringFrom + ease * (ringTo - ringFrom);
+          if (currentStep >= steps) {
+            displayValue = ringTo;
+            clearInterval(interval);
+          }
+        }, stepTime);
+      }, 100);
+    }
   });
 
   function skip() {
     skipped = true;
+    displayValue = ringTo;
   }
 
   function onKey(e: KeyboardEvent) {
     if (e.key === 'Escape') skip();
   }
 
-  // Ring geometry (large glow-ring).
+  // Ring geometry
   const R = 86;
   const C = 2 * Math.PI * R;
-  // Final dash offset (what reduced-motion / skipped must show).
-  const offsetTo = $derived(C * (1 - ringTo));
-  const offsetFrom = $derived(C * (1 - ringFrom));
-
-  // Earned droplets — a brief shower flying into the bed.
-  const DROPLETS = [
-    { x: -120, delay: 0 },
-    { x: -64, delay: 0.12 },
-    { x: -10, delay: 0.24 },
-    { x: 48, delay: 0.36 },
-    { x: 104, delay: 0.48 },
-    { x: -36, delay: 0.6 },
-    { x: 72, delay: 0.72 },
-  ];
+  const offset = $derived(C * (1 - displayValue));
 </script>
 
 <svelte:window onkeydown={onKey} />
+
+<!-- Background mesh blobs -->
+<div class="mesh-bg" aria-hidden="true">
+  <div class="mesh-blob mesh-blob-1"></div>
+  <div class="mesh-blob mesh-blob-2"></div>
+</div>
 
 <div
   class="end-screen glass-panel animate-entrance text-center"
@@ -148,59 +138,47 @@
   ></button>
 
   <div class="mascot-wrapper">
-    <Mascot pose={mascotPose} size={140} />
+    <Mascot pose={mascotPose} size={130} />
   </div>
 
-  <h1>{tierHeadline}</h1>
+  <h1 class="headline">{tierHeadline}</h1>
 
   <p class="score-display">
-    You tended <span class="score-val">{score}</span> of {total} tonight.
+    You stabilized <span class="score-val">{score}</span> of {total} nodes.
   </p>
 
   {#if isPersonalBest}
-    <p class="personal-best">Your brightest night yet for this plant!</p>
+    <p class="personal-best">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+      </svg>
+      New stabilization record achieved!
+    </p>
   {/if}
 
-  <!-- The watered bed: ring + plant, lit, with the earned-droplet shower. -->
-  <div class="bed" role="img" aria-label="{modeName} bed, {ringPct(ringTo)} percent grown">
-
-    <svg class="ring" viewBox="0 0 200 200" aria-hidden="true">
+  <!-- Stabilized Cell Display: ring + central MasteryCell -->
+  <div class="stabilization-ring-area" role="img" aria-label="{modeName} cell, {ringPct(ringTo)} percent synchronized">
+    <svg class="stabilization-svg" viewBox="0 0 200 200" aria-hidden="true">
       <circle class="ring-track" cx="100" cy="100" r={R} />
       <circle
         class="ring-fill"
-        class:animate={mounted && !skipped && !reducedMotion}
         cx="100"
         cy="100"
         r={R}
         stroke-dasharray={C}
-        stroke-dashoffset={ringValue !== undefined ? offsetTo : offsetFrom}
-        style="--off-from:{offsetFrom}; --off-to:{offsetTo};"
+        stroke-dashoffset={offset}
       />
     </svg>
 
-    <div class="bed-plant">
-      <Plant
-        species={speciesFor(mode)}
-        stage={bedStage}
-        glow={GROVE_GLOW[mode] ?? 'var(--glow-firefly)'}
-        size={132}
-      />
+    <div class="central-cell">
+      <MasteryCell mastery={displayValue} size={128} />
     </div>
 
-    <!-- earned droplets flying in (skippable / reduced-motion: hidden, bed already lit) -->
-    {#if !skipped}
-      <div class="droplets" aria-hidden="true">
-        {#each DROPLETS as d, i (i)}
-          <span class="droplet" style="--x:{d.x}px; --delay:{d.delay}s;"></span>
-        {/each}
-      </div>
-    {/if}
-
-    <!-- bloom flourish — only when the 85% gate was crossed this result -->
+    <!-- Celebration spark particles -->
     {#if bloomed && !skipped}
-      <div class="bloom-burst" aria-hidden="true">
-        {#each Array(10) as _, i (i)}
-          <span class="ray" style="--a:{(360 / 10) * i}deg;"></span>
+      <div class="burst-sparks" aria-hidden="true">
+        {#each Array(12) as _, i (i)}
+          <span class="spark" style="--a:{(360 / 12) * i}deg;"></span>
         {/each}
       </div>
     {/if}
@@ -209,16 +187,16 @@
   <p class="ring-caption">{ringCaption}</p>
 
   {#if bloomed}
-    <p class="bloom-line">This bed came into full bloom tonight.</p>
+    <p class="bloom-line">This node reached full crystallization phase!</p>
   {/if}
 
   <div class="actions mt-8">
-    <button onclick={onPlayAgain} class="btn-primary">Water Again</button>
-    <button onclick={onPickAnother} class="btn-ghost">Tend Another</button>
+    <button onclick={onPlayAgain} class="btn-primary">Reinforce Cell</button>
+    <button onclick={onPickAnother} class="btn-ghost">Back to Topology</button>
   </div>
 
   <button type="button" class="next-link" onclick={() => onSelectNext(smartPick)}>
-    Next: tend {smartPickName}
+    Next Cell: stabilize {smartPickName} →
   </button>
 </div>
 
@@ -226,17 +204,17 @@
   .end-screen {
     position: relative;
     width: 100%;
-    max-width: 640px;
-    padding: 2.5rem 2rem;
+    max-width: 600px;
+    padding: 3rem 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.85rem;
-    font-family: var(--font-sans);
+    gap: 1rem;
+    border-radius: var(--r-xl);
+    background: var(--glass-bg);
+    margin: 0 auto;
   }
 
-  /* Invisible tap surface that captures a tap-anywhere to skip the show.
-     Sits behind the interactive controls (which have their own z-index). */
   .skip-surface {
     position: absolute;
     inset: 0;
@@ -246,16 +224,16 @@
     padding: 0;
     cursor: default;
   }
-  /* Once skipped there's nothing left to skip — let clicks fall through. */
+  
   .is-skipped .skip-surface {
     pointer-events: none;
   }
 
   .mascot-wrapper,
-  h1,
+  .headline,
   .score-display,
   .personal-best,
-  .bed,
+  .stabilization-ring-area,
   .ring-caption,
   .bloom-line,
   .actions,
@@ -265,54 +243,60 @@
   }
 
   .mascot-wrapper {
-    height: 140px;
+    height: 130px;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  .end-screen h1 {
+  .headline {
     font-family: var(--font-display);
-    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    font-size: clamp(1.4rem, 5vw, 2rem);
     color: var(--color-primary);
     margin: 0;
+    letter-spacing: -0.02em;
+    text-shadow: 0 0 10px oklch(0.70 0.12 190 / 0.15);
   }
 
   .score-display {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 500;
     margin: 0;
+    color: var(--color-text-muted);
   }
 
   .score-val {
     font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--glow-moonflower);
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--glow-fluid-cyan);
     font-variant-numeric: tabular-nums;
-    text-shadow: var(--glow-md, 0 0 10px var(--glow-moonflower));
-    --glow-c: var(--glow-moonflower);
+    text-shadow: 0 0 8px var(--glow-fluid-cyan);
   }
 
   .personal-best {
     margin: 0;
-    font-weight: 600;
-    color: var(--glow-firefly);
-    text-shadow: 0 0 10px oklch(88% 0.15 95 / 0.5);
+    font-weight: 700;
+    color: var(--color-coral);
+    text-shadow: 0 0 10px oklch(0.70 0.19 32 / 0.3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95rem;
   }
 
-  /* ---- The watered bed: ring + plant ---- */
-  .bed {
+  /* ── Stabilization ring and MasteryCell center ────────────────── */
+  .stabilization-ring-area {
     position: relative;
     width: 220px;
     height: 220px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0.25rem 0;
+    margin: 0.5rem 0;
   }
 
-  .ring {
+  .stabilization-svg {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -320,60 +304,45 @@
     transform: rotate(-90deg);
     overflow: visible;
   }
+
   .ring-track {
     fill: none;
     stroke: var(--color-border);
-    stroke-width: 10;
-  }
-  .ring-fill {
-    fill: none;
-    stroke: var(--glow-moonflower);
-    stroke-width: 10;
-    stroke-linecap: round;
-    filter: drop-shadow(0 0 4px var(--glow-moonflower))
-      drop-shadow(0 0 14px var(--glow-moonflower));
+    stroke-width: 8;
   }
 
-  .bed-plant {
+  .ring-fill {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 8;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 6px var(--color-primary));
+    transition: stroke-dashoffset 0.1s linear;
+  }
+
+  .central-cell {
     position: relative;
     z-index: 1;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
-  }
-
-  .droplets {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-  .droplet {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 7px;
-    height: 11px;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    background: var(--glow-moonflower);
-    box-shadow: 0 0 8px var(--glow-moonflower);
-    opacity: 0;
   }
 
   .ring-caption {
     margin: 0;
     color: var(--color-text-muted);
     font-size: 0.95rem;
-    font-variant-numeric: tabular-nums;
   }
 
   .bloom-line {
     margin: 0;
-    font-weight: 600;
-    color: var(--glow-moonflower);
+    font-weight: 700;
+    color: var(--glow-crystal);
+    text-shadow: 0 0 6px var(--glow-crystal);
   }
 
-  /* ---- Bloom burst flourish (gated by `bloomed`) ---- */
-  .bloom-burst {
+  /* ── Sparks explosion ─────────────────────────────────────────── */
+  .burst-sparks {
     position: absolute;
     inset: 0;
     display: grid;
@@ -381,15 +350,38 @@
     pointer-events: none;
     z-index: 2;
   }
-  .ray {
+
+  .spark {
     position: absolute;
-    width: 3px;
-    height: 70px;
-    border-radius: 3px;
-    background: linear-gradient(var(--glow-firefly), transparent);
-    transform: rotate(var(--a)) translateY(-40px) scaleY(0);
+    width: 4px;
+    height: 36px;
+    border-radius: 99px;
+    background: linear-gradient(var(--glow-crystal), transparent);
+    transform: rotate(var(--a)) translateY(-50px) scaleY(0);
     transform-origin: center bottom;
     opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .spark {
+      animation: spark-burst 1s ease-out forwards;
+      animation-delay: 1.1s;
+    }
+
+    @keyframes spark-burst {
+      0% {
+        opacity: 0;
+        transform: rotate(var(--a)) translateY(-50px) scaleY(0);
+      }
+      50% {
+        opacity: 0.95;
+        transform: rotate(var(--a)) translateY(-95px) scaleY(1);
+      }
+      100% {
+        opacity: 0;
+        transform: rotate(var(--a)) translateY(-120px) scaleY(0.4);
+      }
+    }
   }
 
   .actions {
@@ -399,85 +391,28 @@
     justify-content: center;
     flex-wrap: wrap;
   }
+
   .actions :global(.btn-primary),
   .actions :global(.btn-ghost) {
-    min-height: var(--touch, 48px);
+    min-height: var(--touch);
     min-width: 160px;
   }
 
   .next-link {
-    position: relative;
-    z-index: 1;
     background: none;
     border: none;
     color: var(--color-text-muted);
     font-size: 0.95rem;
-    font-weight: 500;
+    font-weight: 600;
     text-decoration: underline;
-    text-underline-offset: 3px;
+    text-underline-offset: 4px;
     cursor: pointer;
-    padding: 0.5rem 0.75rem;
-    min-height: var(--touch, 48px);
+    padding: 0.5rem 1rem;
+    min-height: var(--touch);
+    transition: color 0.2s ease;
   }
+  
   .next-link:hover {
-    color: var(--color-primary);
-  }
-
-  /* ===== Motion: only under prefers-reduced-motion: no-preference =====
-     With reduced motion (or skipped), no keyframes run, so the ring renders at
-     its final offset (ringTo), droplets/bloom are not in the DOM, and the bed
-     plant shows its final stage immediately. */
-  @media (prefers-reduced-motion: no-preference) {
-    .ring-fill.animate {
-      animation: ring-fill 1100ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    }
-
-    .droplet {
-      animation: droplet-fall 900ms ease-in forwards;
-      animation-delay: var(--delay, 0s);
-    }
-
-    .ray {
-      animation: ray-burst 900ms ease-out forwards;
-      animation-delay: 120ms;
-    }
-
-    @keyframes ring-fill {
-      from {
-        stroke-dashoffset: var(--off-from);
-      }
-      to {
-        stroke-dashoffset: var(--off-to);
-      }
-    }
-
-    @keyframes droplet-fall {
-      0% {
-        opacity: 0;
-        transform: translate(var(--x), -90px) scale(0.6);
-      }
-      30% {
-        opacity: 1;
-      }
-      100% {
-        opacity: 0;
-        transform: translate(0, 70px) scale(1);
-      }
-    }
-
-    @keyframes ray-burst {
-      0% {
-        opacity: 0;
-        transform: rotate(var(--a)) translateY(-40px) scaleY(0);
-      }
-      45% {
-        opacity: 0.9;
-        transform: rotate(var(--a)) translateY(-72px) scaleY(1);
-      }
-      100% {
-        opacity: 0;
-        transform: rotate(var(--a)) translateY(-96px) scaleY(0.6);
-      }
-    }
+    color: var(--color-coral);
   }
 </style>

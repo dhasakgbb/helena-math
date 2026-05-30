@@ -140,7 +140,7 @@
     box-shadow:
       0 0 0 1px oklch(85% 0.04 280 / 0.08),
       0 8px 32px -8px oklch(10% 0.05 270 / 0.6),
-      0 0 48px -12px var(--glow-moonflower, oklch(92% 0.10 200));
+      0 0 48px -12px var(--glow-crystal);
     /* Animation */
     animation: packet-open 0.25s ease-out both;
   }
@@ -185,7 +185,7 @@
   .close-btn:focus-visible {
     background: oklch(85% 0.02 280 / 0.16);
     color: var(--color-text, oklch(95% 0.02 280));
-    outline: 2px solid var(--glow-moonflower, oklch(92% 0.10 200));
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }
 
@@ -221,7 +221,7 @@
   .cell.header {
     background: oklch(85% 0.02 280 / 0.12);
     font-weight: 700;
-    color: var(--glow-moonflower, oklch(92% 0.10 200));
+    color: var(--glow-crystal);
     font-size: 0.72rem;
     letter-spacing: 0.02em;
   }

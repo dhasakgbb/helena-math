@@ -1,5 +1,5 @@
 <script lang="ts">
-  // GardenerBadge — collapsed profile & settings sheet for the Moonlit Garden hub.
+  // GardenerBadge — collapsed profile & settings sheet for the Quantum Fluid Topology hub.
   import { profileStore } from "../lib/profile.svelte";
 
   // ── Sheet open state ──────────────────────────────────────────────────────
@@ -26,7 +26,6 @@
   // ── Open / close ──────────────────────────────────────────────────────────
   function openSheet() {
     sheetOpen = true;
-    // Let the DOM render before stealing focus
     setTimeout(() => closeEl?.focus(), 30);
   }
 
@@ -115,15 +114,17 @@
   aria-expanded={sheetOpen}
   onclick={openSheet}
 >
-  <!-- Gardener icon: simple leaf/seedling SVG -->
+  <!-- Synapse node network SVG -->
   <svg class="gb-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-    <path
-      d="M12 21V12M12 12C12 12 7 10 5 5c4 0 7 3 7 7zM12 12C12 12 17 10 19 5c-4 0-7 3-7 7z"
-      stroke="currentColor"
-      stroke-width="1.8"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
+    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+    <circle cx="6" cy="6" r="2" stroke="currentColor" stroke-width="1.8" />
+    <circle cx="18" cy="6" r="2" stroke="currentColor" stroke-width="1.8" />
+    <circle cx="6" cy="18" r="2" stroke="currentColor" stroke-width="1.8" />
+    <circle cx="18" cy="18" r="2" stroke="currentColor" stroke-width="1.8" />
+    <line x1="8" y1="8" x2="10.5" y2="10.5" stroke="currentColor" stroke-width="1.5" />
+    <line x1="16" y1="8" x2="13.5" y2="10.5" stroke="currentColor" stroke-width="1.5" />
+    <line x1="8" y1="16" x2="10.5" y2="13.5" stroke="currentColor" stroke-width="1.5" />
+    <line x1="16" y1="16" x2="13.5" y2="13.5" stroke="currentColor" stroke-width="1.5" />
   </svg>
 
   {#if showIndicator}
@@ -150,7 +151,7 @@
   >
     <!-- Header row -->
     <div class="gb-sheet-header">
-      <h2 class="gb-sheet-title">Gardener's Corner</h2>
+      <h2 class="gb-sheet-title">Cell Network Console</h2>
       <button
         bind:this={closeEl}
         class="gb-close"
@@ -219,15 +220,15 @@
           Re-export
         </button>
         <button
-          class="gb-action-btn gb-action-btn--ghost"
+          class="gb-action-btn"
           onclick={() => { importOpen = !importOpen; importError = null; }}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Import
+          Import Profile
         </button>
         <button class="gb-action-btn gb-action-btn--danger" onclick={clearProfile}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-          Forget
+          Forget Profile
         </button>
       {:else}
         <a
@@ -292,23 +293,20 @@
     border: 1.5px solid var(--color-border);
     color: var(--color-text-muted);
     cursor: pointer;
-    /* Compose glow using the scale tokens */
-    --glow-c: var(--glow-moonflower);
     transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
   }
 
   .gb-badge:hover,
   .gb-badge:focus-visible {
-    color: var(--glow-moonflower);
-    border-color: var(--glow-moonflower);
-    box-shadow: var(--glow-sm);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 12px var(--color-primary);
     outline: none;
   }
 
   .gb-badge--alert {
-    border-color: var(--color-primary);
-    --glow-c: var(--color-primary);
-    box-shadow: var(--glow-sm);
+    border-color: var(--color-coral);
+    box-shadow: 0 0 10px var(--color-coral);
   }
 
   .gb-icon {
@@ -326,9 +324,9 @@
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background: var(--color-primary);
-    border: 2px solid var(--color-bg);
-    box-shadow: 0 0 6px var(--color-primary);
+    background: var(--color-coral);
+    border: 2px solid var(--canvas-bg);
+    box-shadow: 0 0 6px var(--color-coral);
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -337,8 +335,8 @@
     }
 
     @keyframes dot-pulse {
-      0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--color-primary); }
-      50% { opacity: 0.55; box-shadow: 0 0 12px var(--color-primary); }
+      0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--color-coral); }
+      50% { opacity: 0.55; box-shadow: 0 0 12px var(--color-coral); }
     }
   }
 
@@ -346,10 +344,10 @@
   .gb-backdrop {
     position: fixed;
     inset: 0;
-    background: var(--gb-backdrop, oklch(10% 0.04 280 / 0.55));
+    background: rgba(0, 0, 0, 0.6);
     z-index: 900;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -371,11 +369,11 @@
     bottom: 0;
     width: min(400px, 94vw);
     z-index: 901;
-    background: var(--gb-sheet-bg, oklch(27% 0.06 275 / 0.92));
-    backdrop-filter: blur(24px) saturate(1.4);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    background: oklch(0.20 0.04 210 / 0.85);
+    backdrop-filter: blur(30px) saturate(1.4);
+    -webkit-backdrop-filter: blur(30px) saturate(1.4);
     border-left: 1px solid var(--color-border);
-    box-shadow: -8px 0 40px var(--gb-sheet-shadow, oklch(10% 0.04 280 / 0.5));
+    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -425,7 +423,7 @@
     flex-shrink: 0;
   }
   .gb-close svg { width: 18px; height: 18px; }
-  .gb-close:hover { color: var(--color-text); background: oklch(100% 0 0 / 0.06); }
+  .gb-close:hover { color: var(--color-text); background: rgba(255, 255, 255, 0.08); }
   .gb-close:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
@@ -456,14 +454,14 @@
     flex-shrink: 0;
   }
   .gb-chip--active {
-    background: oklch(92% 0.10 200 / 0.14);
-    color: var(--glow-moonflower);
-    border: 1px solid oklch(92% 0.10 200 / 0.25);
+    background: oklch(0.70 0.12 190 / 0.14);
+    color: var(--color-primary);
+    border: 1px solid oklch(0.70 0.12 190 / 0.25);
   }
   .gb-chip--none {
-    background: oklch(75% 0.18 350 / 0.12);
-    color: var(--glow-blossom);
-    border: 1px solid oklch(75% 0.18 350 / 0.2);
+    background: oklch(0.70 0.19 32 / 0.12);
+    color: var(--color-coral);
+    border: 1px solid oklch(0.70 0.19 32 / 0.2);
   }
 
   .gb-status-label {
@@ -487,7 +485,7 @@
   /* ── Nudge bar ──────────────────────────────────────────────────────────── */
   .gb-nudge {
     padding: 1rem 1.4rem;
-    background: linear-gradient(135deg, oklch(82% 0.15 75 / 0.08), oklch(75% 0.18 350 / 0.08));
+    background: linear-gradient(135deg, oklch(0.70 0.12 190 / 0.08), oklch(0.70 0.19 32 / 0.08));
     border-bottom: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
@@ -524,7 +522,7 @@
 
   .gb-btn--primary {
     background: var(--color-primary);
-    color: oklch(20% 0.04 280);
+    color: oklch(0.16 0.03 210);
   }
   .gb-btn--quiet {
     background: transparent;
@@ -533,7 +531,7 @@
   }
   .gb-btn--quiet:hover {
     color: var(--color-text);
-    background: oklch(100% 0 0 / 0.05);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   /* ── Action buttons ─────────────────────────────────────────────────────── */
@@ -565,7 +563,7 @@
   .gb-action-link:hover,
   .gb-action-btn:hover {
     color: var(--color-text);
-    background: oklch(100% 0 0 / 0.05);
+    background: rgba(255, 255, 255, 0.05);
   }
   .gb-action-link:focus-visible,
   .gb-action-btn:focus-visible {
@@ -585,13 +583,13 @@
     color: var(--color-primary);
   }
   .gb-action-link--primary:hover {
-    background: oklch(82% 0.15 75 / 0.08);
-    color: var(--color-primary-strong);
+    background: oklch(0.70 0.12 190 / 0.08);
+    color: var(--color-primary);
   }
 
   .gb-action-btn--danger:hover {
     color: var(--color-retry);
-    background: oklch(82% 0.15 75 / 0.06);
+    background: oklch(0.82 0.15 75 / 0.06);
   }
 
   /* ── Import panel ───────────────────────────────────────────────────────── */
@@ -630,7 +628,7 @@
 
   .gb-textarea {
     width: 100%;
-    background: oklch(18% 0.04 275 / 0.7);
+    background: oklch(0.14 0.02 210 / 0.7);
     border: 1px solid var(--color-border);
     border-radius: var(--r-sm);
     color: var(--color-text);
@@ -659,7 +657,6 @@
     flex-wrap: wrap;
   }
 
-  /* Tighten global btn-primary/btn-ghost when inside the sheet */
   .gb-import-submit {
     font-size: 0.9rem;
     padding: 0.55rem 1.2rem;

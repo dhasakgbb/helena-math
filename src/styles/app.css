@@ -12,7 +12,7 @@ html, body {
 }
 
 html {
-  background-color: var(--color-bg);
+  background-color: var(--canvas-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
   font-size: 16px;
@@ -23,52 +23,58 @@ html {
 body {
   position: relative;
   overflow-x: hidden;
-  background: 
-    radial-gradient(circle at 0% 0%, rgba(0, 122, 255, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 100% 0%, rgba(255, 45, 85, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(255, 159, 10, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 0% 100%, rgba(52, 199, 89, 0.08) 0%, transparent 50%),
-    var(--color-bg);
-  background-attachment: fixed;
+  background: var(--canvas-bg);
 }
 
-/* Ambient glow blobs (Apple mesh gradient style) */
-body::before {
-  content: '';
+/* Background drift mesh gradients */
+.mesh-bg {
   position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--canvas-bg);
+  overflow: hidden;
+}
+
+.mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.18;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+:root.theme-day .mesh-blob {
+  opacity: 0.1;
+  mix-blend-mode: multiply;
+}
+
+.mesh-blob-1 {
   top: -10%;
-  left: -10%;
+  left: 10%;
   width: 50vw;
   height: 50vw;
-  background: radial-gradient(circle, rgba(0, 122, 255, 0.1) 0%, transparent 60%);
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: 0;
-  animation: float-blob-1 20s ease-in-out infinite alternate;
+  background: radial-gradient(circle, var(--color-coral) 0%, transparent 70%);
+  animation: drift-1 25s ease-in-out infinite alternate;
 }
 
-body::after {
-  content: '';
-  position: fixed;
-  bottom: -10%;
+.mesh-blob-2 {
+  bottom: -20%;
   right: -10%;
   width: 60vw;
   height: 60vw;
-  background: radial-gradient(circle, rgba(255, 45, 85, 0.08) 0%, transparent 60%);
-  filter: blur(100px);
-  pointer-events: none;
-  z-index: 0;
-  animation: float-blob-2 25s ease-in-out infinite alternate-reverse;
+  background: radial-gradient(circle, var(--glow-fluid-cyan) 0%, transparent 75%);
+  animation: drift-2 30s ease-in-out infinite alternate-reverse;
 }
 
-@keyframes float-blob-1 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(10vw, 10vh) scale(1.1); }
+@keyframes drift-1 {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  100% { transform: translate(15vw, 10vh) rotate(120deg) scale(1.2); }
 }
 
-@keyframes float-blob-2 {
+@keyframes drift-2 {
   0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-10vw, -10vh) scale(1.1); }
+  100% { transform: translate(-10vw, -15vh) scale(0.9); }
 }
 
 /* Scrollbars */
@@ -80,11 +86,11 @@ body::after {
   background: oklch(100% 0 0 / 0.05);
 }
 ::-webkit-scrollbar-thumb {
-  background: oklch(70% 0.03 280 / 0.25);
+  background: oklch(70% 0.03 210 / 0.25);
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(75% 0.04 280 / 0.4);
+  background: oklch(75% 0.04 210 / 0.4);
 }
 
 #app {
@@ -113,18 +119,18 @@ button {
 
 .btn-primary {
   background: var(--color-primary);
-  color: oklch(20% 0.03 280);
+  color: oklch(0.16 0.03 210);
   padding: 0.8rem 1.8rem;
-  border-radius: 999px; /* Pill shape for Apple style */
+  border-radius: 999px;
   font-weight: 600;
   font-family: var(--font-sans);
   font-size: 1.05rem;
-  box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3);
+  box-shadow: 0 4px 14px oklch(0.70 0.12 190 / 0.3);
   border: none;
 }
 .btn-primary:hover {
   transform: scale(1.02);
-  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+  box-shadow: 0 6px 20px oklch(0.70 0.12 190 / 0.4);
 }
 .btn-primary:active {
   transform: scale(0.98);
@@ -151,24 +157,26 @@ button {
   border-color: var(--color-text-muted);
 }
 
-/* Clean Bento Box Panel */
+/* Glassmorphism Styling */
 .glass-panel {
-  width: 100%;
-  background: var(--color-panel);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--color-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--inset-specular);
   border-radius: var(--r-lg);
-  box-shadow: 0 10px 40px -12px oklch(15% 0.05 285 / 0.6);
-  padding: 2rem;
-  position: relative;
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), 
               box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .glass-panel:hover {
-  transform: scale(1.01) translateY(-2px);
-  box-shadow: 0 18px 48px -12px oklch(12% 0.05 285 / 0.7);
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow), 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Metaball Blending Filter Container */
+.metaball-container {
+  filter: url(#metaball-filter);
 }
 
 /* Animation utilities */
