@@ -76,15 +76,14 @@
         <div class="dashboard-capsule">
           <div class="robot-slot">
             <Mascot pose="waving" size={170} />
+            <!-- The speech bubble -->
+            <div class="robot-bubble">
+              <p class="bubble-text">{speech}</p>
+            </div>
           </div>
           <div class="meters-slot">
             <GlowMeters />
           </div>
-        </div>
-
-        <!-- The speech bubble -->
-        <div class="robot-bubble">
-          <p class="bubble-text">{speech}</p>
         </div>
         
         <!-- The today's plant button -->
@@ -133,8 +132,7 @@
   }
 
   .sky-band {
-    position: absolute;
-    top: 0; left: 0; right: 0;
+    position: relative;
     z-index: 20;
     pointer-events: none;
     padding: 2rem;
@@ -156,7 +154,6 @@
     display: flex;
     position: relative;
     width: 100%;
-    margin-top: -2rem; /* Pull garden up to be under skyband nicely */
   }
 
   .dashboard-container {
@@ -175,7 +172,7 @@
     justify-content: center;
     width: 100%;
     gap: 2rem;
-    padding: 1.5rem 2rem 1.5rem 6rem;
+    padding: 1.5rem 2rem 1.5rem 2rem;
     background: linear-gradient(135deg, rgba(200, 240, 255, 0.25) 0%, rgba(150, 200, 255, 0.1) 100%);
     border: 1.5px solid rgba(255, 255, 255, 0.5);
     border-radius: 999px;
@@ -187,17 +184,15 @@
   }
 
   .robot-slot {
-    position: absolute;
-    left: -40px;
-    top: 50%;
-    transform: translateY(-50%);
+    position: relative;
     z-index: 20;
   }
 
   .robot-bubble {
     position: absolute;
-    left: -50px;
-    top: calc(100% - 20px);
+    left: 50%;
+    transform: translateX(-50%);
+    top: calc(100% - 10px);
     width: 240px;
     background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
     backdrop-filter: blur(24px);
@@ -220,7 +215,7 @@
   }
 
   .today-plant-wrap {
-    margin-top: -15px; /* Overlap the capsule */
+    margin-top: -20px; /* Overlap the capsule */
     z-index: 35;
   }
 
@@ -274,10 +269,14 @@
       position: relative;
       left: 0; bottom: 0;
       margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .robot-bubble {
       position: relative;
       left: 0; top: 0;
+      transform: none;
       margin-top: 1rem;
     }
   }

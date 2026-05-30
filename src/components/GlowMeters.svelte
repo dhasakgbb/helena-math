@@ -192,7 +192,7 @@
       {/if}
     </div>
 
-    <div class="streak-sublabel" aria-hidden="true" style="color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">
+    <div class="streak-sublabel" aria-hidden="true">
       {streak} Day Streak
     </div>
   </div>
@@ -226,8 +226,8 @@
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #fff;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    color: oklch(30% 0.05 250);
+    text-shadow: none;
     white-space: nowrap;
   }
 
@@ -277,9 +277,9 @@
     display: flex;
     align-items: baseline;
     gap: 0.05em;
-    color: oklch(98% 0.01 200);
+    color: oklch(30% 0.05 250);
     pointer-events: none;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    text-shadow: none;
   }
 
   .ring-pct {
@@ -287,7 +287,8 @@
     font-size: 1.8rem;
     font-weight: 800;
     line-height: 1;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    color: oklch(20% 0.05 250);
+    text-shadow: none;
     font-variant-numeric: tabular-nums lining-nums;
   }
 
@@ -295,8 +296,7 @@
     font-family: var(--font-display);
     font-size: 0.8rem;
     font-weight: 600;
-    color: #fff;
-    opacity: 0.9;
+    color: oklch(40% 0.05 250);
     margin-left: 2px;
   }
 
@@ -342,7 +342,7 @@
     font-family: var(--font-display);
     font-size: 1rem;
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: oklch(40% 0.05 250);
   }
 
   .bed-dots {
@@ -442,10 +442,9 @@
   .flame-overflow {
     font-family: var(--font-display);
     font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--glow-firefly);
-    --glow-c: var(--glow-firefly);
-    text-shadow: var(--glow-sm);
+    font-weight: 800;
+    color: oklch(30% 0.05 250);
+    text-shadow: none;
     align-self: center;
     margin-bottom: 2px;
   }
@@ -456,10 +455,11 @@
 
   .streak-sublabel {
     font-family: var(--font-display);
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: oklch(40% 0.05 250);
     text-align: center;
+    text-shadow: none;
   }
 
   /* ── Compact variant ────────────────────────────────────────────────── */
