@@ -286,35 +286,44 @@
              on (32,22), fill var(--glow-c) so per-grove glow flows through, and
              obey the upper-left moonlight key (lit elements highest opacity). -->
         {#if species === 'moonflower'}
-          <!-- five rounded teardrop petals — soft open moonflower -->
+          <!-- six broad round-lobed petals around (32,22) — a compact daisy/blossom.
+               Each petal is a fat rounded oval with a blunt tip (wide shoulders,
+               no sharp points), reaching ~r12 so the bloom stays compact and reads
+               as a ROUND FLOWER, never a star. 60° apart; upper-left lit brightest. -->
           <g class="petals">
             <!-- top -->
             <path
-              d="M32 22 C 29.5 14 30.5 7 32 6 C 33.5 7 34.5 14 32 22 Z"
+              d="M32 22 C 26.5 18 26 12 32 10.8 C 38 12 37.5 18 32 22 Z"
               fill="var(--glow-c)"
               opacity="0.92"
             />
             <!-- upper-right -->
             <path
-              d="M32 22 C 38 18 43.5 16 44.5 17.5 C 44.5 19.5 39.5 23 32 22 Z"
+              d="M32 22 C 32.7 15.2 37.7 11.8 41.7 16.4 C 43.7 22.2 38.2 24.8 32 22 Z"
               fill="var(--glow-c)"
               opacity="0.85"
             />
             <!-- lower-right -->
             <path
-              d="M32 22 C 38 25 42 30 41 31.5 C 39 32 33.5 29 32 22 Z"
+              d="M32 22 C 38.2 19.2 43.7 21.8 41.7 27.6 C 37.7 32.2 32.7 28.8 32 22 Z"
               fill="var(--glow-c)"
               opacity="0.8"
             />
-            <!-- lower-left -->
+            <!-- bottom -->
             <path
-              d="M32 22 C 26 25 22 30 23 31.5 C 25 32 30.5 29 32 22 Z"
+              d="M32 22 C 37.5 26 38 32 32 33.2 C 26 32 26.5 26 32 22 Z"
               fill="var(--glow-c)"
               opacity="0.82"
             />
+            <!-- lower-left -->
+            <path
+              d="M32 22 C 31.3 28.8 26.3 32.2 22.3 27.6 C 20.3 21.8 25.8 19.2 32 22 Z"
+              fill="var(--glow-c)"
+              opacity="0.85"
+            />
             <!-- upper-left (most lit by the key light, slightly brighter) -->
             <path
-              d="M32 22 C 26 18 20.5 16 19.5 17.5 C 19.5 19.5 24.5 23 32 22 Z"
+              d="M32 22 C 25.8 24.8 20.3 22.2 22.3 16.4 C 26.3 11.8 31.3 15.2 32 22 Z"
               fill="var(--glow-c)"
               opacity="0.95"
             />

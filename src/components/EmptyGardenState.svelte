@@ -41,7 +41,7 @@
     <div class="alt-actions">
       <a class="alt-link" href={QUIZ_URL} target="_blank" rel="noopener">Take the quiz</a>
       <span class="dot">·</span>
-      <button class="alt-link" onclick={() => (showImport = !showImport)}>Import a profile</button>
+      <button class="alt-link" aria-expanded={showImport} onclick={() => (showImport = !showImport)}>Import a profile</button>
     </div>
 
     {#if showImport}
