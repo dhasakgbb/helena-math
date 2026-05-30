@@ -58,8 +58,8 @@
         hint: 'Split the bigger number into tens and ones, multiply each part, then add.',
         steps: [
           `Split: ${b} = ${q.bTens} + ${q.bOnes}`,
-          `Left box: ${a} × ${q.bTens} = ${q.q1}`,
-          `Right box: ${a} × ${q.bOnes} = ${q.q2}`,
+          `Left box: ${a} × ${q.bTens} = ${a * q.bTens}`,
+          `Right box: ${a} × ${q.bOnes} = ${a * q.bOnes}`,
           `Add the boxes: ${a} × ${b} = ${q.answer}`,
         ],
       };
