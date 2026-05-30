@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { profileStore } from './profile.svelte';
+// Note: recordLaunch / telemetry now delegate 100% to profile-schema canonical impls
+// (wrappers removed in migration). Tests verify behavior parity.
 
 // Mock localStorage
 const localStorageMock = (() => {

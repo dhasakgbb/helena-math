@@ -66,19 +66,46 @@
   .sub { color: var(--color-text-muted); line-height: 1.5; max-width: 26rem; }
   .btn-seed {
     --glow-c: var(--glow-firefly);
-    min-height: var(--touch); padding: 0 1.6rem; border-radius: var(--r-md);
-    background: var(--color-primary); color: var(--btn-text, oklch(20% 0.03 280)); font-weight: 700; font-family: var(--font-display);
-    box-shadow: var(--glow-md); border: none; cursor: pointer; font-size: 1.05rem;
+    /* DR-05: Adopt astrid-tokens spacing + radii + motion for profile import buttons.
+       Twilight garden colors/glows/illustrations fully preserved; only structural scales + focus ring shared. */
+    min-height: var(--touch);
+    padding: var(--astrid-spacing-3) var(--astrid-spacing-6);
+    border-radius: var(--astrid-radius-md);
+    background: var(--color-primary);
+    color: var(--btn-text, oklch(20% 0.03 280));
+    font-weight: 700;
+    font-family: var(--font-display);
+    box-shadow: var(--glow-md);
+    border: none;
+    cursor: pointer;
+    font-size: 1.05rem;
+    transition: transform var(--astrid-motion-duration-fast) var(--astrid-motion-easing-ease-out),
+                box-shadow var(--astrid-motion-duration-base) var(--astrid-motion-easing-ease-out);
   }
-  .btn-seed:focus-visible { outline: 3px solid var(--color-text); outline-offset: 3px; }
+  .btn-seed:focus-visible {
+    /* Platform-coherent focus using astrid focus ring (cyan thread) + garden personality */
+    outline: 3px solid var(--astrid-color-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--astrid-radius-sm);
+  }
+  .btn-seed:active:not(:disabled) {
+    transform: translateY(1px);
+  }
   .alt-actions { display: flex; align-items: center; gap: 0.6rem; color: var(--color-text-muted); }
   .alt-link { background: none; border: none; color: var(--color-primary); font: inherit; cursor: pointer; text-decoration: underline; padding: 0.4rem; }
-  .import-sheet { width: 100%; display: flex; flex-direction: column; gap: 0.6rem; }
+  .import-sheet { width: 100%; display: flex; flex-direction: column; gap: var(--astrid-spacing-3); }
   .import-sheet textarea {
-    width: 100%; background: var(--color-panel); border: 1px solid var(--color-border); border-radius: var(--r-sm);
-    color: var(--color-text); padding: 0.6rem; font-family: monospace; resize: vertical;
+    /* DR-05: astrid spacing/radius on profile import UI (cross-room banner pattern) */
+    width: 100%; background: var(--color-panel); border: 1px solid var(--color-border);
+    border-radius: var(--astrid-radius-lg);
+    color: var(--color-text); padding: var(--astrid-spacing-3); font-family: monospace; resize: vertical;
+    transition: border-color var(--astrid-motion-duration-fast) var(--astrid-motion-easing-ease-out);
   }
-  .import-sheet textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: var(--glow-sm); }
+  .import-sheet textarea:focus-visible {
+    outline: none;
+    border-color: var(--astrid-color-cyan);
+    box-shadow: var(--astrid-shadow-glow-cyan-sm);
+  }
   .import-error { color: var(--color-retry); font-size: 0.85rem; }
   .btn-import { align-self: center; }
   @media (prefers-reduced-motion: no-preference) {

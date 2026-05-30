@@ -5,6 +5,11 @@ import {
   isProfileStale,
   recommendedMathMode,
   decodeProfileFragment,
+  emptyModuleTelemetry,
+  getModuleTelemetry,
+  setModuleTelemetry,
+  recordModuleLaunch,
+  nextSessionIndex,
   type ExportedProfile
 } from 'profile-schema';
 import { pickSmartMode } from './recommender';
@@ -24,31 +29,10 @@ export interface MathTelemetry {
   last_override_streak: number;
 }
 
-function emptyTelemetry(): MathTelemetry {
-  return { followed: {}, overrode: {}, last_launches: [], last_override_streak: 0 };
-}
-
-function getTelemetry(p: ExportedProfile | null): MathTelemetry {
-  const raw = p?.module_overrides?.math;
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return emptyTelemetry();
-  const obj = raw as Record<string, any>;
-  return {
-    followed: (obj.followed && typeof obj.followed === 'object') ? obj.followed : {},
-    overrode: (obj.overrode && typeof obj.overrode === 'object') ? obj.overrode : {},
-    last_launches: Array.isArray(obj.last_launches) ? obj.last_launches.filter((s: any) => typeof s === 'string') : [],
-    last_override_streak: typeof obj.last_override_streak === 'number' && obj.last_override_streak >= 0 ? obj.last_override_streak : 0
-  };
-}
-
-function setTelemetry(p: ExportedProfile, t: MathTelemetry): ExportedProfile {
-  return {
-    ...p,
-    module_overrides: {
-      ...(p.module_overrides || {}),
-      math: t as unknown as Record<string, unknown>
-    }
-  };
-}
+// All write-side telemetry/record logic (getModuleTelemetry, setModuleTelemetry,
+// recordModuleLaunch, etc.) is sourced exclusively from profile-schema (the
+// workspace-linked single source of truth). No duplicated algorithms remain
+// in this consumer. Local casts only for MathTelemetry view type.
 
 class ProfileStore {
   // Svelte 5 Runes for reactivity
@@ -114,7 +98,8 @@ class ProfileStore {
   }
 
   get telemetry(): MathTelemetry {
-    return getTelemetry(this.profile);
+    if (!this.profile) return emptyModuleTelemetry() as MathTelemetry;
+    return getModuleTelemetry(this.profile, 'math') as MathTelemetry;
   }
 
   get overrideNudgeVisible(): boolean {
@@ -175,7 +160,7 @@ class ProfileStore {
   }
 
   advanceSession() {
-    this.sessionIndex += 1;
+    this.sessionIndex = nextSessionIndex(this.sessionIndex);
     this.persistSessionIndex(this.sessionIndex);
   }
 
@@ -191,7 +176,9 @@ class ProfileStore {
       plan: 'strengths',
       source: 'intake_quiz',
       child_label: 'Helena',
-      module_overrides: {}
+      module_overrides: {},
+      custom_content: { spelling: { word_lists: [] } },
+      custom_content_version: 1
     };
     this.profile = defaultProfile;
     this.persist(this.profile);
@@ -359,24 +346,17 @@ class ProfileStore {
 
   recordLaunch(launched: MathMode, recommended: string | null) {
     if (!this.profile) return;
-    const next = getTelemetry(this.profile);
-    const wasFollow = recommended !== null && launched === recommended;
-    const bucket = wasFollow ? next.followed : next.overrode;
-    
-    bucket[launched] = (bucket[launched] || 0) + 1;
-    next.last_launches = [launched, ...next.last_launches].slice(0, LAUNCH_HISTORY_MAX);
-    if (recommended !== null) {
-      next.last_override_streak = wasFollow ? 0 : next.last_override_streak + 1;
-    }
-    this.profile = setTelemetry(this.profile, next);
+    this.profile = recordModuleLaunch(this.profile, 'math', launched, recommended, {
+      launchHistoryMax: LAUNCH_HISTORY_MAX
+    }) as ExportedProfile;
     this.persist(this.profile);
   }
 
   clearOverrideStreak() {
     if (!this.profile) return;
-    const next = getTelemetry(this.profile);
+    const next = getModuleTelemetry(this.profile, 'math') as MathTelemetry;
     next.last_override_streak = 0;
-    this.profile = setTelemetry(this.profile, next);
+    this.profile = setModuleTelemetry(this.profile, 'math', next);
     this.persist(this.profile);
   }
 

@@ -57,9 +57,10 @@
    * the gate value recorded by recordGameResult / recordTimesTableFact.
    */
   const BLOOM_GATE = 0.85;
-  const bloomedCount = $derived(
+  const numBloomed = $derived(
     MATH_MODES.filter((id) => (masteryMap[id] ?? 0) >= BLOOM_GATE).length
   );
+  const bloomedCount = $derived(numBloomed);
 
   /**
    * Meter 3 — Watering Streak
@@ -116,8 +117,16 @@
         />
       </svg>
 
-      <!-- Percentage in the centre -->
+      <!-- Sun icon in the centre -->
       <div class="ring-center" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="48" height="48" fill="#FFD700" style="filter: drop-shadow(0 0 10px #FFD700);">
+          <path d="M12 4V2M12 22V20M4 12H2M22 12H20M5.636 5.636L4.222 4.222M19.778 19.778L18.364 18.364M5.636 18.364L4.222 19.778M19.778 4.222L18.364 5.636M12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12C17 14.7614 14.7614 17 12 17Z" stroke="#FFD700" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="5" fill="#FFB300" />
+        </svg>
+      </div>
+
+      <!-- Percentage on the right -->
+      <div class="ring-pct-right" aria-hidden="true">
         <span class="ring-pct">{gardenGlowPct}</span>
         <span class="ring-unit">%</span>
       </div>
@@ -132,20 +141,24 @@
   >
     <div class="chip-label">Bloomed Beds</div>
 
-    <div class="bloomed-value" aria-hidden="true">
-      <span class="bloomed-n">{bloomedCount}</span>
-      <span class="bloomed-denom">/ 10</span>
-    </div>
-
-    <!-- Mini bed icons — filled circles for bloomed, dim for not yet -->
+    <!-- Mini bed icons — filled flowers for bloomed, dim for not yet -->
     <div class="bed-dots" aria-hidden="true">
       {#each MATH_MODES as id (id)}
         <span
-          class="bed-dot"
-          class:bed-dot--bloomed={(masteryMap[id] ?? 0) >= BLOOM_GATE}
+          class="bed-flower"
+          class:bed-flower--bloomed={(masteryMap[id] ?? 0) >= BLOOM_GATE}
           title={id}
-        ></span>
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M12 2C9 2 9 6 12 8C15 6 15 2 12 2ZM12 22C9 22 9 18 12 16C15 18 15 22 12 22ZM2 12C2 9 6 9 8 12C6 15 2 15 2 12ZM22 12C22 9 18 9 16 12C18 15 22 15 22 12ZM5 5C3 7 6 10 9 9C6 7 4 3 5 5ZM19 19C21 17 18 14 15 15C18 17 20 21 19 19ZM19 5C21 7 18 10 15 9C18 7 20 3 19 5ZM5 19C3 17 6 14 9 15C6 17 4 21 5 19ZM12 14C10.9 14 10 13.1 10 12C10 10.9 10.9 10 12 10C13.1 10 14 10.9 14 12C14 13.1 13.1 14 12 14Z" />
+          </svg>
+        </span>
       {/each}
+    </div>
+
+    <div class="bloomed-value" aria-hidden="true">
+      <span class="bloomed-n">{bloomedCount}</span>
+      <span class="bloomed-denom">/ 10</span>
     </div>
   </div>
 
@@ -156,6 +169,14 @@
     aria-label="Watering Streak: {streak} in a row"
   >
     <div class="chip-label">Watering Streak</div>
+
+    <div class="water-drops" aria-hidden="true" style="display:flex; align-items:center; gap:4px; margin-bottom: -4px; color: #00DDFF; filter: drop-shadow(0 0 5px #00DDFF);">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 21C8.686 21 6 18.314 6 15C6 11.2 12 2 12 2C12 2 18 11.2 18 15C18 18.314 15.314 21 12 21Z"/></svg>
+      <span style="font-size:12px; font-weight:bold; color: #fff;">+</span>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21C8.686 21 6 18.314 6 15C6 11.2 12 2 12 2C12 2 18 11.2 18 15C18 18.314 15.314 21 12 21Z"/></svg>
+      <span style="font-size:12px; font-weight:bold; color: #fff;">+</span>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 21C8.686 21 6 18.314 6 15C6 11.2 12 2 12 2C12 2 18 11.2 18 15C18 18.314 15.314 21 12 21Z"/></svg>
+    </div>
 
     <div class="flames-row" aria-hidden="true">
       {#each { length: FLAME_CAP } as _, i}
@@ -169,24 +190,10 @@
       {#if streakOverflow}
         <span class="flame-overflow">+</span>
       {/if}
-
-      <!-- Dewdrop / freeze affordance (purely visual) -->
-      <span class="dewdrop" aria-hidden="true" title="Streak resets on a score below 70%">
-        <svg viewBox="0 0 16 20" width="14" height="17" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M8 1 C8 1 2 8 2 13 a6 6 0 0 0 12 0 C14 8 8 1 8 1 Z"
-            fill="currentColor"
-            opacity="0.25"
-            stroke="currentColor"
-            stroke-width="1.2"
-            stroke-linejoin="round"
-          />
-        </svg>
-      </span>
     </div>
 
-    <div class="streak-sublabel" aria-hidden="true">
-      {streak} in a row
+    <div class="streak-sublabel" aria-hidden="true" style="color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">
+      {streak} Day Streak
     </div>
   </div>
 </div>
@@ -207,12 +214,7 @@
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    padding: 1rem 1.25rem 1.1rem;
-    border-radius: var(--r-lg);
-    background: var(--color-panel);
-    border: 1px solid var(--color-border);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    padding: 0.5rem 1rem;
     min-width: 130px;
     flex: 1 1 130px;
     max-width: 200px;
@@ -220,11 +222,12 @@
 
   .chip-label {
     font-family: var(--font-display);
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--color-text-muted);
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     white-space: nowrap;
   }
 
@@ -266,24 +269,35 @@
     pointer-events: none;
   }
 
+  .ring-pct-right {
+    position: absolute;
+    top: 50%;
+    right: -55px; /* Push to the right of the ring */
+    transform: translateY(-50%);
+    display: flex;
+    align-items: baseline;
+    gap: 0.05em;
+    color: oklch(98% 0.01 200);
+    pointer-events: none;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+
   .ring-pct {
     font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 700;
+    font-size: 1.8rem;
+    font-weight: 800;
     line-height: 1;
-    color: var(--glow-moonflower);
-    --glow-c: var(--glow-moonflower);
-    text-shadow: var(--glow-sm);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
     font-variant-numeric: tabular-nums lining-nums;
   }
 
   .ring-unit {
     font-family: var(--font-display);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: var(--color-text-muted);
-    align-self: flex-end;
-    margin-bottom: 0.2em;
+    color: #fff;
+    opacity: 0.9;
+    margin-left: 2px;
   }
 
   /* Animate ring fill on load (respects reduced-motion via media) */
@@ -339,19 +353,18 @@
     max-width: 140px;
   }
 
-  .bed-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--color-border);
-    border: 1px solid var(--color-border);
-    transition: background 0.3s, box-shadow 0.3s;
+  .bed-flower {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0,0,0,0.4); /* Dim out unbloomed */
+    transition: color 0.3s, filter 0.3s;
+    filter: drop-shadow(0 -1px 1px rgba(255,255,255,0.1));
   }
 
-  .bed-dot--bloomed {
-    background: var(--glow-blossom);
-    border-color: var(--glow-blossom);
-    box-shadow: 0 0 5px var(--glow-blossom), 0 0 12px color-mix(in oklch, var(--glow-blossom), transparent 50%);
+  .bed-flower--bloomed {
+    color: var(--glow-blossom);
+    filter: drop-shadow(0 0 4px var(--glow-blossom));
   }
 
   /* ── Watering Streak ────────────────────────────────────────────────── */

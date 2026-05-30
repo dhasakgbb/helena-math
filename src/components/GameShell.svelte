@@ -151,7 +151,8 @@
     padding: 0.5rem 0.75rem;
     background: color-mix(in oklch, var(--color-panel, oklch(18% 0.04 280)) 90%, transparent);
     border: 1px solid var(--color-border, oklch(35% 0.06 280));
-    border-radius: var(--r-lg, 18px);
+    /* DR-05: astrid radius on game shell chrome for cross-room card/banner cohesion */
+    border-radius: var(--astrid-radius-lg);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   }
 
@@ -198,7 +199,9 @@
     border: 1.5px solid oklch(45% 0.14 165);
     color: oklch(88% 0.12 165);
     cursor: pointer;
-    transition: background 0.18s, box-shadow 0.18s;
+    /* DR-05: astrid motion for cross-room shell consistency (garden personality untouched) */
+    transition: background var(--astrid-motion-duration-fast) var(--astrid-motion-easing-ease-out),
+                box-shadow var(--astrid-motion-duration-base) var(--astrid-motion-easing-ease-out);
     flex-shrink: 0;
   }
   .back-leaf:hover,
@@ -210,8 +213,10 @@
     outline: none;
   }
   .back-leaf:focus-visible {
-    outline: 2px solid oklch(70% 0.18 165);
-    outline-offset: 2px;
+    /* Use platform astrid focus ring for cohesion on shell chrome */
+    outline: 3px solid var(--astrid-color-focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--astrid-radius-sm);
   }
 
   /* title + plant thumb */

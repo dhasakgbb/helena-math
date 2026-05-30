@@ -7,6 +7,7 @@
     glow?: string; // CSS color; default firefly gold
     size?: number; // px height of the pod
     sparkles?: number; // fluent_facts count -> firefly twinkles above bloom
+    mode?: string; // Math mode id for custom floating symbols
   }
 
   let {
@@ -15,16 +16,17 @@
     glow = 'var(--glow-firefly)',
     size = 96,
     sparkles = 0,
+    mode = '',
   }: Props = $props();
 
   // Firefly twinkles above the bloom, capped so a high fluency count never
   // floods the canvas. Pre-positioned along a gentle arc over the flower head.
   const SPARK_SLOTS: { x: number; y: number; r: number; d: number }[] = [
-    { x: 24, y: 16, r: 0.9, d: 0 },
-    { x: 40, y: 13, r: 1.1, d: 0.6 },
-    { x: 32, y: 9, r: 0.8, d: 1.2 },
-    { x: 17, y: 22, r: 0.7, d: 1.8 },
-    { x: 47, y: 21, r: 0.9, d: 2.4 },
+    { x: 22, y: 5, r: 0.9, d: 0 },
+    { x: 42, y: 3, r: 1.1, d: 0.6 },
+    { x: 32, y: -2, r: 0.8, d: 1.2 },
+    { x: 15, y: 12, r: 0.7, d: 1.8 },
+    { x: 49, y: 11, r: 0.9, d: 2.4 },
   ];
   const sparkleList = $derived(SPARK_SLOTS.slice(0, Math.max(0, Math.min(5, sparkles))));
 </script>
@@ -37,6 +39,7 @@
   data-species={species}
   data-stage={stage}
   aria-hidden="true"
+  overflow="visible"
 >
   <defs>
     <!-- Wide soft halo behind the bloom: bright core path is drawn sharp on top -->
@@ -74,6 +77,10 @@
   <g class="pot">
     <!-- soft contact shadow on the ground -->
     <ellipse cx="32" cy="92" rx="20" ry="3.4" fill="oklch(16% 0.03 280)" opacity="0.55" />
+    <!-- Active plant ring -->
+    {#if mode === 'number-sort'}
+      <ellipse cx="32" cy="92" rx="28" ry="8" fill="none" stroke="#00DDFF" stroke-width="1.5" style="filter: drop-shadow(0 0 4px #00DDFF);" opacity="0.9" />
+    {/if}
     <!-- pot body -->
     <path
       d="M16 70
@@ -628,8 +635,36 @@
       </g>
     </g>
 
-    <!-- firefly twinkles drifting above the bloom, gated to stage 4 -->
-    {#if sparkleList.length > 0}
+    <!-- mode-specific floating symbols drifting above the bloom -->
+    {#if mode}
+      <g class="sparkles" aria-hidden="true" style="filter: drop-shadow(0 0 5px currentColor);">
+        {#each SPARK_SLOTS.slice(0, 3) as s, i (i)}
+          {#if mode === 'times-tables'}
+            <text x={s.x} y={s.y} fill="#FF8800" font-size="16" font-family="monospace" class="spark" style="--d:{s.d}s">x</text>
+          {:else if mode === 'speed-add'}
+            <text x={s.x} y={s.y} fill="#FFD700" font-size="16" class="spark" style="--d:{s.d}s">⚡</text>
+          {:else if mode === 'number-sort'}
+            <text x={s.x} y={s.y} fill="#00DDFF" font-size="16" font-family="monospace" font-weight="bold" class="spark" style="--d:{s.d}s">{i === 0 ? '1' : i === 1 ? '7' : '10'}</text>
+          {:else if mode === 'long-division'}
+            <text x={s.x} y={s.y} fill="#FF55FF" font-size="16" font-family="monospace" font-weight="bold" class="spark" style="--d:{s.d}s">{i === 0 ? '÷' : i === 1 ? '5' : '2'}</text>
+          {:else if mode === 'geometry-angles'}
+            <text x={s.x} y={s.y} fill="#00FF88" font-size="16" class="spark" style="--d:{s.d}s">∠</text>
+          {:else if mode === 'fractions-visual'}
+            <text x={s.x} y={s.y} fill="#FF00AA" font-size="14" font-family="monospace" class="spark" style="--d:{s.d}s">½</text>
+          {:else if mode === 'multiplication-grid'}
+            <rect x={s.x-2} y={s.y-2} width="6" height="6" fill="#00AAFF" class="spark" style="--d:{s.d}s" />
+          {:else if mode === 'decimals-grid'}
+            <text x={s.x} y={s.y} fill="#00FFAA" font-size="12" font-family="monospace" class="spark" style="--d:{s.d}s">.5</text>
+          {:else if mode === 'place-value'}
+            <polygon points="{s.x},{s.y-5} {s.x+4},{s.y} {s.x},{s.y+5} {s.x-4},{s.y}" fill="#AA00FF" class="spark" style="--d:{s.d}s" />
+          {:else if mode === 'pemdas-tree'}
+            <text x={s.x} y={s.y} fill="#FF8855" font-size="16" class="spark" style="--d:{s.d}s">⚙</text>
+          {:else}
+            <circle class="spark" cx={s.x} cy={s.y} r={s.r * 1.5} fill="var(--glow-firefly)" style="--d:{s.d}s" />
+          {/if}
+        {/each}
+      </g>
+    {:else if sparkleList.length > 0}
       <g class="sparkles" aria-hidden="true">
         {#each sparkleList as s, i (i)}
           <circle

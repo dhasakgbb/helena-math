@@ -469,7 +469,7 @@
   {#if isNarrow}
     <div class="column">
       {#each narrowGroups as group (group.grove)}
-        <h2 class="grove-sign narrow" style:--glow-c={GROVE_GLOW[group.grove]}>
+        <h2 class="portal-title narrow" style:--glow-c={GROVE_GLOW[group.grove]}>
           {GROVE_SIGN[group.grove]}
         </h2>
         <div class="column-row">
@@ -492,14 +492,44 @@
   {:else if layout}
     <div class="overlay">
       {#each GROVES as g (g)}
-        <h2
-          class="grove-sign"
-          style:--glow-c={GROVE_GLOW[g]}
+        <div 
+          class="portal-wrap"
           style:left={`${signPos[g].x}%`}
           style:top={`${signPos[g].y}%`}
+          style:--glow-c={GROVE_GLOW[g]}
         >
-          {GROVE_SIGN[g]}
-        </h2>
+          <div class="portal-graphic">
+            {#if g === 1}
+              <div class="portal portal-fire">
+                <div class="p-ring"></div>
+                <div class="p-core"></div>
+              </div>
+            {:else if g === 2}
+              <div class="portal portal-space">
+                <div class="p-ring"></div>
+                <div class="p-core"></div>
+                <svg class="p-shapes" viewBox="0 0 200 200">
+                  <polygon points="30,40 50,80 10,80" fill="#00FFFF" opacity="0.9" filter="drop-shadow(0 0 5px #00FFFF)"/>
+                  <polygon points="170,30 190,50 150,50" fill="#0088FF" opacity="0.9" filter="drop-shadow(0 0 5px #0088FF)"/>
+                  <polygon points="20,150 40,130 0,110" fill="#00FFFF" opacity="0.9" filter="drop-shadow(0 0 5px #00FFFF)"/>
+                  <polygon points="160,160 180,180 140,180" fill="#0088FF" opacity="0.9" filter="drop-shadow(0 0 5px #0088FF)"/>
+                </svg>
+              </div>
+            {:else}
+              <div class="portal portal-math">
+                <div class="p-frame">
+                  <div class="p-frame-inner"></div>
+                </div>
+                <div class="p-core"></div>
+                <div class="p-math-text" style="top: 20px; left: -40px;">(a+b)²</div>
+                <div class="p-math-text" style="top: 80px; right: -50px;">E=mc²</div>
+                <div class="p-math-text" style="bottom: 40px; left: -30px;">π≈3.14</div>
+                <div class="p-math-text" style="bottom: 10px; right: -30px;">y=mx+b</div>
+              </div>
+            {/if}
+          </div>
+          <h2 class="portal-title">{GROVE_SIGN[g]}</h2>
+        </div>
       {/each}
 
       {#each layout as pod (pod.id)}
@@ -514,7 +544,13 @@
           onkeydown={(e) => onKey(e, pod.id)}
         >
           {@render tuft(GROVE_GLOW[pod.grove], POD_HAS_SHROOM[pod.id])}
-          <Plant stage={st} glow={GROVE_GLOW[pod.grove]} size={104} species={speciesFor(pod.id)} />
+          <Plant
+            stage={st}
+            glow={GROVE_GLOW[pod.grove]}
+            size={104}
+            species={speciesFor(pod.id)}
+            mode={pod.id}
+          />
           <span class="pod-name">{PRETTY[pod.id]}</span>
         </button>
       {/each}
@@ -526,11 +562,10 @@
   .garden {
     position: relative; /* required for .grain / .vignette and the overlay */
     width: 100%;
-    min-height: 460px;
-    height: min(78vh, 760px);
+    height: 100%;
+    min-height: 800px;
     overflow: hidden;
-    border-radius: 20px;
-    background: var(--sky-top);
+    background: transparent;
     touch-action: pan-y;
   }
 
@@ -685,23 +720,7 @@
       0 0 28px 8px var(--glow-c);
   }
 
-  .grove-sign {
-    pointer-events: none;
-    position: absolute;
-    transform: translate(-50%, -50%);
-    margin: 0;
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-    color: oklch(97% 0.02 250);
-    background: oklch(22% 0.05 285 / 0.55);
-    border: 1px solid var(--glow-c);
-    box-shadow: 0 0 14px -2px var(--glow-c);
-    backdrop-filter: blur(3px);
-  }
+  /* Removed old grove-sign styles, replaced with portals below */
 
   /* ---- Narrow column layout ---- */
   .column {
@@ -742,5 +761,156 @@
     .pod:hover {
       transition: none;
     }
+    .p-ring, .p-core {
+      animation: none !important;
+    }
+  }
+
+  /* ---- Portals ---- */
+  .portal-wrap {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+    z-index: 1; /* Portals sit behind pods */
+  }
+
+  .portal-graphic {
+    position: relative;
+    width: 140px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .portal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.65); /* Shrink everything inside proportionally */
+  }
+
+  /* Portal 1: Fire */
+  .portal-fire .p-core {
+    width: 140px; height: 180px;
+    background: #000;
+    border-radius: 50%;
+    box-shadow: 0 0 40px #FF5500, inset 0 0 30px #FF9900;
+    border: 4px solid #FFDD55;
+    filter: drop-shadow(0 0 30px #FF3300);
+  }
+  .portal-fire .p-ring {
+    position: absolute;
+    width: 170px; height: 210px;
+    border-radius: 50%;
+    border: 12px solid transparent;
+    border-top-color: #FF7700;
+    border-bottom-color: #FFCC00;
+    animation: spin 3s linear infinite;
+    filter: blur(6px);
+  }
+
+  /* Portal 2: Space */
+  .portal-space .p-core {
+    width: 150px; height: 170px;
+    background: #001133;
+    border-radius: 40% 60% 50% 50%;
+    box-shadow: 0 0 50px #00AAFF, inset 0 0 40px #00FFFF;
+    border: 5px solid #CCFFFF;
+    animation: morph 4s ease-in-out infinite alternate;
+  }
+  .portal-space .p-ring {
+    position: absolute;
+    width: 180px; height: 200px;
+    border-radius: 50%;
+    border: 8px solid #00DDFF;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    animation: spin 2.5s linear infinite reverse;
+    filter: drop-shadow(0 0 15px #00AAFF);
+  }
+  .portal-space .p-shapes {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Portal 3: Math */
+  .portal-math .p-core {
+    position: absolute;
+    width: 140px; height: 170px;
+    background: #110022;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    box-shadow: inset 0 0 50px #AA00FF;
+    z-index: 2;
+  }
+  .portal-math .p-frame {
+    position: absolute;
+    width: 160px; height: 190px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: conic-gradient(from 0deg, #AA00FF, #FF00FF, #AA00FF, #FF00FF, #AA00FF);
+    padding: 8px;
+    filter: drop-shadow(0 0 20px #DD00FF);
+    z-index: 1;
+    animation: spin 6s linear infinite;
+  }
+  .portal-math .p-frame-inner {
+    width: 100%; height: 100%;
+    background: #000;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+  .portal-math .p-math-text {
+    position: absolute;
+    color: #FF88FF;
+    font-family: monospace;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 0 0 8px #FF00FF;
+    z-index: 3;
+    animation: float 4s ease-in-out infinite alternate;
+  }
+
+  .portal-title {
+    font-family: "Georgia", "Times New Roman", serif;
+    font-style: italic;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #FFEFD5;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.9), 0 0 15px var(--glow-c);
+    letter-spacing: 0.05em;
+    white-space: normal; /* allow wrap */
+    text-align: center;
+    max-width: 180px;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .portal-title.narrow {
+    position: static;
+    transform: none;
+    align-self: center;
+    margin-top: 8px;
+    font-size: 1.4rem;
+  }
+
+  @keyframes spin {
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes morph {
+    0% { border-radius: 40% 60% 50% 50%; box-shadow: 0 0 50px #00AAFF, inset 0 0 40px #00FFFF; }
+    100% { border-radius: 60% 40% 50% 50%; box-shadow: 0 0 70px #00AAFF, inset 0 0 60px #00FFFF; }
+  }
+  @keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
   }
 </style>

@@ -1,5 +1,12 @@
 @import './theme.css';
 
+/* Astrid platform unifying tokens (DR-05 adoption starter).
+   Import brings --astrid-* scales, cyan/glow accents, motion, reduced-motion safety.
+   Math (twilight garden) keeps its own --color-*, --glow-* palette and aesthetic.
+   Use astrid-* selectively for cross-room "Astrid presence" patterns (focus, banners, cards)
+   or map them to local vars. See astrid-tokens/README.md "Per-Room Theming Rules". */
+@import 'astrid-tokens/css';
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
