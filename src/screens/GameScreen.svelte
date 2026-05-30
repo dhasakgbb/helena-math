@@ -227,6 +227,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'multiplication-grid'}
     <MultiplicationGrid
