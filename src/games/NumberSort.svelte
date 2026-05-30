@@ -17,32 +17,22 @@
 
   interface Question {
     n: number;
-    bin: 'even' | 'odd' | 'prime';
+    bin: 'even' | 'odd';
   }
   let questions = $state<Question[]>([]);
-  let placedNumbers = $state<Record<number, 'even' | 'odd' | 'prime' | null>>({});
+  let placedNumbers = $state<Record<number, 'even' | 'odd' | null>>({});
 
   let currentQuestionIndex = $state(0);
   let animatingOut = $state(false);
 
   // Touch/Keyboard Selection state
   let selectedNumber = $state<number | null>(null);
-  let hoveredBin = $state<'even' | 'odd' | 'prime' | null>(null);
-  let particleBin = $state<'even' | 'odd' | 'prime' | null>(null);
+  let hoveredBin = $state<'even' | 'odd' | null>(null);
+  let particleBin = $state<'even' | 'odd' | null>(null);
 
   onMount(() => {
     generateQuestions();
   });
-
-  function checkPrime(n: number): boolean {
-    if (n < 2) return false;
-    if (n < 4) return true;
-    if (n % 2 === 0) return false;
-    for (let i = 3; i * i <= n; i += 2) {
-      if (n % i === 0) return false;
-    }
-    return true;
-  }
 
   function generateQuestions() {
     const list: Question[] = [];
@@ -52,8 +42,7 @@
       const n = 2 + Math.floor(Math.random() * (maxVal - 1));
       if (seen.has(n)) continue;
       seen.add(n);
-      const isPrime = checkPrime(n);
-      const bin = isPrime ? 'prime' : (n % 2 === 0 ? 'even' : 'odd');
+      const bin = n % 2 === 0 ? 'even' : 'odd';
       list.push({ n, bin });
     }
     questions = list;
@@ -62,14 +51,14 @@
     });
   }
 
-  function triggerParticles(bin: 'even' | 'odd' | 'prime') {
+  function triggerParticles(bin: 'even' | 'odd') {
     particleBin = bin;
     setTimeout(() => {
       particleBin = null;
     }, 600);
   }
 
-  function handleSort(n: number, targetBin: 'even' | 'odd' | 'prime') {
+  function handleSort(n: number, targetBin: 'even' | 'odd') {
     if (animatingOut) return;
     
     const q = questions[currentQuestionIndex];
@@ -115,12 +104,12 @@
     selectedNumber = n;
   }
 
-  function handleDragOver(e: DragEvent, bin: 'even' | 'odd' | 'prime') {
+  function handleDragOver(e: DragEvent, bin: 'even' | 'odd') {
     e.preventDefault();
     hoveredBin = bin;
   }
 
-  function handleDrop(e: DragEvent, bin: 'even' | 'odd' | 'prime') {
+  function handleDrop(e: DragEvent, bin: 'even' | 'odd') {
     e.preventDefault();
     hoveredBin = null;
     const data = e.dataTransfer?.getData('text/plain');
@@ -138,7 +127,7 @@
     }
   }
 
-  function handleBinClick(bin: 'even' | 'odd' | 'prime') {
+  function handleBinClick(bin: 'even' | 'odd') {
     if (selectedNumber !== null && placedNumbers[selectedNumber] === null) {
       handleSort(selectedNumber, bin);
     }
@@ -174,7 +163,7 @@
 
   <!-- Bins -->
   <div class="bins-container">
-    {#each ['even', 'odd', 'prime'] as binType}
+    {#each ['even', 'odd'] as binType}
       <button
         class="bin {binType}"
         class:drag-over={hoveredBin === binType}
@@ -271,7 +260,7 @@
 
   .bins-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
     width: 100%;
     margin-top: 0.5rem;
@@ -304,11 +293,7 @@
     border-color: var(--color-primary);
     box-shadow: var(--glow-sm);
   }
-  .bin.prime {
-    --bin-accent: var(--glow-firefly);
-    border-color: var(--color-border);
-    box-shadow: var(--glow-sm);
-  }
+
 
   /* Drag-over and highlight-active: bin lights up */
   .bin.drag-over,
