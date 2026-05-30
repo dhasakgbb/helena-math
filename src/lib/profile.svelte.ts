@@ -143,6 +143,16 @@ class ProfileStore {
     return this.profile ? recommendedMathMode(this.profile, this.sessionIndex) : null;
   }
 
+  /** Smooth 0..1 fill for the times-tables ring: partial credit toward 5 facts per table (11 tables). */
+  get timesTablesRingFill(): number {
+    const facts = ((this.profile?.module_overrides?.math as any)?.times_tables_facts) || {};
+    let sum = 0;
+    for (let f = 2; f <= 12; f++) {
+      sum += Math.min(facts[f] || 0, 5);
+    }
+    return sum / (11 * 5);
+  }
+
   get isStale(): boolean {
     return this.profile ? isProfileStale(this.profile) : false;
   }

@@ -155,6 +155,16 @@ describe('profileStore', () => {
     expect((profileStore.profile?.module_overrides?.math as any)?.streak).toBe(1);
   });
 
+  it('exposes a smooth times-tables ring fill via partial fact credit', () => {
+    profileStore.importFromText(JSON.stringify(mockProfileJSON));
+    // gate mastery stays 0 until a table hits 5 facts, but ring fill should already move
+    profileStore.recordTimesTableFact(7, 2); // table 7 -> 1, table 2 -> 1
+    // fill = (min(1,5)+min(1,5)) / (11*5) = 2/55 ≈ 0.036
+    expect(profileStore.timesTablesRingFill).toBeCloseTo(2 / 55, 3);
+    // gate mastery is still 0 (no table at 5 yet)
+    expect((profileStore.profile?.module_overrides?.math as any)?.mastery?.['times-tables']).toBe(0);
+  });
+
   it('serializes and parses back successfully through Zod after game events', () => {
     profileStore.importFromText(JSON.stringify(mockProfileJSON));
     profileStore.recordLaunch('speed-add', 'times-tables');
