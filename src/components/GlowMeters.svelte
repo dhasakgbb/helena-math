@@ -274,6 +274,7 @@
     color: var(--glow-moonflower);
     --glow-c: var(--glow-moonflower);
     text-shadow: var(--glow-sm);
+    font-variant-numeric: tabular-nums lining-nums;
   }
 
   .ring-unit {
@@ -320,6 +321,7 @@
     color: var(--glow-blossom);
     --glow-c: var(--glow-blossom);
     text-shadow: var(--glow-md);
+    font-variant-numeric: tabular-nums lining-nums;
   }
 
   .bloomed-denom {

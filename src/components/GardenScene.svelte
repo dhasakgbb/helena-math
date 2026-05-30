@@ -64,16 +64,16 @@
   // Grove 3 uses a 2×2 arrangement (x=71/83, y=38/66) so all 4 fit within the right margin.
   // Every adjacent/near pair satisfies: dx_px ≥ 116 OR dy_px ≥ 132 (pod dims + 12px margin).
   const LAYOUT_WIDE: Pod[] = [
-    { id: 'times-tables', x: 5, y: 44, grove: 1 },
-    { id: 'speed-add', x: 16, y: 64, grove: 1 },
-    { id: 'number-sort', x: 27, y: 44, grove: 1 },
-    { id: 'fractions-visual', x: 38, y: 64, grove: 2 },
-    { id: 'multiplication-grid', x: 49, y: 44, grove: 2 },
-    { id: 'decimals-grid', x: 60, y: 64, grove: 2 },
-    { id: 'place-value', x: 71, y: 38, grove: 3 },
-    { id: 'long-division', x: 83, y: 64, grove: 3 },
-    { id: 'geometry-angles', x: 71, y: 66, grove: 3 },
-    { id: 'pemdas-tree', x: 83, y: 40, grove: 3 },
+    { id: 'times-tables', x: 5, y: 32, grove: 1 },
+    { id: 'speed-add', x: 16, y: 52, grove: 1 },
+    { id: 'number-sort', x: 27, y: 32, grove: 1 },
+    { id: 'fractions-visual', x: 38, y: 52, grove: 2 },
+    { id: 'multiplication-grid', x: 49, y: 32, grove: 2 },
+    { id: 'decimals-grid', x: 60, y: 52, grove: 2 },
+    { id: 'place-value', x: 71, y: 26, grove: 3 },
+    { id: 'long-division', x: 83, y: 52, grove: 3 },
+    { id: 'geometry-angles', x: 71, y: 54, grove: 3 },
+    { id: 'pemdas-tree', x: 83, y: 28, grove: 3 },
   ];
 
   // Tablet portrait (600–1100px): taller serpentine, ~3 visual rows of groves.
@@ -202,8 +202,8 @@
 
     <!-- LAYER 1 (far, depth 0.15): star-field + moon + rolling hills -->
     <g class="parallax-layer" style="--depth:0.15">
-      <circle cx="980" cy="130" r="120" fill="url(#gs-moon)" />
-      <circle cx="980" cy="130" r="60" fill="oklch(97% 0.02 250)" opacity="0.9" />
+      <circle cx="1040" cy="95" r="74" fill="url(#gs-moon)" />
+      <circle cx="1040" cy="95" r="40" fill="oklch(97% 0.02 250)" opacity="0.9" />
       {#each Array.from({ length: 60 }, (_, i) => i) as i (i)}
         <circle
           cx={(i * 197) % 1200}

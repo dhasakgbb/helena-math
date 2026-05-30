@@ -78,7 +78,18 @@
       </div>
 
       <button class="tonight-btn" onclick={() => handleSelect(pick)}>
-        <span class="tonight-icon" aria-hidden="true">🌙</span>
+        <svg
+          class="tonight-icon"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M21 14.2A8.4 8.4 0 0 1 9.8 3 8.4 8.4 0 1 0 21 14.2Z"
+          />
+        </svg>
         <span class="tonight-label">
           <span class="tonight-kicker">Tonight's Plant</span>
           <span class="tonight-mode">{MODE_NAMES[pick]}</span>
@@ -247,9 +258,10 @@
   }
 
   .tonight-icon {
-    font-size: 1.5rem;
-    line-height: 1;
-    filter: drop-shadow(0 1px 2px oklch(20% 0.04 280 / 0.4));
+    flex: none;
+    display: block;
+    color: oklch(24% 0.05 70);
+    filter: drop-shadow(0 1px 1px oklch(95% 0.1 80 / 0.5));
   }
 
   .tonight-label {
@@ -275,6 +287,30 @@
   /* ---- Garden band ---- */
   .garden-band {
     position: relative;
+  }
+
+  /* ---- Desktop: spread the row so the right third isn't dead space ---- */
+  @media (min-width: 1100px) {
+    .sky-content {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1.25rem 2rem;
+    }
+    /* bubble + button form the left cluster, capped so meters get room */
+    .bubble {
+      flex: 1 1 22rem;
+      max-width: 34ch;
+    }
+    .tonight-btn {
+      flex: 0 0 auto;
+    }
+    /* push the three meters to the right edge and let them spread */
+    .sky-content :global(.glow-meters) {
+      flex: 1 1 360px;
+      margin-left: auto;
+      justify-content: flex-end;
+    }
   }
 
   /* ---- Responsive: stack on narrow ---- */

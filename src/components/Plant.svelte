@@ -146,55 +146,55 @@
   <!-- ===================== STAGE 1: seedling ===================== -->
   {#if stage === 1}
     <g class="bloom seedling">
-      <!-- one thin curved stem, the canonical stem weight -->
+      <!-- a short, thin stem — barely above the soil -->
       <path
         class="stem"
-        d="M32 69 C 31 62 30.5 58 31.5 53"
+        d="M32 69 C 31.4 65 31 63 31.6 60.5"
         fill="none"
         stroke="oklch(60% 0.12 165)"
-        stroke-width="2.4"
+        stroke-width="2"
         stroke-linecap="round"
       />
-      <!-- one tiny leaf on the lit (left) side -->
+      <!-- one small leaf on the lit (left) side -->
       <path
-        d="M31 60 C 26.5 58.5 24.5 60.5 25 63 C 28 63 30.5 62 31 60 Z"
+        d="M31.4 64 C 28 62.8 26.4 64.2 26.8 66.2 C 29.2 66.2 30.8 65.4 31.4 64 Z"
         fill="url(#plant-leaf)"
         stroke="oklch(66% 0.12 165)"
         stroke-width="0.5"
       />
       <!-- tender growing tip, faint glow -->
-      <circle cx="31.5" cy="52.6" r="1.6" fill="var(--glow-c)" opacity="0.7" />
+      <circle cx="31.6" cy="60.2" r="1.4" fill="var(--glow-c)" opacity="0.6" />
     </g>
   {/if}
 
   <!-- ===================== STAGE 2: sprout ===================== -->
   {#if stage === 2}
     <g class="bloom sprout">
-      <!-- taller stem, identical weight to stage 1 -->
+      <!-- clearly taller, thicker stem — reads as established growth -->
       <path
         class="stem"
-        d="M32 69 C 30.5 60 30 50 32 41"
+        d="M32 69 C 30 59 29.5 48 32 39"
         fill="none"
         stroke="oklch(60% 0.12 165)"
-        stroke-width="2.4"
+        stroke-width="3"
         stroke-linecap="round"
       />
-      <!-- lower-left leaf -->
+      <!-- lower-left leaf — broad and full -->
       <path
-        d="M31 56 C 25 54 22.5 56.5 23.2 59.8 C 27 60 30 58.6 31 56 Z"
+        d="M31 58 C 23 55.5 19.5 58.5 20.5 62.8 C 25.5 63.2 29.5 61.4 31 58 Z"
         fill="url(#plant-leaf)"
         stroke="oklch(66% 0.12 165)"
-        stroke-width="0.5"
+        stroke-width="0.6"
       />
-      <!-- higher-right leaf (slightly shaded, right side away from key light) -->
+      <!-- higher-right leaf — broad, slightly shaded (away from key light) -->
       <path
-        d="M31.6 48 C 38 46 40.6 48.6 39.8 52 C 35.8 52 32.6 50.6 31.6 48 Z"
+        d="M31.6 49 C 40 46.5 43.5 49.5 42.5 53.8 C 37.5 54.2 33 52.4 31.6 49 Z"
         fill="url(#plant-leaf)"
         stroke="oklch(60% 0.11 168)"
-        stroke-width="0.5"
-        opacity="0.9"
+        stroke-width="0.6"
+        opacity="0.92"
       />
-      <circle cx="32" cy="40.6" r="1.7" fill="var(--glow-c)" opacity="0.7" />
+      <circle cx="32" cy="38.6" r="1.8" fill="var(--glow-c)" opacity="0.75" />
     </g>
   {/if}
 
