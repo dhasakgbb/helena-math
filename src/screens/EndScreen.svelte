@@ -86,9 +86,11 @@
   // a keyframe (motion only). When skipped/reduced-motion, the final value
   // (ringTo) is what shows — guaranteed by binding the stroke offset to `to`.
   let mounted = $state(false);
-  const ringValue = $derived(skipped || !mounted ? ringTo : undefined);
+  let reducedMotion = $state(false);
+  const ringValue = $derived(skipped || !mounted || reducedMotion ? ringTo : undefined);
 
   onMount(() => {
+    reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     // Defer one frame so the from→to keyframe has a start state to animate from.
     requestAnimationFrame(() => {
       mounted = true;
@@ -158,7 +160,7 @@
       <circle class="ring-track" cx="100" cy="100" r={R} />
       <circle
         class="ring-fill"
-        class:animate={mounted && !skipped}
+        class:animate={mounted && !skipped && !reducedMotion}
         cx="100"
         cy="100"
         r={R}
