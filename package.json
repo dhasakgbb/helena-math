@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --debug",
+    "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run"
@@ -22,8 +22,9 @@
     "vitest": "^4.1.7"
   },
   "dependencies": {
-    "astrid-mascot": "github:dhasakgbb/astrid-mascot#v1.0.0",
-    "profile-schema": "github:dhasakgbb/profile-schema#v1.0.0",
+    "astrid-mascot": "workspace:*",
+    "astrid-tokens": "workspace:*",
+    "profile-schema": "workspace:*",
     "zod": "^4.4.3"
   }
 }
