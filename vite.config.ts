@@ -13,8 +13,8 @@ export default defineConfig({
         name: "Astrid's Number Garden",
         short_name: "Number Garden",
         description: "A fun and modular math learning game featuring Astrid.",
-        theme_color: "#1c1a3a",
-        background_color: "#1c1a3a",
+        theme_color: "#241b3a",
+        background_color: "#241b3a",
         display: "standalone",
         icons: [
           {
