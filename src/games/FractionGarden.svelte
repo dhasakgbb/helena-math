@@ -85,30 +85,53 @@
   function togglePetal(idx: number) {
     if (disabled) return;
     wateredPetals[idx] = !wateredPetals[idx];
-    playTone(300 + idx * 50); // Auditory tick
+    playTone(300 + idx * 50, 'drop'); // Auditory tick
   }
 
-  function playTone(freq: number) {
+  function playTone(freq: number, type: 'drop' | 'chime' = 'drop') {
     if (typeof window === 'undefined' || !window.AudioContext) return;
     try {
       const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.3);
+      
+      if (type === 'drop') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.5, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
+      } else {
+        osc.type = 'sine';
+        const osc2 = ctx.createOscillator();
+        osc2.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc2.frequency.setValueAtTime(freq * 2.76, ctx.currentTime);
+        
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+        
+        osc.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc2.start();
+        osc.stop(ctx.currentTime + 0.9);
+        osc2.stop(ctx.currentTime + 0.9);
+      }
     } catch (_) {}
   }
 
   function playHarmony() {
     // Play a nice major chord (equivalent fractions match)
     [261.63, 329.63, 392.00, 523.25].forEach((freq, idx) => {
-      setTimeout(() => playTone(freq), idx * 80);
+      setTimeout(() => playTone(freq, 'chime'), idx * 80);
     });
   }
 
@@ -161,16 +184,41 @@
   {#if target}
     <div class="target-container">
       <span class="target-label">Water the flower to match:</span>
-      <div class="fraction-display animate-pulse">
-        <span class="numerator">{target.num}</span>
-        <span class="fraction-line"></span>
-        <span class="denominator">{target.den}</span>
+      <div class="target-visual-wrapper">
+        <div class="fraction-display animate-pulse">
+          <span class="numerator">{target.num}</span>
+          <span class="fraction-line"></span>
+          <span class="denominator">{target.den}</span>
+        </div>
+        <svg viewBox="0 0 100 100" class="target-pie">
+          <circle cx="50" cy="50" r="46" fill="rgba(255,255,255,0.05)" stroke="var(--color-border)" />
+          {#each Array(target.den) as _, i}
+            <path
+              d={getSlicePath(i, target.den)}
+              class="target-slice"
+              class:filled={i < target.num}
+            />
+          {/each}
+        </svg>
       </div>
     </div>
 
     <!-- The Garden Plot -->
     <div class="garden-plot">
       <svg viewBox="0 0 100 100" class="flower-svg">
+        <defs>
+          <linearGradient id="waterGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#00f2fe" />
+            <stop offset="100%" stop-color="#4facfe" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
         <!-- Dirt / Plot background -->
         <circle cx="50" cy="50" r="46" fill="rgba(112, 98, 235, 0.03)" stroke="var(--color-border)" stroke-width="1" />
         
@@ -261,6 +309,31 @@
     color: var(--color-text-muted);
   }
 
+  .target-visual-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .target-pie {
+    width: 60px;
+    height: 60px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+  }
+  
+  .target-slice {
+    fill: transparent;
+    stroke: var(--color-border);
+    stroke-width: 1;
+    transition: fill 0.3s ease;
+  }
+  
+  .target-slice.filled {
+    fill: var(--neon-cyan);
+    opacity: 0.8;
+  }
+
   .fraction-display {
     display: inline-flex;
     flex-direction: column;
@@ -298,15 +371,18 @@
     stroke: var(--color-border);
     stroke-width: 1.5;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: fill 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.6s ease, transform 0.3s ease;
+    transform-origin: 50px 50px;
   }
   .petal:hover {
     fill: rgba(255, 255, 255, 0.12);
+    transform: scale(1.02);
   }
   .petal.watered {
-    fill: var(--color-primary);
-    stroke: rgba(255, 255, 255, 0.2);
-    filter: drop-shadow(0 0 4px var(--color-primary));
+    fill: url(#waterGrad);
+    stroke: rgba(255, 255, 255, 0.4);
+    filter: url(#glow);
+    transform: scale(1.05);
   }
 
   .control-panel {

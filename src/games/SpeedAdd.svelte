@@ -3,7 +3,7 @@
 
   interface Props {
     grade: number;
-    onCorrect: () => void;
+    onCorrect: (a?: number, b?: number, timeMs?: number) => void;
     onIncorrect: (details: { question: string; answer: number; userVal: number }) => void;
     onFinished: (score: number, total: number) => void;
   }
@@ -17,6 +17,9 @@
   let feedbackClass = $state<'correct' | 'wrong' | ''>('');
   let disabled = $state(false);
   let inputEl = $state<HTMLInputElement | null>(null);
+  let startTime = 0;
+  let sonicBoom = $state(false);
+  let isSpeaking = $state(false);
 
   interface Question {
     a: number;
@@ -63,6 +66,7 @@
     if (!q) return;
     const text = `${q.a} plus ${q.b}`;
     speakText(text);
+    startTime = Date.now();
   }
 
   function speakText(text: string) {
@@ -71,13 +75,19 @@
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 0.95;
+      utterance.onstart = () => { isSpeaking = true; };
+      utterance.onend = () => { isSpeaking = false; };
+      utterance.onerror = () => { isSpeaking = false; };
       window.speechSynthesis.speak(utterance);
-    } catch (_) {}
+    } catch (_) {
+      isSpeaking = false;
+    }
   }
 
   function cancelSpeech() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
+      isSpeaking = false;
     }
   }
 
@@ -98,7 +108,14 @@
       score++;
       feedback = '✓ Correct';
       feedbackClass = 'correct';
-      onCorrect();
+      
+      const elapsedMs = Date.now() - startTime;
+      if (elapsedMs <= 3000) {
+        sonicBoom = true;
+        onCorrect(q.a, q.b, elapsedMs);
+      } else {
+        onCorrect();
+      }
     } else {
       feedback = `Not quite — the answer was ${q.answer}.`;
       feedbackClass = 'wrong';
@@ -115,6 +132,7 @@
         currentVal = '';
         feedback = '';
         feedbackClass = '';
+        sonicBoom = false;
         disabled = false;
         speakQuestion(questionIndex);
         focusInput();
@@ -131,7 +149,7 @@
   }
 </script>
 
-<div class="game-container">
+<div class="game-container" class:sonic-boom={sonicBoom}>
   <div class="status-bar">
     <span>Question {questionIndex + 1} of 10</span>
     <span>Score: {score}</span>
@@ -141,6 +159,11 @@
     <div class="question-box">
       <div class="listening-prompt">
         🎧 Listen carefully...
+        {#if isSpeaking}
+          <div class="sound-waves">
+            <span></span><span></span><span></span>
+          </div>
+        {/if}
       </div>
       
       <button onclick={() => speakQuestion(questionIndex)} {disabled} class="btn-ghost audio-btn">
@@ -255,5 +278,37 @@
   .feedback-msg.wrong {
     color: var(--danger);
     background: rgba(255, 23, 68, 0.1);
+  }
+
+  :global(.game-container.sonic-boom) {
+    animation: goldenFlash 0.8s ease-out;
+  }
+  @keyframes goldenFlash {
+    0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.8); }
+    50% { box-shadow: 0 0 40px 20px rgba(255, 215, 0, 0.4); background: rgba(255, 215, 0, 0.1); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+  }
+
+  .sound-waves {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 10px;
+    height: 1.5rem;
+  }
+  .sound-waves span {
+    display: inline-block;
+    width: 4px;
+    background-color: var(--color-primary);
+    border-radius: 2px;
+    animation: eqBounce 0.5s infinite alternate ease-in-out;
+  }
+  .sound-waves span:nth-child(1) { height: 40%; animation-delay: 0s; }
+  .sound-waves span:nth-child(2) { height: 100%; animation-delay: 0.2s; }
+  .sound-waves span:nth-child(3) { height: 60%; animation-delay: 0.4s; }
+
+  @keyframes eqBounce {
+    0% { height: 20%; }
+    100% { height: 100%; }
   }
 </style>
