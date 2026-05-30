@@ -176,11 +176,6 @@
 </script>
 
 <div class="game-container">
-  <div class="status-bar">
-    <span>Flower {questionIndex + 1} of 10</span>
-    <span>Score: {score}</span>
-  </div>
-
   {#if target}
     <div class="target-container">
       <span class="target-label">Water the flower to match:</span>
@@ -286,15 +281,6 @@
     gap: 1.2rem;
     align-items: center;
     width: 100%;
-  }
-
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    color: var(--color-text-muted);
-    font-size: 0.95rem;
-    font-weight: 500;
   }
 
   .target-container {
@@ -420,16 +406,19 @@
     -webkit-appearance: none;
     appearance: none;
     background: var(--color-border);
-    height: 6px;
-    border-radius: 3px;
+    height: 8px;
+    border-radius: 4px;
     outline: none;
     cursor: pointer;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
   .denom-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 26px;
-    height: 26px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: var(--color-primary);
     cursor: pointer;
@@ -442,8 +431,8 @@
     box-shadow: var(--glow-md);
   }
   .denom-slider::-moz-range-thumb {
-    width: 26px;
-    height: 26px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: var(--color-primary);
     cursor: pointer;
