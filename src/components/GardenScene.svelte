@@ -175,12 +175,14 @@
     };
   });
 
-  // Pre-computed firefly drift positions for the foreground layer.
-  const FIREFLIES = Array.from({ length: 14 }, (_, i) => ({
-    x: (i * 67) % 100,
-    y: 30 + ((i * 41) % 60),
-    d: (i % 7) * 0.5,
-    r: 0.8 + (i % 3) * 0.4,
+  // Pre-computed firefly drift positions for the foreground layer. Denser
+  // (22) with extra position/size variance derived from the index so the
+  // swarm reads scattered rather than gridded.
+  const FIREFLIES = Array.from({ length: 22 }, (_, i) => ({
+    x: (i * 71 + ((i * 29) % 19)) % 100,
+    y: 22 + ((i * 47) % 70),
+    d: (i % 9) * 0.45,
+    r: 0.7 + ((i * 13) % 5) * 0.3,
   }));
 
   // Glowing mushrooms scattered along the floor band (y≈580–680). Hand-placed
@@ -239,6 +241,16 @@
       <filter id="gs-ground-blur" x="-10%" y="-40%" width="120%" height="180%">
         <feGaussianBlur stdDeviation="22" />
       </filter>
+      <!-- soft blur for the path's wide under-glow stroke -->
+      <filter id="gs-path-blur" x="-10%" y="-40%" width="120%" height="180%">
+        <feGaussianBlur stdDeviation="9" />
+      </filter>
+      <!-- low fog band: fades top→bottom so it melts into the mid-ground -->
+      <linearGradient id="gs-fog" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--gs-fog, oklch(62% 0.04 250 / 0.12))" stop-opacity="0" />
+        <stop offset="45%" stop-color="var(--gs-fog, oklch(62% 0.04 250 / 0.12))" />
+        <stop offset="100%" stop-color="var(--gs-fog, oklch(62% 0.04 250 / 0.12))" stop-opacity="0" />
+      </linearGradient>
     </defs>
 
     <!-- sky always fills -->
@@ -269,15 +281,37 @@
         d="M-40 540 C 180 480 420 560 660 520 C 900 482 1080 560 1240 520 L 1240 780 L -40 780 Z"
         fill="var(--gs-hill2, oklch(26% 0.06 280))"
       />
-      <!-- the serpentine path the pods sit along -->
+      <!-- the serpentine path the pods sit along, rendered as a glowing lit
+           trail: a wide soft under-glow + a narrower bright core on top. -->
+      <!-- wide under-glow: blurred, low opacity, gradient tone -->
       <path
         d="M-20 690 C 180 560 300 600 360 500 C 430 388 560 360 660 440 C 760 516 840 400 940 350 C 1040 300 1140 320 1240 270"
         fill="none"
         stroke="url(#gs-path)"
-        stroke-width="56"
+        stroke-width="64"
         stroke-linecap="round"
-        opacity="0.5"
+        opacity="0.4"
+        filter="url(#gs-path-blur)"
       />
+      <!-- bright core: narrower, lighter tone, higher opacity -->
+      <path
+        d="M-20 690 C 180 560 300 600 360 500 C 430 388 560 360 660 440 C 760 516 840 400 940 350 C 1040 300 1140 320 1240 270"
+        fill="none"
+        stroke="var(--gs-path2, oklch(70% 0.06 200 / 0.35))"
+        stroke-width="22"
+        stroke-linecap="round"
+        opacity="0.7"
+      />
+      <!-- faint stepping-stone dots threading the trail -->
+      {#each [[120, 588], [360, 500], [520, 392], [660, 440], [820, 432], [940, 350], [1120, 308]] as [sx, sy] (sx)}
+        <circle cx={sx} cy={sy} r="6" fill="var(--gs-path2, oklch(70% 0.06 200 / 0.35))" opacity="0.5" />
+      {/each}
+    </g>
+
+    <!-- FOG BAND (depth 0.55): a soft low haze across the mid-ground so distant
+         elements read hazier. Sits between the hills/path and the plant beds. -->
+    <g class="parallax-layer" style="--depth:0.55">
+      <rect x="-40" y="470" width="1280" height="90" fill="url(#gs-fog)" />
     </g>
 
     <!-- LAYER 3 (plant beds, depth 0.7): soft glowing mounds under the pods -->
