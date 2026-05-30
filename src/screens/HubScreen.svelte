@@ -5,6 +5,7 @@
   import GlowMeters from '../components/GlowMeters.svelte';
   import GardenerBadge from '../components/GardenerBadge.svelte';
   import GridModal from '../components/GridModal.svelte';
+  import EmptyGardenState from '../components/EmptyGardenState.svelte';
 
   interface Props {
     onSelectMode: (mode: string) => void;
@@ -60,54 +61,58 @@
   }
 </script>
 
-<div class="hub grain vignette">
-  <!-- ============ SKY BAND ============ -->
-  <section class="sky-band">
-    <GardenerBadge />
+{#if profileStore.profile === null}
+  <EmptyGardenState onStart={() => {}} />
+{:else}
+  <div class="hub grain vignette">
+    <!-- ============ SKY BAND ============ -->
+    <section class="sky-band">
+      <GardenerBadge />
 
-    <div class="lantern" aria-hidden="true">
-      <span class="lantern-cord"></span>
-      <div class="lantern-glow">
-        <Mascot pose="waving" size={132} />
-      </div>
-    </div>
-
-    <div class="sky-content">
-      <div class="bubble" role="status">
-        <p class="bubble-text">{speech}</p>
+      <div class="lantern" aria-hidden="true">
+        <span class="lantern-cord"></span>
+        <div class="lantern-glow">
+          <Mascot pose="waving" size={132} />
+        </div>
       </div>
 
-      <button class="tonight-btn" onclick={() => handleSelect(pick)}>
-        <svg
-          class="tonight-icon"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            d="M21 14.2A8.4 8.4 0 0 1 9.8 3 8.4 8.4 0 1 0 21 14.2Z"
-          />
-        </svg>
-        <span class="tonight-label">
-          <span class="tonight-kicker">Tonight's Plant</span>
-          <span class="tonight-mode">{MODE_NAMES[pick]}</span>
-        </span>
-      </button>
+      <div class="sky-content">
+        <div class="bubble" role="status">
+          <p class="bubble-text">{speech}</p>
+        </div>
 
-      <GlowMeters />
-    </div>
-  </section>
+        <button class="tonight-btn" onclick={() => handleSelect(pick)}>
+          <svg
+            class="tonight-icon"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              d="M21 14.2A8.4 8.4 0 0 1 9.8 3 8.4 8.4 0 1 0 21 14.2Z"
+            />
+          </svg>
+          <span class="tonight-label">
+            <span class="tonight-kicker">Tonight's Plant</span>
+            <span class="tonight-mode">{MODE_NAMES[pick]}</span>
+          </span>
+        </button>
 
-  <!-- ============ GARDEN BAND ============ -->
-  <section class="garden-band">
-    <GardenScene onSelect={handleSelect} />
-  </section>
-</div>
+        <GlowMeters />
+      </div>
+    </section>
 
-{#if showGridModal}
-  <GridModal onClose={() => (showGridModal = false)} />
+    <!-- ============ GARDEN BAND ============ -->
+    <section class="garden-band">
+      <GardenScene onSelect={handleSelect} />
+    </section>
+  </div>
+
+  {#if showGridModal}
+    <GridModal onClose={() => (showGridModal = false)} />
+  {/if}
 {/if}
 
 <style>
