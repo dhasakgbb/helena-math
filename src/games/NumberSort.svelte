@@ -146,11 +146,6 @@
 </script>
 
 <div class="game-container">
-  <div class="status-bar">
-    <span>Item {Math.min(currentQuestionIndex + 1, questions.length)} of {questions.length}</span>
-    <span>Score: {score}</span>
-  </div>
-
   <div class="instruction">
     Drag the number to its correct bin, or tap the number then tap a bin.
   </div>
@@ -220,15 +215,6 @@
     width: 100%;
   }
 
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    color: var(--color-text-muted);
-    font-size: 0.95rem;
-    font-weight: 500;
-  }
-
   .instruction {
     font-size: 0.95rem;
     color: var(--color-text-muted);
@@ -245,11 +231,13 @@
     margin: 0.5rem 0;
   }
 
+  /* Tile: dark-glass with firefly glow */
   .tile {
+    --glow-c: var(--glow-firefly);
     width: 70px;
     height: 70px;
-    background: linear-gradient(135deg, var(--color-primary, #6200ea), var(--neon-purple, #b388ff));
-    color: light-dark(#ffffff, #0b0c16);
+    background: var(--color-panel);
+    color: var(--color-text);
     border-radius: var(--r-md, 8px);
     display: flex;
     justify-content: center;
@@ -258,18 +246,27 @@
     font-weight: 700;
     cursor: grab;
     user-select: none;
-    box-shadow: 0 4px 12px rgba(157, 78, 221, 0.4);
-    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-    border: 3px solid transparent;
+    border: 2px solid var(--color-border);
+    box-shadow: var(--glow-sm);
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
-  .tile:hover {
-    transform: scale(1.1) translateY(-2px);
-    box-shadow: 0 6px 16px rgba(157, 78, 221, 0.6);
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tile {
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .tile:hover {
+      transform: scale(1.1) translateY(-2px);
+      box-shadow: var(--glow-md);
+    }
+    .tile.selected {
+      transform: scale(1.15);
+    }
   }
+
   .tile.selected {
-    border-color: #fff;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-    transform: scale(1.15);
+    border-color: var(--color-primary);
+    box-shadow: var(--glow-lg);
   }
 
   .bins-container {
@@ -280,81 +277,94 @@
     margin-top: 0.5rem;
   }
 
+  /* Bins: dark-glass with per-bin twilight accent */
   .bin {
-    background: rgba(0, 0, 0, 0.15);
-    border: 3px dashed;
+    --glow-c: var(--glow-firefly);
+    background: var(--color-panel);
+    border: 2px dashed var(--color-border);
     border-radius: var(--r-lg, 12px);
     min-height: 160px;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 1rem;
-    transition: all 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
     position: relative;
     overflow: hidden;
   }
-  
-  /* Neon Glowing Bins */
+
+  /* Each bin gets its own twilight accent color */
   .bin.even {
-    --bin-color: #00e676; /* Neon Green */
-    border-color: var(--bin-color);
-    box-shadow: 0 0 15px rgba(0, 230, 118, 0.3), inset 0 0 10px rgba(0, 230, 118, 0.1);
+    --bin-accent: var(--color-correct);
+    border-color: var(--color-correct);
+    box-shadow: var(--glow-sm);
   }
   .bin.odd {
-    --bin-color: #00e5ff; /* Neon Cyan */
-    border-color: var(--bin-color);
-    box-shadow: 0 0 15px rgba(0, 229, 255, 0.3), inset 0 0 10px rgba(0, 229, 255, 0.1);
+    --bin-accent: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: var(--glow-sm);
   }
   .bin.prime {
-    --bin-color: #d500f9; /* Neon Purple */
-    border-color: var(--bin-color);
-    box-shadow: 0 0 15px rgba(213, 0, 249, 0.3), inset 0 0 10px rgba(213, 0, 249, 0.1);
+    --bin-accent: var(--glow-firefly);
+    border-color: var(--color-border);
+    box-shadow: var(--glow-sm);
   }
 
-  /* Interaction states for bins */
-  .bin.even.drag-over, .bin.even.highlight-active {
-    background: rgba(0, 230, 118, 0.15);
-    box-shadow: 0 0 30px rgba(0, 230, 118, 0.8), inset 0 0 20px rgba(0, 230, 118, 0.4);
-    transform: scale(1.03);
+  /* Drag-over and highlight-active: bin lights up */
+  .bin.drag-over,
+  .bin.highlight-active {
+    background: color-mix(in srgb, var(--bin-accent, var(--color-primary)) 12%, var(--color-panel));
+    border-color: var(--bin-accent, var(--color-primary));
     border-style: solid;
-  }
-  .bin.odd.drag-over, .bin.odd.highlight-active {
-    background: rgba(0, 229, 255, 0.15);
-    box-shadow: 0 0 30px rgba(0, 229, 255, 0.8), inset 0 0 20px rgba(0, 229, 255, 0.4);
-    transform: scale(1.03);
-    border-style: solid;
-  }
-  .bin.prime.drag-over, .bin.prime.highlight-active {
-    background: rgba(213, 0, 249, 0.15);
-    box-shadow: 0 0 30px rgba(213, 0, 249, 0.8), inset 0 0 20px rgba(213, 0, 249, 0.4);
-    transform: scale(1.03);
-    border-style: solid;
+    box-shadow: var(--glow-md);
   }
 
-  /* Particle Effect Animation */
+  @media (prefers-reduced-motion: no-preference) {
+    .bin.drag-over,
+    .bin.highlight-active {
+      transform: scale(1.03);
+    }
+  }
+
+  /* Particle burst: firefly glow pulse on correct sort */
   @keyframes pop-burst {
-    0% { transform: scale(1); filter: brightness(1); }
-    30% { transform: scale(1.1); filter: brightness(1.5); }
-    100% { transform: scale(1); filter: brightness(1); }
+    0%   { box-shadow: var(--glow-sm); }
+    35%  { box-shadow: var(--glow-lg); filter: brightness(1.3); }
+    100% { box-shadow: var(--glow-sm); filter: brightness(1); }
   }
-  .particle-burst {
-    animation: pop-burst 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border-style: solid !important;
+
+  @media (prefers-reduced-motion: no-preference) {
+    .particle-burst {
+      animation: pop-burst 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border-style: solid !important;
+    }
+  }
+
+  /* Correct feedback: glow pulse */
+  @keyframes correct-pulse {
+    0%   { box-shadow: 0 0 0 0 var(--color-correct); }
+    60%  { box-shadow: 0 0 0 8px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+
+  /* Wrong feedback: shake */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-6px); }
+    40%       { transform: translateX(6px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
   }
 
   .bin-label {
     font-family: var(--font-display, sans-serif);
     font-size: 1.2rem;
     font-weight: 800;
-    color: var(--color-text-muted, #ccc);
+    color: var(--bin-accent, var(--color-text-muted));
     letter-spacing: 0.1em;
     margin-bottom: 1rem;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   }
-  
-  .bin.even .bin-label { color: #00e676; text-shadow: 0 0 8px rgba(0,230,118,0.5); }
-  .bin.odd .bin-label { color: #00e5ff; text-shadow: 0 0 8px rgba(0,229,255,0.5); }
-  .bin.prime .bin-label { color: #d500f9; text-shadow: 0 0 8px rgba(213,0,249,0.5); }
 
   .bin-contents {
     display: flex;
@@ -366,14 +376,14 @@
   }
 
   .placed-badge {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: color-mix(in srgb, var(--bin-accent, var(--color-primary)) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--bin-accent, var(--color-primary)) 40%, transparent);
+    color: var(--color-text);
     padding: 0.3rem 0.6rem;
     border-radius: var(--r-sm, 4px);
     font-weight: 700;
     font-size: 1.1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
   .feedback-msg {
@@ -384,20 +394,33 @@
     padding: 0.8rem 1.5rem;
     border-radius: var(--r-md, 8px);
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  }
-  .feedback-msg.correct {
-    color: var(--success, #00e676);
-    background: rgba(0, 230, 118, 0.15);
-    border: 1px solid rgba(0, 230, 118, 0.3);
-  }
-  .feedback-msg.wrong {
-    color: var(--danger, #ff1744);
-    background: rgba(255, 23, 68, 0.15);
-    border: 1px solid rgba(255, 23, 68, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
-  .tile:focus-visible, .bin:focus-visible {
+  .feedback-msg.correct {
+    color: var(--color-correct);
+    background: color-mix(in srgb, var(--color-correct) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-correct) 35%, transparent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .feedback-msg.correct {
+      animation: correct-pulse 0.6s ease-out;
+    }
+    .feedback-msg.wrong {
+      animation: shake 0.45s ease-in-out;
+    }
+  }
+
+  .feedback-msg.wrong {
+    color: var(--color-retry);
+    background: color-mix(in srgb, var(--color-retry) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-retry) 35%, transparent);
+  }
+
+  /* A11y: preserved focus ring — native buttons handle Enter/Space */
+  .tile:focus-visible,
+  .bin:focus-visible {
     outline: 3px solid var(--color-primary);
     outline-offset: 2px;
   }
