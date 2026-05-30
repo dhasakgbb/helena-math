@@ -1,51 +1,47 @@
+@font-face {
+  font-family: 'Lexend';
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/lexend.woff2') format('woff2-variations'),
+       url('/fonts/lexend.woff2') format('woff2');
+}
+
 :root {
-  /* Premium Typography */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-display: 'SF Pro Display', 'Inter', var(--font-sans);
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Lexend', var(--font-sans);
 
-  /* Color Design Tokens (Bento Box - Light/Clean) */
-  --color-bg: #f4f5f7; /* Very light cool grey */
-  
-  --color-primary-light: #007aff; /* Apple Blue */
-  --color-primary-dark: #005bb5;  
-  
-  --color-accent-light: #ff2d55;  /* Apple Pink */
-  --color-accent-dark: #d92648;   
-  
-  --color-panel: rgba(255, 255, 255, 0.7); /* Frosted white glass */
-  --color-border: rgba(0, 0, 0, 0.04);
+  /* Twilight canvas (OKLCH) */
+  --sky-top: oklch(28% 0.07 280);     /* deep indigo */
+  --sky-mid: oklch(33% 0.08 250);
+  --sky-bot: oklch(38% 0.06 200);     /* midnight teal */
+  --color-bg: var(--sky-top);
+  --color-panel: oklch(30% 0.05 275 / 0.55);
+  --color-border: oklch(85% 0.02 280 / 0.12);
 
-  /* Functional Mappings */
-  color-scheme: light;
-  --color-primary: var(--color-primary-light);
-  --color-accent: var(--color-accent-light);
-  --color-text: #1d1d1f; /* Apple dark gray */
-  --color-text-muted: #86868b;
+  color-scheme: dark;
+  --color-text: oklch(95% 0.02 280);
+  --color-text-muted: oklch(78% 0.03 280);
 
-  /* Pastel Accents for Bento Cards */
-  --neon-cyan: #34c759; /* Apple Green */
-  --neon-purple: #af52de; /* Apple Purple */
-  --neon-pink: #ff2d55; /* Apple Pink */
-  --neon-yellow: #ff9f0a; /* Apple Orange */
-  --success: #34c759;
-  --danger: #ff3b30;
+  /* Single action color: lantern amber */
+  --color-primary: oklch(82% 0.15 75);
+  --color-primary-strong: oklch(72% 0.17 70);
 
-  /* Shadows (Soft diffuse) */
-  --glow-cyan: 0 4px 14px rgba(52, 199, 89, 0.25);
-  --glow-purple: 0 4px 14px rgba(175, 82, 222, 0.25);
-  --glow-pink: 0 4px 14px rgba(255, 45, 85, 0.25);
+  /* Plant-glow accents (honest names) */
+  --glow-moonflower: oklch(92% 0.10 200);  /* cyan-white */
+  --glow-firefly: oklch(88% 0.15 95);      /* gold */
+  --glow-blossom: oklch(75% 0.18 350);     /* magenta */
 
-  /* Glassmorphism Configuration */
-  --glass-blur: blur(30px) saturate(200%);
-  --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+  /* State colors */
+  --color-correct: oklch(80% 0.16 150);
+  --color-retry: oklch(82% 0.15 75);       /* amber, replaces every red-X */
 
-  /* Radii & Layout Constants (Bento Box requires large radii) */
-  --r-sm: 12px;
-  --r-md: 20px;
-  --r-lg: 32px;
-  --r-xl: 40px;
-  
-  --touch: 44px;
+  /* Layered glow scale: core + halo (compose, never a single flat shadow) */
+  --glow-sm: 0 0 4px var(--glow-c, var(--color-primary)), 0 0 14px -2px var(--glow-c, var(--color-primary));
+  --glow-md: 0 0 6px var(--glow-c, var(--color-primary)), 0 0 28px -4px var(--glow-c, var(--color-primary));
+  --glow-lg: 0 0 10px var(--glow-c, var(--color-primary)), 0 0 48px -6px var(--glow-c, var(--color-primary));
+
+  --r-sm: 12px; --r-md: 20px; --r-lg: 32px; --r-xl: 40px;
+  --touch: 48px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -55,6 +51,7 @@
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
+  .parallax-layer { transform: none !important; }
 }
 
 @media print {

@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { profileStore } from '../lib/profile.svelte';
   import Mascot from '../components/Mascot.svelte';
+  import GameShell from '../components/GameShell.svelte';
   import TimesTables from '../games/TimesTables.svelte';
   import SpeedAdd from '../games/SpeedAdd.svelte';
   import NumberSort from '../games/NumberSort.svelte';
@@ -21,6 +22,39 @@
   }
 
   let { mode, grade, onBack, onFinished }: Props = $props();
+
+  // Honest game titles
+  const GAME_TITLES: Record<string, string> = {
+    'times-tables': 'Times Tables',
+    'speed-add': 'Speed Add',
+    'number-sort': 'Number Sort',
+    'fractions-visual': 'Fraction Garden',
+    'place-value': 'Place Value',
+    'multiplication-grid': 'Multiplication Grid',
+    'long-division': 'Long Division',
+    'decimals-grid': 'Decimal Shading',
+    'geometry-angles': 'Coordinate Plot',
+    'pemdas-tree': 'Order of Operations',
+  };
+
+  // Questions per game: 5 for long-division, geometry-angles, pemdas-tree; 10 for the rest
+  const TOTALS: Record<string, number> = {
+    'times-tables': 10,
+    'speed-add': 10,
+    'number-sort': 10,
+    'fractions-visual': 10,
+    'place-value': 10,
+    'multiplication-grid': 10,
+    'long-division': 5,
+    'decimals-grid': 10,
+    'geometry-angles': 5,
+    'pemdas-tree': 5,
+  };
+
+  const total = $derived(TOTALS[mode] ?? 10);
+
+  // Live answered counter — incremented by both handleCorrect and handleIncorrect
+  let answered = $state(0);
 
   // Mascot reactive pose state
   let mascotPose = $state<'thinking' | 'happy' | 'wow' | 'sad' | 'sleeping'>('thinking');
@@ -53,7 +87,7 @@
 
   function resetInactivityTimer() {
     clearInactivityTimer();
-    
+
     // If Astrid was sleeping, wake her up
     if (mascotPose === 'sleeping') {
       triggerPose('thinking');
@@ -86,6 +120,7 @@
   }
 
   function handleCorrect(a?: number, b?: number, timeMs?: number) {
+    answered++;
     currentStreak++;
     if (currentStreak >= 3) {
       triggerPose('wow', 2000);
@@ -99,6 +134,7 @@
   }
 
   function handleIncorrect(details?: any) {
+    answered++;
     currentStreak = 0;
     triggerPose('sad', 1800);
 
@@ -106,32 +142,18 @@
       profileStore.recordTimesTableMistake(details.a, details.b);
     }
   }
-
-  const GAME_TITLES = {
-    'times-tables': 'Times Tables',
-    'speed-add': 'Speed Add',
-    'number-sort': 'Number Sort',
-    'fractions-visual': 'Fraction Garden',
-    'place-value': 'Place Value Orchard',
-    'multiplication-grid': 'Multiplication Grid',
-    'long-division': 'Division Stones',
-    'decimals-grid': 'Decimal Shading',
-    'geometry-angles': 'Garden Star Maps',
-    'pemdas-tree': 'PEMDAS Trees'
-  } as Record<string, string>;
 </script>
 
-<div class="game-screen-container glass-panel animate-entrance">
-  <div class="header">
-    <button onclick={onBack} class="back-btn" aria-label="Go back to dashboard">
-      &larr; Back to modes
-    </button>
-    <h1>{GAME_TITLES[mode] || 'Math Game'}</h1>
-  </div>
-
-  <div class="mascot-bar">
+<GameShell
+  title={GAME_TITLES[mode] ?? 'Math'}
+  plantModeId={mode}
+  questionIndex={answered}
+  {total}
+  {onBack}
+>
+  {#snippet mascot()}
     <div class="mascot-wrapper">
-      <Mascot pose={mascotPose} size={140} />
+      <Mascot pose={mascotPose} size={110} />
       {#if astridMessage}
         <div class="game-speech-bubble animate-pop">
           {astridMessage}
@@ -139,132 +161,83 @@
         </div>
       {/if}
     </div>
-  </div>
+  {/snippet}
 
-  <div class="game-body-wrapper">
-    {#if mode === 'times-tables'}
-      <TimesTables
-        {grade}
-        onCorrect={handleCorrect}
-        onIncorrect={handleIncorrect}
-        onFinished={onFinished}
-        {setAstridMessage}
-      />
-    {:else if mode === 'speed-add'}
-      <SpeedAdd
-        {grade}
-        onCorrect={handleCorrect}
-        onIncorrect={handleIncorrect}
-        onFinished={onFinished}
-      />
-    {:else if mode === 'number-sort'}
-      <NumberSort
-        {grade}
-        onCorrect={handleCorrect}
-        onIncorrect={handleIncorrect}
-        onFinished={onFinished}
-      />
-    {:else if mode === 'fractions-visual'}
-      <FractionGarden
-        {grade}
-        onCorrect={handleCorrect}
-        onIncorrect={handleIncorrect}
-        onFinished={onFinished}
-      />
-    {:else if mode === 'place-value'}
-      <PlaceValueCosmos
-        {grade}
-        onCorrect={handleCorrect}
-        onIncorrect={handleIncorrect}
-        onFinished={onFinished}
-      />
-    {:else if mode === 'multiplication-grid'}
-      <MultiplicationGrid
-        {grade}
-        onCorrect={handleCorrect}
-        onIncorrect={handleIncorrect}
-        onFinished={onFinished}
-      />
-    {:else if mode === 'long-division'}
-      <LongDivisionSpace
-        {grade}
-        onCorrect={handleCorrect}
-        onIncorrect={handleIncorrect}
-        onFinished={onFinished}
-      />
-    {:else if mode === 'decimals-grid'}
-      <DecimalGridZoom
-        {grade}
-        onCorrect={handleCorrect}
-        onIncorrect={handleIncorrect}
-        onFinished={onFinished}
-      />
-    {:else if mode === 'geometry-angles'}
-      <GeometryConstellation
-        {grade}
-        onCorrect={handleCorrect}
-        onIncorrect={handleIncorrect}
-        onFinished={onFinished}
-      />
-    {:else if mode === 'pemdas-tree'}
-      <PEMDASTree
-        {grade}
-        onCorrect={handleCorrect}
-        onIncorrect={handleIncorrect}
-        onFinished={onFinished}
-      />
-    {/if}
-  </div>
-</div>
+  {#if mode === 'times-tables'}
+    <TimesTables
+      {grade}
+      onCorrect={handleCorrect}
+      onIncorrect={handleIncorrect}
+      onFinished={onFinished}
+      {setAstridMessage}
+    />
+  {:else if mode === 'speed-add'}
+    <SpeedAdd
+      {grade}
+      onCorrect={handleCorrect}
+      onIncorrect={handleIncorrect}
+      onFinished={onFinished}
+    />
+  {:else if mode === 'number-sort'}
+    <NumberSort
+      {grade}
+      onCorrect={handleCorrect}
+      onIncorrect={handleIncorrect}
+      onFinished={onFinished}
+    />
+  {:else if mode === 'fractions-visual'}
+    <FractionGarden
+      {grade}
+      onCorrect={handleCorrect}
+      onIncorrect={handleIncorrect}
+      onFinished={onFinished}
+    />
+  {:else if mode === 'place-value'}
+    <PlaceValueCosmos
+      {grade}
+      onCorrect={handleCorrect}
+      onIncorrect={handleIncorrect}
+      onFinished={onFinished}
+    />
+  {:else if mode === 'multiplication-grid'}
+    <MultiplicationGrid
+      {grade}
+      onCorrect={handleCorrect}
+      onIncorrect={handleIncorrect}
+      onFinished={onFinished}
+    />
+  {:else if mode === 'long-division'}
+    <LongDivisionSpace
+      {grade}
+      onCorrect={handleCorrect}
+      onIncorrect={handleIncorrect}
+      onFinished={onFinished}
+    />
+  {:else if mode === 'decimals-grid'}
+    <DecimalGridZoom
+      {grade}
+      onCorrect={handleCorrect}
+      onIncorrect={handleIncorrect}
+      onFinished={onFinished}
+    />
+  {:else if mode === 'geometry-angles'}
+    <GeometryConstellation
+      {grade}
+      onCorrect={handleCorrect}
+      onIncorrect={handleIncorrect}
+      onFinished={onFinished}
+    />
+  {:else if mode === 'pemdas-tree'}
+    <PEMDASTree
+      {grade}
+      onCorrect={handleCorrect}
+      onIncorrect={handleIncorrect}
+      onFinished={onFinished}
+    />
+  {/if}
+</GameShell>
 
 <style>
-  .game-screen-container {
-    width: 100%;
-    max-width: 650px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1.5rem 2rem;
-  }
-
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 0.8rem;
-  }
-  .header h1 {
-    font-size: 1.5rem;
-    margin: 0;
-    color: var(--color-primary);
-  }
-
-  .back-btn {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    border: 1px solid var(--color-border);
-    padding: 0.4rem 0.8rem;
-    border-radius: var(--r-sm);
-  }
-  .back-btn:hover {
-    color: var(--color-text);
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--color-text-muted);
-  }
-
-  .mascot-bar {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    height: 140px;
-    align-items: center;
-    position: relative;
-    z-index: 10;
-  }
-
   .mascot-wrapper {
     position: relative;
     display: flex;
@@ -274,31 +247,31 @@
 
   .game-speech-bubble {
     position: absolute;
-    left: 100%;
-    top: 20px;
-    margin-left: 1rem;
-    background: #ffffff;
-    color: #0b0c16;
-    padding: 0.8rem 1.2rem;
-    border-radius: 16px;
-    font-size: 1.05rem;
+    right: calc(100% + 0.75rem);
+    top: 50%;
+    transform: translateY(-50%);
+    background: oklch(18% 0.06 280);
+    color: var(--color-text, oklch(92% 0.02 270));
+    padding: 0.7rem 1.1rem;
+    border-radius: 14px;
+    font-size: 1rem;
     font-weight: 700;
     white-space: nowrap;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     z-index: 20;
-    border: 2px solid var(--neon-cyan);
+    border: 2px solid var(--color-primary, var(--glow-firefly, oklch(78% 0.18 280)));
   }
 
   .bubble-arrow {
     position: absolute;
-    left: -6px;
+    right: -7px;
     top: 50%;
     transform: translateY(-50%) rotate(45deg);
     width: 12px;
     height: 12px;
-    background: #ffffff;
-    border-left: 2px solid var(--neon-cyan);
-    border-bottom: 2px solid var(--neon-cyan);
+    background: oklch(18% 0.06 280);
+    border-right: 2px solid var(--color-primary, var(--glow-firefly, oklch(78% 0.18 280)));
+    border-top: 2px solid var(--color-primary, var(--glow-firefly, oklch(78% 0.18 280)));
   }
 
   .animate-pop {
@@ -306,14 +279,13 @@
   }
 
   @keyframes popIn {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-
-  .game-body-wrapper {
-    width: 100%;
-    margin-top: 0.5rem;
-    position: relative;
-    z-index: 1;
+    0% {
+      transform: translateY(-50%) scale(0.8);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(-50%) scale(1);
+      opacity: 1;
+    }
   }
 </style>

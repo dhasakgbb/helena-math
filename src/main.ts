@@ -1,4 +1,5 @@
 import './styles/app.css';
+import './styles/garden.css';
 import App from './App.svelte';
 import { mount } from 'svelte';
 

@@ -13,6 +13,13 @@
   let lastScore = $state(0);
   let lastTotal = $state(0);
 
+  // End-screen bloom-moment data
+  let lastMode = $state<string | null>(null);
+  let ringFrom = $state(0);
+  let ringTo = $state(0);
+  let bloomed = $state(false);
+  let isPersonalBest = $state(false);
+
   // Toast
   let toastMessage = $state<string | null>(null);
   let toastClass = $state<'ok' | 'bad' | ''>('');
@@ -50,11 +57,17 @@
   // Safe grade extractor
   const gradeLevel = $derived(profileStore.profile ? (profileStore.profile as any).grade_level ?? 4 : 4);
 
+  // Mastery + ring-fill helpers for the end-screen bloom moment.
+  const gateMastery = (m: string) =>
+    (profileStore.profile?.module_overrides?.math as any)?.mastery?.[m] ?? 0;
+  const ringFill = (m: string) =>
+    m === 'times-tables' ? profileStore.timesTablesRingFill : gateMastery(m);
+
   function handleSelectMode(mode: string) {
     selectedMode = mode as MathMode;
     
-    // Record telemetry launch
-    const recommended = profileStore.recommendedMathMode;
+    // Record telemetry launch — smartPick is the single source of truth (spec §10.6)
+    const recommended = profileStore.smartPick;
     profileStore.recordLaunch(selectedMode, recommended);
     profileStore.advanceSession();
 
@@ -64,11 +77,22 @@
   function handleGameFinished(score: number, total: number) {
     lastScore = score;
     lastTotal = total;
-
     if (selectedMode) {
-      profileStore.recordGameResult(selectedMode, score, total, gradeLevel);
+      const m = selectedMode;
+      const prevGate = gateMastery(m);
+      const prevRing = ringFill(m);
+      // personal best = beat the best PRIOR ratio (first-ever play is not a "new best")
+      const prior = ((profileStore.profile?.module_overrides?.math as any)?.scores?.[m]) ?? [];
+      const prevBestRatio = prior.length
+        ? Math.max(...prior.map((s: any) => s.score / s.total))
+        : -1;
+      profileStore.recordGameResult(m, score, total, gradeLevel);
+      lastMode = m;
+      ringFrom = prevRing;
+      ringTo = ringFill(m);
+      bloomed = prevGate < 0.85 && gateMastery(m) >= 0.85;
+      isPersonalBest = prior.length > 0 && score / total > prevBestRatio;
     }
-
     currentScreen = 'end';
   }
 </script>
@@ -89,10 +113,16 @@
           />
         {:else if currentScreen === 'end'}
           <EndScreen
+            mode={lastMode ?? selectedMode}
             score={lastScore}
             total={lastTotal}
+            ringFrom={ringFrom}
+            ringTo={ringTo}
+            bloomed={bloomed}
+            isPersonalBest={isPersonalBest}
             onPlayAgain={() => currentScreen = 'game'}
             onPickAnother={() => currentScreen = 'hub'}
+            onSelectNext={(m) => handleSelectMode(m)}
           />
         {/if}
       {/if}
@@ -155,12 +185,10 @@
     left: 50%;
     transform: translateX(-50%);
     background: var(--color-panel);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--color-border);
     padding: 0.8rem 1.5rem;
     border-radius: var(--r-md);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
     z-index: 999;
     font-size: 0.95rem;
     font-weight: 600;
@@ -168,11 +196,11 @@
     text-align: center;
   }
   .toast-popup.ok {
-    color: var(--success);
-    border-color: rgba(0, 230, 118, 0.3);
+    color: var(--color-correct);
+    border-color: oklch(70% 0.18 165 / 0.35);
   }
   .toast-popup.bad {
-    color: var(--danger);
-    border-color: rgba(255, 23, 68, 0.3);
+    color: var(--color-retry);
+    border-color: oklch(65% 0.20 25 / 0.35);
   }
 </style>

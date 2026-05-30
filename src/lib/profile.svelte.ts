@@ -7,25 +7,15 @@ import {
   decodeProfileFragment,
   type ExportedProfile
 } from 'profile-schema';
+import { pickSmartMode } from './recommender';
 
 const PROFILE_STORAGE_KEY = 'helena-math:profile:v1';
 const SESSION_INDEX_KEY = 'helena-math:profile:session-index:v1';
 const LAUNCH_HISTORY_MAX = 12;
 const OVERRIDE_NUDGE_THRESHOLD = 3;
 
-export const MATH_MODES = [
-  'times-tables',
-  'speed-add',
-  'number-sort',
-  'fractions-visual',
-  'place-value',
-  'multiplication-grid',
-  'long-division',
-  'decimals-grid',
-  'geometry-angles',
-  'pemdas-tree'
-] as const;
-export type MathMode = typeof MATH_MODES[number];
+export { MATH_MODES, type MathMode } from './modes';
+import { type MathMode } from './modes';
 
 export interface MathTelemetry {
   followed: Record<string, number>;
@@ -141,6 +131,23 @@ class ProfileStore {
 
   get recommendedMathMode(): string | null {
     return this.profile ? recommendedMathMode(this.profile, this.sessionIndex) : null;
+  }
+
+  /** All-10 Smart Pick used by the UI AND by recordLaunch telemetry (single source of truth). */
+  get smartPick(): MathMode {
+    // missing mastery → treat all modes as 0 fill
+    const mastery = ((this.profile?.module_overrides?.math as any)?.mastery) || {};
+    return pickSmartMode(this.recommendedMathMode, mastery);
+  }
+
+  /** Smooth 0..1 fill for the times-tables ring: partial credit toward 5 facts per table (11 tables). */
+  get timesTablesRingFill(): number {
+    const facts = ((this.profile?.module_overrides?.math as any)?.times_tables_facts) || {};
+    let sum = 0;
+    for (let f = 2; f <= 12; f++) {
+      sum += Math.min(facts[f] || 0, 5);
+    }
+    return sum / (11 * 5);
   }
 
   get isStale(): boolean {
@@ -321,9 +328,9 @@ class ProfileStore {
       grade: gradeLevel
     });
 
-    // 3. Update Streak: Consecutive games with score >= 7 out of 10
+    // 3. Update Streak: consecutive games scoring >= 70% (length-agnostic, matches end-screen tiers)
     let streak = typeof mathOverrides.streak === 'number' ? mathOverrides.streak : 0;
-    if (score >= 7) {
+    if (total > 0 && score / total >= 0.7) {
       streak += 1;
     } else {
       streak = 0;
