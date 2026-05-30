@@ -267,6 +267,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {/if}
 </GameShell>
