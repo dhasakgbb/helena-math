@@ -733,13 +733,6 @@
     min-height: 100%;
   }
 
-  .grove-sign.narrow {
-    position: static;
-    transform: none;
-    align-self: center;
-    margin-top: 8px;
-  }
-
   .column-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));

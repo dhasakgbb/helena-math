@@ -450,14 +450,8 @@
     margin-bottom: 2px;
   }
 
-  /* Dewdrop freeze icon — dim, purely decorative */
-  .dewdrop {
-    display: inline-flex;
-    align-items: flex-end;
-    color: var(--glow-moonflower);
-    opacity: 0.35;
-    margin-left: 3px;
-    margin-bottom: 1px;
+  .water-drops {
+    margin-top: 2px;
   }
 
   .streak-sublabel {
