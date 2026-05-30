@@ -142,6 +142,19 @@ describe('profileStore', () => {
     expect((profileStore.profile?.module_overrides?.math as any)?.streak).toBe(0);
   });
 
+  it('builds streak on a ratio, so 5-question games count', () => {
+    profileStore.importFromText(JSON.stringify(mockProfileJSON));
+    // 4/5 = 0.8 >= 0.7 -> streak should increment (old code required score>=7 and failed here)
+    profileStore.recordGameResult('long-division', 4, 5, 4);
+    expect((profileStore.profile?.module_overrides?.math as any)?.streak).toBe(1);
+    // 3/5 = 0.6 < 0.7 -> streak resets
+    profileStore.recordGameResult('long-division', 3, 5, 4);
+    expect((profileStore.profile?.module_overrides?.math as any)?.streak).toBe(0);
+    // 7/10 = 0.7 -> still counts for 10-question games
+    profileStore.recordGameResult('speed-add', 7, 10, 4);
+    expect((profileStore.profile?.module_overrides?.math as any)?.streak).toBe(1);
+  });
+
   it('serializes and parses back successfully through Zod after game events', () => {
     profileStore.importFromText(JSON.stringify(mockProfileJSON));
     profileStore.recordLaunch('speed-add', 'times-tables');

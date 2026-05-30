@@ -321,9 +321,9 @@ class ProfileStore {
       grade: gradeLevel
     });
 
-    // 3. Update Streak: Consecutive games with score >= 7 out of 10
+    // 3. Update Streak: consecutive games scoring >= 70% (length-agnostic, matches end-screen tiers)
     let streak = typeof mathOverrides.streak === 'number' ? mathOverrides.streak : 0;
-    if (score >= 7) {
+    if (total > 0 && score / total >= 0.7) {
       streak += 1;
     } else {
       streak = 0;
