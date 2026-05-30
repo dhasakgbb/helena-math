@@ -278,6 +278,67 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Two-layer firefly-gold glow: tight bright core + wide soft halo */
+    filter:
+      drop-shadow(0 0 5px color-mix(in oklch, var(--glow-firefly), transparent 18%))
+      drop-shadow(0 0 20px color-mix(in oklch, var(--glow-firefly), transparent 44%))
+      drop-shadow(0 0 50px color-mix(in oklch, var(--glow-firefly), transparent 70%))
+      drop-shadow(0 5px 9px color-mix(in oklch, oklch(10% 0.04 280), transparent 48%));
+  }
+
+  /* Warm radial halo pseudo-element behind Astrid */
+  .mascot-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -24px;
+    border-radius: 50%;
+    background: radial-gradient(
+      ellipse at 50% 54%,
+      color-mix(in oklch, var(--glow-firefly), transparent 28%) 0%,
+      color-mix(in oklch, var(--glow-firefly), transparent 60%) 38%,
+      transparent 68%
+    );
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Soft ground shadow — depth cue below */
+  .mascot-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 8px;
+    border-radius: 50%;
+    background: color-mix(in oklch, oklch(12% 0.05 260), transparent 58%);
+    filter: blur(5px);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Glow breathe animation — reduced-motion gated */
+  @media (prefers-reduced-motion: no-preference) {
+    .mascot-wrapper {
+      animation: mascot-glow-breathe 4s ease-in-out infinite;
+    }
+    @keyframes mascot-glow-breathe {
+      0%, 100% {
+        filter:
+          drop-shadow(0 0 4px color-mix(in oklch, var(--glow-firefly), transparent 22%))
+          drop-shadow(0 0 16px color-mix(in oklch, var(--glow-firefly), transparent 50%))
+          drop-shadow(0 0 42px color-mix(in oklch, var(--glow-firefly), transparent 74%))
+          drop-shadow(0 5px 9px color-mix(in oklch, oklch(10% 0.04 280), transparent 48%));
+      }
+      50% {
+        filter:
+          drop-shadow(0 0 8px color-mix(in oklch, var(--glow-firefly), transparent 10%))
+          drop-shadow(0 0 26px color-mix(in oklch, var(--glow-firefly), transparent 34%))
+          drop-shadow(0 0 62px color-mix(in oklch, var(--glow-firefly), transparent 58%))
+          drop-shadow(0 5px 9px color-mix(in oklch, oklch(10% 0.04 280), transparent 48%));
+      }
+    }
   }
 
   .game-speech-bubble {

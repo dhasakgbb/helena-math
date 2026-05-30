@@ -100,6 +100,9 @@
           <span class="tonight-label">
             <span class="tonight-kicker">{isDay ? "Today's" : "Tonight's"} Plant</span>
             <span class="tonight-mode">{MODE_NAMES[pick]}</span>
+            <!-- DR-05: lightweight recommended indicator using astrid tokens for platform cohesion.
+                 Subtle firefly glow + pill radius; full garden personality preserved. -->
+            <span class="recommended-pill" aria-label="Recommended by Astrid for your profile">RECOMMENDED</span>
           </span>
         </button>
 
@@ -173,12 +176,48 @@
   }
 
   .lantern-glow {
+    position: relative;
     border-radius: 50%;
     padding: 0.5rem;
     --glow-c: var(--glow-firefly);
+    /* Two-layer drop-shadow: tight bright core + wide soft halo */
     filter:
-      drop-shadow(0 0 18px color-mix(in oklch, var(--glow-firefly), transparent 35%))
-      drop-shadow(0 0 44px color-mix(in oklch, var(--glow-firefly), transparent 65%));
+      drop-shadow(0 0 6px color-mix(in oklch, var(--glow-firefly), transparent 15%))
+      drop-shadow(0 0 22px color-mix(in oklch, var(--glow-firefly), transparent 42%))
+      drop-shadow(0 0 54px color-mix(in oklch, var(--glow-firefly), transparent 68%))
+      drop-shadow(0 4px 8px color-mix(in oklch, oklch(10% 0.04 280), transparent 50%));
+  }
+
+  /* Radial halo behind Astrid — warm amber bloom */
+  .lantern-glow::before {
+    content: '';
+    position: absolute;
+    inset: -28px;
+    border-radius: 50%;
+    background: radial-gradient(
+      ellipse at 50% 52%,
+      color-mix(in oklch, var(--glow-firefly), transparent 30%) 0%,
+      color-mix(in oklch, var(--glow-firefly), transparent 62%) 35%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Soft grounded shadow — depth cue below Astrid */
+  .lantern-glow::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 55%;
+    height: 10px;
+    border-radius: 50%;
+    background: color-mix(in oklch, oklch(12% 0.05 260), transparent 55%);
+    filter: blur(6px);
+    pointer-events: none;
+    z-index: -1;
   }
 
   .sky-content {
@@ -233,7 +272,8 @@
     min-height: 56px;
     padding: 0.75rem 1.5rem;
     border: 1px solid var(--color-primary);
-    border-radius: var(--r-md);
+    /* DR-05: astrid radius + motion on the primary recommended action in hub */
+    border-radius: var(--astrid-radius-lg);
     cursor: pointer;
     color: var(--btn-text, oklch(20% 0.04 280));
     background:
@@ -244,7 +284,9 @@
       0 0 0 0 transparent,
       var(--glow-md),
       0 8px 24px -6px var(--btn-shadow, oklch(20% 0.04 280 / 0.6));
-    transition: transform 0.18s ease, box-shadow 0.22s ease, filter 0.18s ease;
+    transition: transform var(--astrid-motion-duration-fast) var(--astrid-motion-easing-ease-out),
+                box-shadow var(--astrid-motion-duration-base) var(--astrid-motion-easing-ease-out),
+                filter var(--astrid-motion-duration-fast) var(--astrid-motion-easing-ease-out);
   }
 
   .tonight-btn:hover {
@@ -259,9 +301,10 @@
 
   .tonight-btn:focus-visible {
     outline: none;
+    /* DR-05: platform focus ring */
     box-shadow:
-      0 0 0 3px oklch(98% 0.02 250 / 0.95),
-      0 0 0 6px var(--color-primary),
+      0 0 0 3px var(--astrid-color-focus-ring-offset),
+      0 0 0 6px var(--astrid-color-focus-ring),
       var(--glow-md);
   }
 
@@ -290,6 +333,24 @@
   .tonight-mode {
     font-size: 1.2rem;
     font-weight: 700;
+  }
+
+  /* DR-05 recommended indicator — uses astrid tokens for scale/cohesion.
+     Garden twilight colors (no cyan flood), pill + small glow from tokens. */
+  .recommended-pill {
+    align-self: flex-start;
+    margin-top: 2px;
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    padding: var(--astrid-spacing-1) var(--astrid-spacing-2);
+    border-radius: var(--astrid-radius-pill);
+    background: color-mix(in oklch, var(--glow-firefly), transparent 30%);
+    color: var(--color-text);
+    border: 1px solid color-mix(in oklch, var(--glow-firefly), transparent 10%);
+    box-shadow: var(--astrid-shadow-glow-yellow-sm);
+    text-transform: uppercase;
+    pointer-events: none;
   }
 
   /* ---- Garden band ---- */
@@ -350,8 +411,20 @@
       animation: lantern-pulse 4s ease-in-out infinite;
     }
     @keyframes lantern-pulse {
-      0%, 100% { filter: drop-shadow(0 0 16px color-mix(in oklch, var(--glow-firefly), transparent 40%)) drop-shadow(0 0 40px color-mix(in oklch, var(--glow-firefly), transparent 70%)); }
-      50% { filter: drop-shadow(0 0 22px color-mix(in oklch, var(--glow-firefly), transparent 25%)) drop-shadow(0 0 54px color-mix(in oklch, var(--glow-firefly), transparent 55%)); }
+      0%, 100% {
+        filter:
+          drop-shadow(0 0 5px color-mix(in oklch, var(--glow-firefly), transparent 20%))
+          drop-shadow(0 0 18px color-mix(in oklch, var(--glow-firefly), transparent 48%))
+          drop-shadow(0 0 46px color-mix(in oklch, var(--glow-firefly), transparent 72%))
+          drop-shadow(0 4px 8px color-mix(in oklch, oklch(10% 0.04 280), transparent 50%));
+      }
+      50% {
+        filter:
+          drop-shadow(0 0 9px color-mix(in oklch, var(--glow-firefly), transparent 8%))
+          drop-shadow(0 0 28px color-mix(in oklch, var(--glow-firefly), transparent 32%))
+          drop-shadow(0 0 64px color-mix(in oklch, var(--glow-firefly), transparent 58%))
+          drop-shadow(0 4px 8px color-mix(in oklch, oklch(10% 0.04 280), transparent 50%));
+      }
     }
 
     .bubble {
