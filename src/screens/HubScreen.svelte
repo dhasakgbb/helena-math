@@ -39,72 +39,72 @@
     'times-tables': {
       title: 'Times Tables',
       desc: 'Practice multiplication facts and test your memory.',
-      color: 'linear-gradient(135deg, rgba(255, 0, 127, 0.2), rgba(255, 0, 127, 0.05))',
-      border: 'oklch(62% 0.22 340)', // Neon Pink
-      glow: '0 0 15px rgba(255, 0, 127, 0.25)'
+      color: 'linear-gradient(135deg, rgba(255, 45, 85, 0.15), rgba(255, 45, 85, 0.05))',
+      border: 'rgba(255, 45, 85, 0.5)', /* Apple Pink */
+      glow: '0 10px 30px rgba(255, 45, 85, 0.1)'
     },
     'speed-add': {
       title: 'Speed Add',
       desc: 'Listen to addition equations and type the answer fast.',
-      color: 'linear-gradient(135deg, rgba(0, 255, 224, 0.2), rgba(0, 255, 224, 0.05))',
-      border: 'oklch(76% 0.16 200)', // Neon Cyan
-      glow: '0 0 15px rgba(0, 255, 224, 0.25)'
+      color: 'linear-gradient(135deg, rgba(52, 199, 89, 0.15), rgba(52, 199, 89, 0.05))',
+      border: 'rgba(52, 199, 89, 0.5)', /* Apple Green */
+      glow: '0 10px 30px rgba(52, 199, 89, 0.1)'
     },
     'number-sort': {
       title: 'Number Sort',
       desc: 'Sort numbers into Even, Odd, and Prime buckets.',
-      color: 'linear-gradient(135deg, rgba(0, 230, 118, 0.2), rgba(0, 230, 118, 0.05))',
-      border: 'oklch(65% 0.2 140)', // Neon Green
-      glow: '0 0 15px rgba(0, 230, 118, 0.25)'
+      color: 'linear-gradient(135deg, rgba(0, 122, 255, 0.15), rgba(0, 122, 255, 0.05))',
+      border: 'rgba(0, 122, 255, 0.5)', /* Apple Blue */
+      glow: '0 10px 30px rgba(0, 122, 255, 0.1)'
     },
     'fractions-visual': {
       title: 'Fraction Garden',
       desc: 'Water fraction flower petals to match a target value.',
-      color: 'linear-gradient(135deg, rgba(255, 142, 0, 0.2), rgba(255, 142, 0, 0.05))',
-      border: 'oklch(68% 0.18 45)', // Saturated Orange
-      glow: '0 0 15px rgba(255, 142, 0, 0.25)'
+      color: 'linear-gradient(135deg, rgba(255, 149, 0, 0.15), rgba(255, 149, 0, 0.05))',
+      border: 'rgba(255, 149, 0, 0.5)', /* Apple Orange */
+      glow: '0 10px 30px rgba(255, 149, 0, 0.1)'
     },
     'place-value': {
       title: 'Place Value Orchard',
       desc: 'Collect falling apples in place value baskets.',
-      color: 'linear-gradient(135deg, rgba(255, 0, 224, 0.2), rgba(255, 0, 224, 0.05))',
-      border: 'oklch(60% 0.18 310)', // Vibrant Violet
-      glow: '0 0 15px rgba(255, 0, 224, 0.25)'
+      color: 'linear-gradient(135deg, rgba(175, 82, 222, 0.15), rgba(175, 82, 222, 0.05))',
+      border: 'rgba(175, 82, 222, 0.5)', /* Apple Purple */
+      glow: '0 10px 30px rgba(175, 82, 222, 0.1)'
     },
     'multiplication-grid': {
       title: 'Multiplication Grid',
       desc: 'Practice multi-digit multiplication with area grids.',
-      color: 'linear-gradient(135deg, rgba(255, 213, 0, 0.2), rgba(255, 213, 0, 0.05))',
-      border: 'oklch(78% 0.18 85)', // Radiant Yellow
-      glow: '0 0 15px rgba(255, 213, 0, 0.25)'
+      color: 'linear-gradient(135deg, rgba(255, 204, 0, 0.15), rgba(255, 204, 0, 0.05))',
+      border: 'rgba(255, 204, 0, 0.5)', /* Apple Yellow */
+      glow: '0 10px 30px rgba(255, 204, 0, 0.1)'
     },
     'long-division': {
       title: 'Division Stones',
       desc: 'Navigate quotients step-by-step across the pond.',
-      color: 'linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(0, 191, 255, 0.05))',
-      border: 'oklch(65% 0.18 220)', // Deep Sky Blue
-      glow: '0 0 15px rgba(0, 191, 255, 0.25)'
+      color: 'linear-gradient(135deg, rgba(90, 200, 250, 0.15), rgba(90, 200, 250, 0.05))',
+      border: 'rgba(90, 200, 250, 0.5)', /* Apple Teal */
+      glow: '0 10px 30px rgba(90, 200, 250, 0.1)'
     },
     'decimals-grid': {
       title: 'Decimal Shading',
       desc: 'Draw areas representing tenths and hundredths.',
-      color: 'linear-gradient(135deg, rgba(124, 252, 0, 0.2), rgba(124, 252, 0, 0.05))',
-      border: 'oklch(74% 0.16 115)', // Lime Green
-      glow: '0 0 15px rgba(124, 252, 0, 0.25)'
+      color: 'linear-gradient(135deg, rgba(52, 199, 89, 0.15), rgba(52, 199, 89, 0.05))',
+      border: 'rgba(52, 199, 89, 0.5)', /* Apple Green */
+      glow: '0 10px 30px rgba(52, 199, 89, 0.1)'
     },
     'geometry-angles': {
       title: 'Garden Star Maps',
       desc: 'Plot (x, y) coordinates to draw glowing garden shapes.',
-      color: 'linear-gradient(135deg, rgba(255, 69, 0, 0.2), rgba(255, 69, 0, 0.05))',
-      border: 'oklch(62% 0.2 30)', // Red Orange
-      glow: '0 0 15px rgba(255, 69, 0, 0.25)'
+      color: 'linear-gradient(135deg, rgba(255, 45, 85, 0.15), rgba(255, 45, 85, 0.05))',
+      border: 'rgba(255, 45, 85, 0.5)', /* Apple Pink */
+      glow: '0 10px 30px rgba(255, 45, 85, 0.1)'
     },
     'pemdas-tree': {
       title: 'PEMDAS Trees',
       desc: 'Solve equations and prune trees in correct priority.',
-      color: 'linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(157, 78, 221, 0.05))',
-      border: 'oklch(55% 0.18 275)', // Deep Purple
-      glow: '0 0 15px rgba(157, 78, 221, 0.25)'
+      color: 'linear-gradient(135deg, rgba(175, 82, 222, 0.15), rgba(175, 82, 222, 0.05))',
+      border: 'rgba(175, 82, 222, 0.5)', /* Apple Purple */
+      glow: '0 10px 30px rgba(175, 82, 222, 0.1)'
     }
   } as const;
 
@@ -202,8 +202,8 @@
       text = `Sorting numbers next. Catch the primes and keep your streak alive. 🔥`;
     } else {
       const metadata = MODES_METADATA[mode as keyof typeof MODES_METADATA];
-      const title = metadata ? metadata.title : 'Math Garden';
-      text = `Welcome back. Let's unlock the ${title} module and make this garden glow. 🌌`;
+      const title = metadata ? metadata.title : 'Math Hub';
+      text = `Welcome back. Let's unlock the ${title} module and clear your goals. 📈`;
     }
     
     return { mode, text };
@@ -297,13 +297,13 @@
               onclick={() => handleSelect(modeId)}
               class="mode-card"
               class:recommended={isRec}
-              style="background: {meta.color}; border-color: {meta.border}; box-shadow: {meta.glow};"
+              style="background: {meta.color}; border: 1px solid {meta.border};"
             >
               {#if isRec}
                 <span class="recommended-card-tag">Smart Pick</span>
               {/if}
 
-              <!-- Gameplay Preview Box (Animated Previews) -->
+              <!-- Gameplay Preview Box -->
               <div class="animated-preview-box" style="border-color: {meta.border};">
                 {#if modeId === 'times-tables'}
                   <div class="preview-times-tables">
@@ -313,24 +313,18 @@
                 {:else if modeId === 'speed-add'}
                   <div class="preview-speed-add">
                     <div class="speaker-wave">🔊</div>
-                    <div class="sound-ring ri-1"></div>
-                    <div class="sound-ring ri-2"></div>
                   </div>
                 {:else if modeId === 'number-sort'}
                   <div class="preview-number-sort">
                     <div class="ball">7</div>
-                    <div class="bucket-draw">Odd</div>
                   </div>
                 {:else if modeId === 'fractions-visual'}
                   <div class="preview-fraction-garden">
                     <div class="slice s1"></div>
-                    <div class="slice s2"></div>
-                    <div class="slice s3"></div>
                   </div>
                 {:else if modeId === 'place-value'}
                   <div class="preview-place-value">
                     <span class="gem-drop gd-1">🍎</span>
-                    <span class="gem-drop gd-2">🍎</span>
                   </div>
                 {:else if modeId === 'multiplication-grid'}
                   <div class="preview-multi-grid">
@@ -339,30 +333,20 @@
                 {:else if modeId === 'long-division'}
                   <div class="preview-division-space">
                     <div class="ufo">🐸</div>
-                    <div class="ray"></div>
                   </div>
                 {:else if modeId === 'decimals-grid'}
                   <div class="preview-decimals-grid">
                     <div class="sh-cell c1"></div>
-                    <div class="sh-cell c2"></div>
-                    <div class="sh-cell c3"></div>
                   </div>
                 {:else if modeId === 'geometry-angles'}
                   <div class="preview-geometry">
                     <svg viewBox="0 0 40 40" class="star-draw">
-                      <line x1="20" y1="5" x2="35" y2="35" stroke="#fff" stroke-dasharray="80" stroke-dashoffset="80" />
-                      <line x1="35" y1="35" x2="5" y2="35" stroke="#fff" stroke-dasharray="80" stroke-dashoffset="80" />
-                      <line x1="5" y1="35" x2="20" y2="5" stroke="#fff" stroke-dasharray="80" stroke-dashoffset="80" />
                       <circle cx="20" cy="5" r="2.5" fill="#ffd000" />
-                      <circle cx="35" cy="35" r="2.5" fill="#ffd000" />
-                      <circle cx="5" cy="35" r="2.5" fill="#ffd000" />
                     </svg>
                   </div>
                 {:else if modeId === 'pemdas-tree'}
                   <div class="preview-pemdas">
                     <div class="braces">(2+3)</div>
-                    <div class="arrow">↓</div>
-                    <div class="collapsed">5</div>
                   </div>
                 {/if}
               </div>
@@ -402,7 +386,6 @@
     gap: 1.5rem;
   }
 
-  /* Astrid Recommendation Card */
   .astrid-recommendation-card {
     display: flex;
     align-items: center;
@@ -410,9 +393,9 @@
     width: 100%;
     margin: 0;
     padding: 1.5rem;
-    background: linear-gradient(135deg, rgba(15, 20, 25, 0.8), rgba(10, 15, 20, 0.95));
-    border-color: rgba(0, 242, 254, 0.3);
-    box-shadow: 0 0 25px rgba(0, 242, 254, 0.15);
+    background: rgba(255,255,255,0.7);
+    border-radius: var(--r-xl);
+    border: 1px solid rgba(0,0,0,0.1);
   }
 
   .astrid-mascot-area {
@@ -422,24 +405,11 @@
     gap: 0.5rem;
   }
 
-  .astrid-guide {
-    animation: float-mascot 4s ease-in-out infinite alternate;
-  }
-  @keyframes float-mascot {
-    0% { transform: translateY(0px) rotate(-1deg); }
-    100% { transform: translateY(-6px) rotate(1deg); }
-  }
-
   .astronaut-badge {
     font-size: 0.75rem;
     font-weight: 700;
-    color: var(--neon-cyan);
+    color: #666;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    background: rgba(0, 255, 224, 0.1);
-    padding: 0.15rem 0.5rem;
-    border-radius: 99px;
-    border: 1px solid rgba(0, 255, 224, 0.2);
   }
 
   .speech-bubble-column {
@@ -451,48 +421,33 @@
 
   .speech-bubble {
     position: relative;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: #fff;
     border-radius: 16px;
     padding: 1rem 1.2rem;
-  }
-
-  .bubble-arrow {
-    position: absolute;
-    left: -8px;
-    top: 50%;
-    transform: translateY(-50%) rotate(45deg);
-    width: 14px;
-    height: 14px;
-    background: rgba(26, 24, 58, 0.85); /* Approximated panel background */
-    border-left: 1px solid rgba(255, 255, 255, 0.15);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   }
 
   .bubble-text {
     margin: 0;
     font-size: 1.05rem;
-    line-height: 1.5;
-    color: #ffffff;
+    color: #333;
     font-weight: 500;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
   }
 
   .recommended-play-btn {
     align-self: flex-start;
     padding: 0.75rem 1.5rem;
-    background: var(--color-primary);
-    box-shadow: 0 0 15px rgba(0, 255, 224, 0.3);
+    background: #007aff;
+    color: white;
     font-size: 1.05rem;
   }
 
-  /* Garden Container & Metrics */
   .garden-container {
     width: 100%;
     margin: 0;
     padding: 1.5rem;
-    background: linear-gradient(180deg, rgba(15, 20, 25, 0.7) 0%, rgba(5, 10, 15, 0.9) 100%);
-    border-color: rgba(254, 9, 121, 0.2);
+    border-radius: var(--r-xl);
+    background: rgba(255,255,255,0.8);
   }
 
   .garden-metrics {
@@ -501,66 +456,30 @@
     width: 100%;
     gap: 1rem;
     margin-bottom: 1rem;
-    flex-wrap: wrap;
   }
 
   .metric-box {
     flex: 1;
-    min-width: 140px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: #fff;
     border-radius: 12px;
     padding: 0.8rem 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .metric-box.fill-gauge {
-    flex: 1.5;
-    min-width: 180px;
   }
 
   .metric-label {
     font-size: 0.8rem;
     font-weight: 700;
-    color: var(--color-primary);
+    color: #888;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.25rem;
-  }
-  .font-neon-orange {
-    color: #ff9100;
   }
 
   .metric-val {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #ffffff;
-    font-family: var(--font-display);
   }
 
-  .mini-progress-bar {
-    width: 100%;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    overflow: hidden;
-    margin: 0.3rem 0;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
-    border-radius: 4px;
-  }
-  .percent-label {
-    font-size: 0.9rem;
-    color: var(--neon-cyan);
-  }
-
-  /* Learning Zones */
   .learning-zones {
     display: flex;
     flex-direction: column;
@@ -576,50 +495,63 @@
   }
 
   .zone-header h2 {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     margin-bottom: 0.2rem;
-    color: #ffffff;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    color: var(--color-text);
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
 
   .text-description {
     font-size: 0.95rem;
-    color: var(--color-text-muted);
+    color: #666;
     margin: 0;
   }
 
   .zone-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.2rem;
-    width: 100%;
-  }
-
-  @media (min-width: 600px) {
-    .zone-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  /* Mode Cards */
-  .mode-card {
-    border-radius: 20px;
-    border: 2px solid transparent;
-    padding: 1.2rem;
-    display: flex;
-    align-items: center;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
     width: 100%;
-    text-align: left;
+  }
+
+  .animated-preview-box {
+    width: 100%;
+    height: 100px;
+    border-radius: var(--r-md);
+    background: rgba(255, 255, 255, 0.5);
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid;
+    box-shadow: inset 0 0 20px rgba(255,255,255,0.5);
     overflow: hidden;
   }
 
+  .mode-card {
+    border-radius: var(--r-lg);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    background-color: var(--color-panel);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
   .mode-card:hover {
-    transform: translateY(-3px) scale(1.01);
-    background-color: rgba(255, 255, 255, 0.05);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
   }
 
   .mode-card.recommended {
@@ -646,15 +578,15 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.4rem;
   }
 
   .mode-info h3 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     margin: 0;
-    color: #ffffff;
+    color: var(--color-text);
     font-family: var(--font-display);
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    font-weight: 700;
   }
 
   .description-text {
@@ -715,7 +647,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
+    color: var(--color-text);
     font-family: var(--font-display);
   }
   .preview-times-tables .formula {
@@ -800,11 +732,11 @@
     left: 10px;
     width: 55px;
     text-align: center;
-    border: 2px solid rgba(255,255,255,0.3);
+    border: 2px solid rgba(0,0,0,0.1);
     border-radius: 6px;
     font-size: 0.65rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--color-text);
     background: rgba(0, 230, 118, 0.2);
   }
   @keyframes fallBall {
@@ -961,7 +893,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
+    color: var(--color-text);
     font-size: 0.75rem;
     font-weight: 700;
   }
