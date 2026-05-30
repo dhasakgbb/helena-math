@@ -59,21 +59,24 @@
   // only their positions reflow. Three groves are kept spatially clustered.
   type Pod = { id: MathMode; x: number; y: number; grove: Grove };
 
-  // Wide (>=900px): one shallow serpentine sweeping left→right.
+  // Wide (>=1100px): serpentine with 11–12% x-steps so pods never overlap.
+  // At 1100px viewport: 11% x-step → 121px horizontal gap (pod width ~104px, need ≥116px).
+  // Grove 3 uses a 2×2 arrangement (x=71/83, y=38/66) so all 4 fit within the right margin.
+  // Every adjacent/near pair satisfies: dx_px ≥ 116 OR dy_px ≥ 132 (pod dims + 12px margin).
   const LAYOUT_WIDE: Pod[] = [
-    { id: 'times-tables', x: 8, y: 64, grove: 1 },
-    { id: 'speed-add', x: 17, y: 50, grove: 1 },
-    { id: 'number-sort', x: 26, y: 62, grove: 1 },
-    { id: 'fractions-visual', x: 39, y: 46, grove: 2 },
-    { id: 'multiplication-grid', x: 48, y: 60, grove: 2 },
-    { id: 'decimals-grid', x: 57, y: 44, grove: 2 },
-    { id: 'place-value', x: 70, y: 58, grove: 3 },
-    { id: 'long-division', x: 79, y: 42, grove: 3 },
-    { id: 'geometry-angles', x: 88, y: 56, grove: 3 },
-    { id: 'pemdas-tree', x: 94, y: 40, grove: 3 },
+    { id: 'times-tables', x: 5, y: 44, grove: 1 },
+    { id: 'speed-add', x: 16, y: 64, grove: 1 },
+    { id: 'number-sort', x: 27, y: 44, grove: 1 },
+    { id: 'fractions-visual', x: 38, y: 64, grove: 2 },
+    { id: 'multiplication-grid', x: 49, y: 44, grove: 2 },
+    { id: 'decimals-grid', x: 60, y: 64, grove: 2 },
+    { id: 'place-value', x: 71, y: 38, grove: 3 },
+    { id: 'long-division', x: 83, y: 64, grove: 3 },
+    { id: 'geometry-angles', x: 71, y: 66, grove: 3 },
+    { id: 'pemdas-tree', x: 83, y: 40, grove: 3 },
   ];
 
-  // Tablet portrait (600–900px): taller serpentine, ~3 visual rows of groves.
+  // Tablet portrait (600–1100px): taller serpentine, ~3 visual rows of groves.
   const LAYOUT_TABLET: Pod[] = [
     { id: 'times-tables', x: 18, y: 22, grove: 1 },
     { id: 'speed-add', x: 50, y: 18, grove: 1 },
@@ -90,7 +93,7 @@
   // Narrow (<600px): single vertical column. Rendered as a grouped list
   // (see the markup branch) so pods never overlap on small screens.
   const NARROW_BP = 600;
-  const TABLET_BP = 900;
+  const TABLET_BP = 1100;
 
   let sceneW = $state(1200);
   const layout = $derived(
@@ -100,9 +103,9 @@
 
   // Grove sign positions (percent), placed near each cluster, per variant.
   const SIGN_WIDE: Record<Grove, { x: number; y: number }> = {
-    1: { x: 17, y: 80 },
-    2: { x: 48, y: 78 },
-    3: { x: 82, y: 76 },
+    1: { x: 16, y: 80 },
+    2: { x: 49, y: 80 },
+    3: { x: 77, y: 80 },
   };
   const SIGN_TABLET: Record<Grove, { x: number; y: number }> = {
     1: { x: 50, y: 6 },
