@@ -13,6 +13,13 @@
   let lastScore = $state(0);
   let lastTotal = $state(0);
 
+  // End-screen bloom-moment data
+  let lastMode = $state<string | null>(null);
+  let ringFrom = $state(0);
+  let ringTo = $state(0);
+  let bloomed = $state(false);
+  let isPersonalBest = $state(false);
+
   // Toast
   let toastMessage = $state<string | null>(null);
   let toastClass = $state<'ok' | 'bad' | ''>('');
@@ -50,6 +57,12 @@
   // Safe grade extractor
   const gradeLevel = $derived(profileStore.profile ? (profileStore.profile as any).grade_level ?? 4 : 4);
 
+  // Mastery + ring-fill helpers for the end-screen bloom moment.
+  const gateMastery = (m: string) =>
+    (profileStore.profile?.module_overrides?.math as any)?.mastery?.[m] ?? 0;
+  const ringFill = (m: string) =>
+    m === 'times-tables' ? profileStore.timesTablesRingFill : gateMastery(m);
+
   function handleSelectMode(mode: string) {
     selectedMode = mode as MathMode;
     
@@ -64,11 +77,22 @@
   function handleGameFinished(score: number, total: number) {
     lastScore = score;
     lastTotal = total;
-
     if (selectedMode) {
-      profileStore.recordGameResult(selectedMode, score, total, gradeLevel);
+      const m = selectedMode;
+      const prevGate = gateMastery(m);
+      const prevRing = ringFill(m);
+      // personal best = beat the best PRIOR ratio (first-ever play is not a "new best")
+      const prior = ((profileStore.profile?.module_overrides?.math as any)?.scores?.[m]) ?? [];
+      const prevBestRatio = prior.length
+        ? Math.max(...prior.map((s: any) => s.score / s.total))
+        : -1;
+      profileStore.recordGameResult(m, score, total, gradeLevel);
+      lastMode = m;
+      ringFrom = prevRing;
+      ringTo = ringFill(m);
+      bloomed = prevGate < 0.85 && gateMastery(m) >= 0.85;
+      isPersonalBest = prior.length > 0 && score / total > prevBestRatio;
     }
-
     currentScreen = 'end';
   }
 </script>
@@ -89,10 +113,16 @@
           />
         {:else if currentScreen === 'end'}
           <EndScreen
+            mode={lastMode ?? selectedMode}
             score={lastScore}
             total={lastTotal}
+            ringFrom={ringFrom}
+            ringTo={ringTo}
+            bloomed={bloomed}
+            isPersonalBest={isPersonalBest}
             onPlayAgain={() => currentScreen = 'game'}
             onPickAnother={() => currentScreen = 'hub'}
+            onSelectNext={(m) => handleSelectMode(m)}
           />
         {/if}
       {/if}
