@@ -209,8 +209,8 @@
     gap: 0.5rem;
     padding: 1rem 1.25rem 1.1rem;
     border-radius: var(--r-lg);
-    background: oklch(30% 0.05 275 / 0.52);
-    border: 1px solid oklch(85% 0.02 280 / 0.14);
+    background: var(--color-panel);
+    border: 1px solid var(--color-border);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     min-width: 130px;
@@ -245,7 +245,7 @@
   }
 
   .ring-track {
-    stroke: oklch(85% 0.02 280 / 0.12);
+    stroke: var(--color-border);
   }
 
   .ring-arc {
@@ -343,8 +343,8 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: oklch(85% 0.02 280 / 0.18);
-    border: 1px solid oklch(85% 0.02 280 / 0.22);
+    background: var(--color-border);
+    border: 1px solid var(--color-border);
     transition: background 0.3s, box-shadow 0.3s;
   }
 
@@ -378,8 +378,8 @@
     width: 7px;
     height: 14px;
     border-radius: 2px 2px 1px 1px;
-    background: oklch(85% 0.02 280 / 0.18);
-    border: 1px solid oklch(85% 0.02 280 / 0.22);
+    background: var(--color-border);
+    border: 1px solid var(--color-border);
     transition: background 0.3s;
   }
 
@@ -392,10 +392,9 @@
     display: block;
     width: 7px;
     height: 10px;
-    background: transparent;
     /* Teardrop flame shape via clip-path */
     clip-path: polygon(50% 0%, 85% 50%, 70% 100%, 30% 100%, 15% 50%);
-    background: oklch(85% 0.02 280 / 0.12);
+    background: var(--color-border);
     border-radius: 50% 50% 30% 30%;
     transition: background 0.3s, box-shadow 0.3s;
   }
