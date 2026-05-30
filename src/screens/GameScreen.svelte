@@ -243,6 +243,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'decimals-grid'}
     <DecimalGridZoom
