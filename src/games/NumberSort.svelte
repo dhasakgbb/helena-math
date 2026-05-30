@@ -1,15 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { fly, scale } from 'svelte/transition';
+  import type { GameHelp } from '../lib/help';
 
   interface Props {
     grade: number;
     onCorrect: () => void;
     onIncorrect: (details: { question: string; answer: string; userVal: string }) => void;
     onFinished: (score: number, total: number) => void;
+    help?: GameHelp | null;
   }
 
-  let { grade, onCorrect, onIncorrect, onFinished }: Props = $props();
+  let { grade, onCorrect, onIncorrect, onFinished, help = $bindable<GameHelp | null>(null) }: Props = $props();
 
   let score = $state(0);
   let feedback = $state<string>('');
@@ -32,6 +34,20 @@
 
   onMount(() => {
     generateQuestions();
+  });
+
+  $effect(() => {
+    const q = questions[currentQuestionIndex];
+    if (!q) { help = null; return; }
+    const n = q.n;
+    help = {
+      howToPlay: "Put each number in Even, Odd, or Prime. If it's prime, prime wins.",
+      hint: "Ends in 0,2,4,6,8 → even. Only 1 and itself as factors → prime.",
+      steps: [
+        `Is ${n} only divisible by 1 and ${n}? If yes → Prime`,
+        `Otherwise: last digit even → Even, else Odd`,
+      ],
+    };
   });
 
   function generateQuestions() {

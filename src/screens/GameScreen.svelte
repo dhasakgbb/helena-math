@@ -211,6 +211,7 @@
       onCorrect={handleCorrect}
       onIncorrect={handleIncorrect}
       onFinished={onFinished}
+      bind:help={currentHelp}
     />
   {:else if mode === 'fractions-visual'}
     <FractionGarden
